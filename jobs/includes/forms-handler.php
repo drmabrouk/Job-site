@@ -115,3 +115,29 @@ function jobs_ajax_send_message() {
     wp_send_json_success( 'Message sent' );
 }
 add_action( 'wp_ajax_jobs_send_message', 'jobs_ajax_send_message' );
+
+// Handle Quick Apply
+function jobs_ajax_quick_apply() {
+    check_ajax_referer( 'jobs_quick_apply', 'quick_apply_nonce' );
+
+    $job_id = intval( $_POST['job_id'] );
+    $user_id = get_current_user_id();
+    $cover_letter = sanitize_textarea_field( $_POST['cover_letter'] );
+
+    if ( ! $user_id || ! $job_id ) {
+        wp_send_json_error( 'Unauthorized or invalid data.' );
+    }
+
+    // Save application as a notification for the employer (the post author)
+    $employer_id = get_post_field( 'post_author', $job_id );
+
+    global $wpdb;
+    $table_notifications = $wpdb->prefix . 'jobs_notifications';
+    $wpdb->insert( $table_notifications, array(
+        'user_id' => $employer_id,
+        'content' => 'New application for job: ' . get_the_title($job_id) . ' from ' . get_userdata($user_id)->display_name,
+    ) );
+
+    wp_send_json_success( 'Application submitted.' );
+}
+add_action( 'wp_ajax_jobs_quick_apply', 'jobs_ajax_quick_apply' );

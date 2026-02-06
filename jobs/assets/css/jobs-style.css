@@ -120,31 +120,47 @@ body {
 
 /* Job Cards */
 .job-card {
-    border: 1px solid var(--jobs-primary-color);
+    border: 1px solid rgba(29, 52, 105, 0.2);
     border-radius: 12px;
-    padding: 20px;
+    padding: 25px;
     margin-bottom: 20px;
-    transition: box-shadow 0.3s;
+    background: transparent !important;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .job-card:hover {
-    box-shadow: 0 4px 15px rgba(29, 52, 105, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(29, 52, 105, 0.05);
+}
+
+.job-title {
+    color: var(--jobs-primary-color);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.company-name {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.95em;
 }
 
 .capsule {
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85em;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8em;
     margin-right: 8px;
-    margin-bottom: 8px;
-    border: 1px solid;
+    margin-bottom: 10px;
+    font-weight: 500;
     background: transparent !important;
+    border: 1px solid;
 }
 
-.capsule-category { border-color: #ffb7b2; color: #ffb7b2; }
-.capsule-specialization { border-color: #b2e2f2; color: #b2e2f2; }
-.capsule-location { border-color: #b2f2bb; color: #b2f2bb; }
+/* Pastel borders with very light transparency for capsules */
+.capsule-category { border-color: #ffb7b2; color: #d67a74; background: rgba(255, 183, 178, 0.1) !important; }
+.capsule-specialization { border-color: #b2e2f2; color: #57a8c4; background: rgba(178, 226, 242, 0.1) !important; }
+.capsule-location { border-color: #b2f2bb; color: #62b56e; background: rgba(178, 242, 187, 0.1) !important; }
 
 .jobs-pagination {
     display: flex;
@@ -201,7 +217,34 @@ body {
 }
 
 .jobs-main-logo {
-    max-height: 80px;
+    max-height: 120px;
+    margin-bottom: 20px;
+}
+
+.jobs-search-engine input {
+    width: 250px;
+    border-radius: 25px;
+    padding: 12px 20px;
+}
+
+.jobs-search-engine button {
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 500;
+}
+
+.quick-apply-form-container label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--jobs-primary-color);
+    font-weight: 500;
+}
+
+.quick-apply-form-container textarea {
+    border: 1px solid rgba(29, 52, 105, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    background: transparent;
 }
 
 @media (max-width: 768px) {

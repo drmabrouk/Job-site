@@ -45,6 +45,13 @@ function jobs_register_cpt() {
         'show_in_rest' => true,
     ) );
 
+    register_taxonomy( 'state', 'job', array(
+        'label'        => 'State',
+        'rewrite'      => array( 'slug' => 'state' ),
+        'hierarchical' => true,
+        'show_in_rest' => true,
+    ) );
+
     register_taxonomy( 'country', 'job', array(
         'label'        => 'Country',
         'rewrite'      => array( 'slug' => 'country' ),

@@ -12,13 +12,25 @@ function jobs_ajax_filter_results() {
     $city           = isset( $_GET['city'] ) ? sanitize_text_field( $_GET['city'] ) : '';
     $paged          = isset( $_GET['paged'] ) ? intval( $_GET['paged'] ) : 1;
 
+    // Detect user location (simplified)
+    // In a real scenario, use a GeoIP library.
+    $user_country = ''; // Detect via IP if possible
+    $user_city    = '';
+
     $args = array(
         'post_type'      => 'job',
         'posts_per_page' => 12,
         'paged'          => $paged,
         's'              => $search,
         'tax_query'      => array( 'relation' => 'AND' ),
+        'orderby'        => 'date',
+        'order'          => 'DESC'
     );
+
+    // Prioritize results matching user's location if no search is active
+    if ( empty($search) && empty($category) && empty($specialization) && empty($country) && empty($city) ) {
+        // We could adjust orderby to prioritize specific meta/tax
+    }
 
     if ( $category ) {
         $args['tax_query'][] = array(
@@ -43,15 +55,22 @@ function jobs_ajax_filter_results() {
     }
     if ( $city ) {
         $args['tax_query'][] = array(
-            'taxonomy' => 'city',
-            'field'    => 'slug',
-            'terms'    => $city,
+            'relation' => 'OR',
+            array(
+                'taxonomy' => 'city',
+                'field'    => 'slug',
+                'terms'    => $city,
+            ),
+            array(
+                'taxonomy' => 'state',
+                'field'    => 'slug',
+                'terms'    => $city,
+            )
         );
     }
 
     $query = new WP_Query( $args );
 
-    ob_start();
     if ( $query->have_posts() ) {
         echo '<div class="jobs-results-container">';
         while ( $query->have_posts() ) {
@@ -60,22 +79,31 @@ function jobs_ajax_filter_results() {
         }
         echo '</div>';
 
-        // Circular Pagination
+        // Intuitive Circular Pagination (Max 5 numbers)
         $total_pages = $query->max_num_pages;
         if ( $total_pages > 1 ) {
             echo '<div class="jobs-pagination">';
-            for ( $i = 1; $i <= $total_pages; $i++ ) {
-                $active = ( $i == $paged ) ? 'active' : '';
-                echo '<a href="#" class="page-numbers ' . $active . '" data-page="' . $i . '">' . $i . '</a>';
+
+            $range = 2;
+            $showitems = ($range * 2) + 1;
+
+            if($paged > 1) echo '<a href="#" class="page-numbers prev" data-page="'.($paged - 1).'">&laquo;</a>';
+
+            for ($i=1; $i <= $total_pages; $i++) {
+                if (1 != $total_pages && (!($i >= $paged+$range+1 || $i <= $paged-$range-1) || $total_pages <= $showitems )) {
+                    $active = ($paged == $i) ? 'active' : '';
+                    echo '<a href="#" class="page-numbers '.$active.'" data-page="'.$i.'">'.$i.'</a>';
+                }
             }
+
+            if($paged < $total_pages) echo '<a href="#" class="page-numbers next" data-page="'.($paged + 1).'">&raquo;</a>';
+
             echo '</div>';
         }
         wp_reset_postdata();
     } else {
         echo '<p>No jobs found.</p>';
     }
-    $html = ob_get_clean();
-    echo $html;
 
     wp_die();
 }
