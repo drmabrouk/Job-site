@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <div class="jobs-search-engine">
         <form id="jobs-search-form" action="" method="GET">
             <input type="text" name="job_search" id="jobs-input-search" placeholder="<?php echo esc_attr( get_option( 'jobs_search_placeholder', 'Job title, keywords, or company' ) ); ?>">
+            <input type="text" name="category" id="jobs-input-category" placeholder="Category">
             <input type="text" name="specialization" id="jobs-input-specialization" placeholder="Specialization">
             <input type="text" name="country" id="jobs-input-country" placeholder="Country">
             <input type="text" name="city" id="jobs-input-city" placeholder="City">
@@ -26,13 +27,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <script>
 jQuery(document).ready(function($) {
-    function filterJobs() {
+    function filterJobs(page = 1) {
         var data = {
             action: 'jobs_filter',
             job_search: $('#jobs-input-search').val(),
+            category: $('#jobs-input-category').val(),
             specialization: $('#jobs-input-specialization').val(),
             country: $('#jobs-input-country').val(),
-            city: $('#jobs-input-city').val()
+            city: $('#jobs-input-city').val(),
+            paged: page
         };
 
         $('.jobs-loader').show();
@@ -44,12 +47,19 @@ jQuery(document).ready(function($) {
     }
 
     $('#jobs-search-form input').on('keyup change', function() {
-        filterJobs();
+        filterJobs(1);
     });
 
     $('#jobs-search-form').on('submit', function(e) {
         e.preventDefault();
-        filterJobs();
+        filterJobs(1);
+    });
+
+    $(document).on('click', '.jobs-pagination a', function(e) {
+        e.preventDefault();
+        var page = $(this).data('page');
+        filterJobs(page);
+        $('html, body').animate({ scrollTop: $('#jobs-search-form').offset().top }, 500);
     });
 
     // Initial load

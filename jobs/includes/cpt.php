@@ -42,24 +42,94 @@ function jobs_register_cpt() {
         'label'        => 'Specialization',
         'rewrite'      => array( 'slug' => 'specialization' ),
         'hierarchical' => true,
+        'show_in_rest' => true,
     ) );
 
     register_taxonomy( 'country', 'job', array(
         'label'        => 'Country',
         'rewrite'      => array( 'slug' => 'country' ),
         'hierarchical' => true,
+        'show_in_rest' => true,
     ) );
 
     register_taxonomy( 'city', 'job', array(
         'label'        => 'City',
         'rewrite'      => array( 'slug' => 'city' ),
         'hierarchical' => true,
+        'show_in_rest' => true,
     ) );
 
     register_taxonomy( 'job_category', 'job', array(
         'label'        => 'Category',
         'rewrite'      => array( 'slug' => 'job-category' ),
         'hierarchical' => true,
+        'show_in_rest' => true,
     ) );
 }
 add_action( 'init', 'jobs_register_cpt' );
+
+// Database setup for internal messaging and notifications
+function jobs_database_setup() {
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $table_messages = $wpdb->prefix . 'jobs_messages';
+    $sql_messages = "CREATE TABLE $table_messages (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        sender_id bigint(20) NOT NULL,
+        receiver_id bigint(20) NOT NULL,
+        message text NOT NULL,
+        timestamp datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        is_read tinyint(1) DEFAULT 0 NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
+    $table_notifications = $wpdb->prefix . 'jobs_notifications';
+    $sql_notifications = "CREATE TABLE $table_notifications (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        user_id bigint(20) NOT NULL,
+        content text NOT NULL,
+        timestamp datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        is_read tinyint(1) DEFAULT 0 NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $sql_messages );
+    dbDelta( $sql_notifications );
+}
+
+// Automated Job Archiving
+function jobs_schedule_archiving() {
+    if ( ! wp_next_scheduled( 'jobs_daily_archiving' ) ) {
+        wp_schedule_event( time(), 'daily', 'jobs_daily_archiving' );
+    }
+}
+add_action( 'wp', 'jobs_schedule_archiving' );
+
+function jobs_do_automated_archiving() {
+    $archive_days = get_option( 'jobs_archive_days', 30 );
+    $args = array(
+        'post_type'      => 'job',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'date_query'     => array(
+            array(
+                'column' => 'post_date_gmt',
+                'before' => $archive_days . ' days ago',
+            ),
+        ),
+    );
+    $query = new WP_Query( $args );
+    if ( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            wp_update_post( array(
+                'ID'          => get_the_ID(),
+                'post_status' => 'private' // Or custom 'archived' status
+            ) );
+        }
+    }
+    wp_reset_postdata();
+}
+add_action( 'jobs_daily_archiving', 'jobs_do_automated_archiving' );

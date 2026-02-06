@@ -146,6 +146,31 @@ body {
 .capsule-specialization { border-color: #b2e2f2; color: #b2e2f2; }
 .capsule-location { border-color: #b2f2bb; color: #b2f2bb; }
 
+.jobs-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.jobs-pagination a {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Circular indicators */
+    border: 1px solid var(--jobs-primary-color);
+    text-decoration: none;
+    color: var(--jobs-primary-color);
+    transition: all 0.3s;
+}
+
+.jobs-pagination a.active, .jobs-pagination a:hover {
+    background: var(--jobs-primary-color);
+    color: white;
+}
+
 .jobs-results-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

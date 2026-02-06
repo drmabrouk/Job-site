@@ -35,6 +35,8 @@ register_deactivation_hook( __FILE__, 'jobs_plugin_deactivate' );
 function jobs_plugin_activate() {
     jobs_create_roles();
     jobs_create_pages();
+    require_once JOBS_PLUGIN_DIR . 'includes/cpt.php';
+    jobs_database_setup();
     flush_rewrite_rules();
 }
 

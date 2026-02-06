@@ -49,8 +49,69 @@ function jobs_handle_forms() {
             if ( isset( $_POST['jobs_search_placeholder'] ) ) {
                 update_option( 'jobs_search_placeholder', sanitize_text_field( $_POST['jobs_search_placeholder'] ) );
             }
-            // Add more search engine customization here
+            if ( isset( $_POST['jobs_archive_days'] ) ) {
+                update_option( 'jobs_archive_days', intval( $_POST['jobs_archive_days'] ) );
+            }
         }
+    }
+
+    // Handle User Account Update
+    if ( isset( $_POST['jobs_save_account'] ) && isset( $_POST['jobs_account_nonce'] ) ) {
+        if ( ! wp_verify_nonce( $_POST['jobs_account_nonce'], 'jobs_update_account' ) ) {
+            return;
+        }
+
+        $user_id = get_current_user_id();
+        if ( ! $user_id ) return;
+
+        $email = sanitize_email( $_POST['user_email'] );
+        $display_name = sanitize_text_field( $_POST['display_name'] );
+        $visibility = sanitize_text_field( $_POST['profile_visibility'] );
+
+        wp_update_user( array(
+            'ID'           => $user_id,
+            'user_email'   => $email,
+            'display_name' => $display_name,
+        ) );
+
+        if ( ! empty( $_POST['user_pass'] ) ) {
+            wp_set_password( $_POST['user_pass'], $user_id );
+        }
+
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
+
+        // Add activity log entry here if needed
     }
 }
 add_action( 'init', 'jobs_handle_forms' );
+
+// AJAX handler for sending messages
+function jobs_ajax_send_message() {
+    check_ajax_referer( 'jobs_messaging_nonce', 'nonce' );
+
+    $receiver_id = intval( $_POST['receiver_id'] );
+    $sender_id   = get_current_user_id();
+    $message     = sanitize_textarea_field( $_POST['message'] );
+
+    if ( ! $sender_id || ! $receiver_id || ! $message ) {
+        wp_send_json_error( 'Invalid data' );
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'jobs_messages';
+    $wpdb->insert( $table, array(
+        'sender_id'   => $sender_id,
+        'receiver_id' => $receiver_id,
+        'message'     => $message,
+    ) );
+
+    // Also create a notification for the receiver
+    $table_notifications = $wpdb->prefix . 'jobs_notifications';
+    $wpdb->insert( $table_notifications, array(
+        'user_id' => $receiver_id,
+        'content' => 'You have a new message from ' . get_userdata($sender_id)->display_name,
+    ) );
+
+    wp_send_json_success( 'Message sent' );
+}
+add_action( 'wp_ajax_jobs_send_message', 'jobs_ajax_send_message' );

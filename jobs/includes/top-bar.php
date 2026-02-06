@@ -31,6 +31,17 @@ function jobs_render_top_bar() {
             <!-- Logo will be here -->
         </div>
         <div class="jobs-user-menu">
+            <?php
+            global $wpdb;
+            $table_notifications = $wpdb->prefix . 'jobs_notifications';
+            $unread_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_notifications WHERE user_id = %d AND is_read = 0", $current_user->ID ) );
+            ?>
+            <div class="jobs-notification-icon" id="jobs-notif-toggle" style="position:relative; margin-right: 15px; cursor: pointer;">
+                <span class="dashicons dashicons-bell" style="font-size: 24px; color: var(--jobs-primary-color);"></span>
+                <?php if ($unread_count > 0) : ?>
+                    <span class="notif-count" style="position:absolute; top:-5px; right:-5px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px;"><?php echo $unread_count; ?></span>
+                <?php endif; ?>
+            </div>
             <img src="<?php echo get_avatar_url( $current_user->ID ); ?>" class="user-avatar" id="jobs-avatar-toggle">
             <div class="jobs-dropdown-menu" id="jobs-dropdown">
                 <?php jobs_render_modules_menu(); ?>
