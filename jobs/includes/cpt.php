@@ -37,6 +37,15 @@ function jobs_register_cpt() {
 
     register_post_type( 'job', $args );
 
+    // Application CPT
+    register_post_type( 'application', array(
+        'label'               => 'Applications',
+        'public'              => false,
+        'show_ui'             => true,
+        'supports'            => array( 'title', 'editor', 'custom-fields' ),
+        'capability_type'     => 'post',
+    ) );
+
     // Taxonomies
     register_taxonomy( 'specialization', 'job', array(
         'label'        => 'Specialization',

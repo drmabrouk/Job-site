@@ -87,6 +87,33 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <label>Job Archive Duration (Days)</label>
                     <input type="number" name="jobs_archive_days" value="<?php echo esc_attr( get_option( 'jobs_archive_days', 30 ) ); ?>" style="width:100%;">
                 </div>
+
+                <div class="form-group">
+                    <label>Visible Modules (Global Control)</label>
+                    <?php
+                    $all_modules = array(
+                        'job-posting' => 'Job Posting',
+                        'job-listings-history' => 'Job Listings History',
+                        'public-profile' => 'Public Profile',
+                        'applications-submitted' => 'Applications Submitted',
+                        'job-requests' => 'Job Requests',
+                        'cv-resume' => 'CV / Resume',
+                        'company-profile' => 'Company Profile',
+                        'favorites' => 'Favorites',
+                        'drafts' => 'Drafts',
+                        'support' => 'Support',
+                        'settings' => 'Settings',
+                        'articles' => 'Articles',
+                    );
+                    $visible_modules = get_option( 'jobs_visible_modules', array_keys( $all_modules ) );
+                    foreach ( $all_modules as $slug => $label ) : ?>
+                        <div style="margin-bottom: 5px;">
+                            <input type="checkbox" name="jobs_visible_modules[]" value="<?php echo $slug; ?>" <?php checked( in_array( $slug, $visible_modules ) ); ?>>
+                            <?php echo $label; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
                 <button type="submit" name="save_jobs_settings" class="jobs-btn">Save Changes</button>
             </form>
             <?php if ( isset( $_POST['save_jobs_settings'] ) ) echo '<p>Settings updated successfully!</p>'; ?>

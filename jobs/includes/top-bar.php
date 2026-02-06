@@ -76,7 +76,11 @@ function jobs_render_modules_menu() {
     );
 
     echo '<ul>';
+    $visible_modules = get_option( 'jobs_visible_modules', array_keys( $modules ) );
+
     foreach ( $modules as $slug => $data ) {
+        if ( ! in_array( $slug, $visible_modules ) ) continue;
+
         $allowed = false;
         foreach ( $roles as $role ) {
             if ( in_array( $role, $data['roles'] ) ) {
