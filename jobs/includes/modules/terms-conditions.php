@@ -1,0 +1,1 @@
+<?php // Module: terms-conditions ?>
