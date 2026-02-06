@@ -52,6 +52,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <script>
 jQuery(document).ready(function($) {
+    var userLocation = { country: '', city: '' };
+
+    // Attempt to get user location via free API
+    $.getJSON('https://ipapi.co/json/', function(data) {
+        userLocation.country = data.country_name;
+        userLocation.city = data.city;
+        console.log('User location detected:', userLocation);
+        if (!$('#jobs-input-country').val()) {
+            // Optionally pre-set or just use for prioritization in backend
+        }
+    });
+
     var locationData = {
         "uae": ["Dubai", "Abu Dhabi", "Sharjah"],
         "saudi-arabia": ["Riyadh", "Jeddah", "Dammam"],
@@ -84,6 +96,8 @@ jQuery(document).ready(function($) {
             specialization: $('#jobs-input-specialization').val(),
             country: $('#jobs-input-country').val(),
             city: $('#jobs-input-city').val(),
+            user_country: userLocation.country,
+            user_city: userLocation.city,
             paged: page
         };
 

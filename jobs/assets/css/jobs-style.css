@@ -336,6 +336,73 @@ body {
     }
 }
 
+/* Public Profile Styles */
+.jobs-public-profile-container {
+    padding: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: 'Rubik', sans-serif;
+    color: var(--jobs-primary-color);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 50px;
+    border-bottom: 1px solid rgba(29, 52, 105, 0.1);
+    padding-bottom: 30px;
+}
+
+.company-logo-large {
+    width: 150px;
+    height: auto;
+    border-radius: 12px;
+}
+
+.profile-basic-info h1 {
+    margin: 0;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    background: var(--jobs-primary-color);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9em;
+    margin: 10px 0;
+}
+
+.profile-content h2 {
+    font-size: 1.5em;
+    border-left: 4px solid var(--jobs-primary-color);
+    padding-left: 15px;
+    margin: 30px 0 20px;
+}
+
+.company-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.info-item {
+    background: rgba(29, 52, 105, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.info-item strong {
+    display: block;
+    font-size: 0.8em;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
 /* Top bar styles */
 .jobs-top-bar {
     display: flex;

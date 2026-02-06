@@ -12,10 +12,8 @@ function jobs_ajax_filter_results() {
     $city           = isset( $_GET['city'] ) ? sanitize_text_field( $_GET['city'] ) : '';
     $paged          = isset( $_GET['paged'] ) ? intval( $_GET['paged'] ) : 1;
 
-    // Detect user location (simplified)
-    // In a real scenario, use a GeoIP library.
-    $user_country = ''; // Detect via IP if possible
-    $user_city    = '';
+    $user_country   = isset( $_GET['user_country'] ) ? sanitize_text_field( $_GET['user_country'] ) : '';
+    $user_city      = isset( $_GET['user_city'] ) ? sanitize_text_field( $_GET['user_city'] ) : '';
 
     $args = array(
         'post_type'      => 'job',
@@ -27,9 +25,25 @@ function jobs_ajax_filter_results() {
         'order'          => 'DESC'
     );
 
-    // Prioritize results matching user's location if no search is active
-    if ( empty($search) && empty($category) && empty($specialization) && empty($country) && empty($city) ) {
-        // We could adjust orderby to prioritize specific meta/tax
+    // Prioritize results matching user's location
+    if ( $user_country || $user_city ) {
+        $args['meta_query'] = array(
+            'relation' => 'OR',
+            array(
+                'key'     => '_location_country',
+                'value'   => $user_country,
+                'compare' => 'LIKE'
+            ),
+            array(
+                'key'     => '_location_city',
+                'value'   => $user_city,
+                'compare' => 'LIKE'
+            )
+        );
+        $args['orderby'] = array(
+            'meta_value' => 'DESC',
+            'date'       => 'DESC'
+        );
     }
 
     if ( $category ) {

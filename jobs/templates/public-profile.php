@@ -1,0 +1,103 @@
+<?php
+/**
+ * Public Profile Display Template
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$username = get_query_var( 'profile_user' );
+if ( ! $username ) {
+    echo '<p>User not found.</p>';
+    return;
+}
+
+$user = get_user_by( 'slug', $username );
+if ( ! $user ) {
+    echo '<p>User not found.</p>';
+    return;
+}
+
+$user_id = $user->ID;
+$role = $user->roles[0];
+$cv_data = get_user_meta( $user_id, 'jobs_cv_data', true ) ?: array();
+$company_data = get_user_meta( $user_id, 'jobs_company_data', true ) ?: array();
+$visibility = get_user_meta( $user_id, 'profile_visibility', true ) ?: 'public';
+
+if ( $visibility === 'private' && get_current_user_id() !== $user_id ) {
+    echo '<p>This profile is private.</p>';
+    return;
+}
+
+$format_pdf = isset( $_GET['format'] ) && $_GET['format'] === 'pdf';
+?>
+
+<?php if ( $format_pdf ) : ?>
+<style>
+    body * { visibility: hidden; }
+    #jobs-pdf-content, #jobs-pdf-content * { visibility: visible; }
+    #jobs-pdf-content { position: absolute; left: 0; top: 0; width: 100%; }
+    .jobs-btn, .jobs-share-link-box { display: none !important; }
+</style>
+<script>window.onload = function() { window.print(); }</script>
+<?php endif; ?>
+
+<div class="jobs-public-profile-container jobs-transparent-bg" id="jobs-pdf-content">
+    <header class="profile-header">
+        <div class="profile-avatar">
+            <?php if ( $role === 'employer' && ! empty( $company_data['logo'] ) ) : ?>
+                <img src="<?php echo esc_url( $company_data['logo'] ); ?>" alt="Company Logo" class="company-logo-large">
+            <?php else : ?>
+                <?php echo get_avatar( $user_id, 150 ); ?>
+            <?php endif; ?>
+        </div>
+        <div class="profile-basic-info">
+            <h1><?php echo esc_html( $user->display_name ); ?></h1>
+            <p class="role-badge"><?php echo ucfirst( str_replace('_', ' ', $role) ); ?></p>
+            <?php if ( $role === 'employer' ) : ?>
+                <p class="company-tagline"><?php echo esc_html( $company_data['name'] ?? '' ); ?></p>
+            <?php endif; ?>
+        </div>
+    </header>
+
+    <div class="profile-content">
+        <?php if ( $role === 'job_seeker' ) : ?>
+            <section class="cv-section">
+                <h2>Education</h2>
+                <div class="cv-item"><?php echo nl2br( esc_html( $cv_data['education'] ?? 'No education details provided.' ) ); ?></div>
+            </section>
+
+            <section class="cv-section">
+                <h2>Work Experience</h2>
+                <div class="cv-item"><?php echo nl2br( esc_html( $cv_data['experience'] ?? 'No experience details provided.' ) ); ?></div>
+            </section>
+
+            <section class="cv-section">
+                <h2>Skills</h2>
+                <div class="cv-item"><?php echo esc_html( $cv_data['skills'] ?? 'No skills listed.' ); ?></div>
+            </section>
+
+            <section class="cv-section">
+                <h2>Certifications & Courses</h2>
+                <div class="cv-item"><?php echo nl2br( esc_html( $cv_data['certifications'] ?? 'No certifications listed.' ) ); ?></div>
+            </section>
+
+        <?php elseif ( $role === 'employer' ) : ?>
+            <section class="company-details">
+                <h2>About Company</h2>
+                <p><?php echo nl2br( esc_html( $company_data['details'] ?? 'No company details available.' ) ); ?></p>
+            </section>
+
+            <section class="company-info-grid">
+                <div class="info-item">
+                    <strong>Address:</strong>
+                    <span><?php echo esc_html( $company_data['address'] ?? 'N/A' ); ?></span>
+                </div>
+                <div class="info-item">
+                    <strong>Employees:</strong>
+                    <span><?php echo esc_html( $company_data['employee_count'] ?? 'N/A' ); ?></span>
+                </div>
+            </section>
+        <?php endif; ?>
+    </div>
+</div>

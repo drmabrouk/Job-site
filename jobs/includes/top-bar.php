@@ -48,6 +48,15 @@ function jobs_render_top_bar() {
             </div>
         </div>
     </div>
+
+    <!-- Module Overlay -->
+    <div id="jobs-module-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;">
+        <div id="jobs-module-modal" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:800px; max-height:90%; background:white; padding:30px; border-radius:12px; overflow-y:auto;">
+            <span id="jobs-close-module" style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:24px;">&times;</span>
+            <div id="jobs-module-container"></div>
+        </div>
+    </div>
+
     <?php
     echo ob_get_clean();
 }

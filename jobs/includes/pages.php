@@ -18,6 +18,10 @@ function jobs_create_pages() {
             'title'   => 'Login & Registration',
             'content' => '[jobs_login_registration]',
         ),
+        'profile' => array(
+            'title'   => 'Public Profile',
+            'content' => '[jobs_public_profile]',
+        ),
     );
 
     foreach ( $pages as $slug => $page ) {
@@ -34,7 +38,7 @@ function jobs_create_pages() {
 }
 
 function jobs_remove_pages() {
-    $pages = array( 'job-search', 'jobs-admin-panel', 'login-registration' );
+    $pages = array( 'job-search', 'jobs-admin-panel', 'login-registration', 'profile' );
     foreach ( $pages as $slug ) {
         $page = get_page_by_path( $slug );
         if ( $page ) {

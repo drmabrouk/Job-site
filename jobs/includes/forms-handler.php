@@ -253,9 +253,10 @@ function jobs_ajax_save_cv_handler() {
     if ( ! $user_id ) wp_send_json_error( 'Not logged in.' );
 
     $cv_data = array(
-        'education'  => sanitize_textarea_field( $_POST['cv_education'] ),
-        'experience' => sanitize_textarea_field( $_POST['cv_experience'] ),
-        'skills'     => sanitize_text_field( $_POST['cv_skills'] ),
+        'education'      => sanitize_textarea_field( $_POST['cv_education'] ),
+        'experience'     => sanitize_textarea_field( $_POST['cv_experience'] ),
+        'skills'         => sanitize_text_field( $_POST['cv_skills'] ),
+        'certifications' => sanitize_textarea_field( $_POST['cv_certifications'] ),
     );
 
     update_user_meta( $user_id, 'jobs_cv_data', $cv_data );
@@ -263,3 +264,42 @@ function jobs_ajax_save_cv_handler() {
     wp_send_json_success( 'CV updated successfully.' );
 }
 add_action( 'wp_ajax_jobs_save_cv_handler', 'jobs_ajax_save_cv_handler' );
+
+// AJAX module loader
+function jobs_ajax_load_module() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+
+    $module = sanitize_text_field( $_POST['module'] );
+    $file = JOBS_PLUGIN_DIR . 'includes/modules/' . $module . '.php';
+
+    if ( file_exists( $file ) ) {
+        ob_start();
+        include $file;
+        $content = ob_get_clean();
+        wp_send_json_success( $content );
+    } else {
+        wp_send_json_error( 'Module not found.' );
+    }
+}
+add_action( 'wp_ajax_jobs_load_module', 'jobs_ajax_load_module' );
+
+// Handle Company Profile Save
+function jobs_ajax_save_company_handler() {
+    check_ajax_referer( 'jobs_save_company', 'jobs_company_nonce' );
+
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) wp_send_json_error( 'Not logged in.' );
+
+    $company_data = array(
+        'name'           => sanitize_text_field( $_POST['company_name'] ),
+        'logo'           => esc_url_raw( $_POST['company_logo'] ),
+        'details'        => sanitize_textarea_field( $_POST['company_details'] ),
+        'address'        => sanitize_text_field( $_POST['company_address'] ),
+        'employee_count' => sanitize_text_field( $_POST['company_employee_count'] ),
+    );
+
+    update_user_meta( $user_id, 'jobs_company_data', $company_data );
+
+    wp_send_json_success( 'Company profile updated successfully.' );
+}
+add_action( 'wp_ajax_jobs_save_company_handler', 'jobs_ajax_save_company_handler' );

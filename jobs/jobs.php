@@ -21,6 +21,7 @@ require_once JOBS_PLUGIN_DIR . 'includes/roles.php';
 require_once JOBS_PLUGIN_DIR . 'includes/cpt.php';
 require_once JOBS_PLUGIN_DIR . 'includes/pages.php';
 require_once JOBS_PLUGIN_DIR . 'includes/shortcodes.php';
+require_once JOBS_PLUGIN_DIR . 'includes/profiles.php';
 require_once JOBS_PLUGIN_DIR . 'includes/search-logic.php';
 require_once JOBS_PLUGIN_DIR . 'includes/forms-handler.php';
 require_once JOBS_PLUGIN_DIR . 'includes/top-bar.php';
