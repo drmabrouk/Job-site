@@ -46,6 +46,12 @@ function jobs_handle_forms() {
             if ( isset( $_POST['jobs_site_logo'] ) ) {
                 update_option( 'jobs_site_logo', esc_url_raw( $_POST['jobs_site_logo'] ) );
             }
+            if ( isset( $_POST['jobs_logo_width'] ) ) {
+                update_option( 'jobs_logo_width', sanitize_text_field( $_POST['jobs_logo_width'] ) );
+            }
+            if ( isset( $_POST['jobs_logo_height'] ) ) {
+                update_option( 'jobs_logo_height', sanitize_text_field( $_POST['jobs_logo_height'] ) );
+            }
             if ( isset( $_POST['jobs_search_placeholder'] ) ) {
                 update_option( 'jobs_search_placeholder', sanitize_text_field( $_POST['jobs_search_placeholder'] ) );
             }

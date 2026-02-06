@@ -79,6 +79,16 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <label>Site Logo URL</label>
                     <input type="text" name="jobs_site_logo" value="<?php echo esc_attr( get_option( 'jobs_site_logo' ) ); ?>" style="width:100%;">
                 </div>
+                <div class="form-row" style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Logo Width (px)</label>
+                        <input type="number" name="jobs_logo_width" value="<?php echo esc_attr( get_option( 'jobs_logo_width', '300' ) ); ?>" style="width:100%;">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Logo Height (e.g. auto or px)</label>
+                        <input type="text" name="jobs_logo_height" value="<?php echo esc_attr( get_option( 'jobs_logo_height', 'auto' ) ); ?>" style="width:100%;">
+                    </div>
+                </div>
                 <div class="form-group">
                     <label>Search Placeholder</label>
                     <input type="text" name="jobs_search_placeholder" value="<?php echo esc_attr( get_option( 'jobs_search_placeholder', 'Job title, keywords, or company' ) ); ?>" style="width:100%;">
