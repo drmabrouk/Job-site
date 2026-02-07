@@ -8,6 +8,7 @@ add_shortcode( 'jobs_search_page', 'jobs_render_search_page' );
 add_shortcode( 'jobs_login_registration', 'jobs_render_login_registration' );
 add_shortcode( 'jobs_public_profile', 'jobs_render_public_profile' );
 add_shortcode( 'jobs_module', 'jobs_render_module_shortcode' );
+add_shortcode( 'jobs_job_seekers_page', 'jobs_render_job_seekers_page' );
 
 function jobs_render_search_page() {
     ob_start();
@@ -25,6 +26,12 @@ function jobs_render_login_registration() {
 function jobs_render_public_profile() {
     ob_start();
     include JOBS_PLUGIN_DIR . 'templates/public-profile.php';
+    return ob_get_clean();
+}
+
+function jobs_render_job_seekers_page() {
+    ob_start();
+    include JOBS_PLUGIN_DIR . 'templates/job-seekers-page.php';
     return ob_get_clean();
 }
 

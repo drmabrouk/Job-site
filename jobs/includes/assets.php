@@ -60,11 +60,43 @@ function jobs_enqueue_assets() {
     if ( is_page('login-registration') ) {
         wp_enqueue_style( 'jobs-auth', JOBS_PLUGIN_URL . 'assets/css/auth.css', array(), '1.0.0' );
         wp_enqueue_script( 'jobs-auth-system', JOBS_PLUGIN_URL . 'assets/js/auth.js', array('jquery'), '1.0.0', true );
+
+        // Add body class for the login page
+        add_filter( 'body_class', function( $classes ) {
+            $classes[] = 'jobs-auth-page';
+            return $classes;
+        } );
     }
 
     // Profile specific
     if ( is_page('profile') || get_query_var('profile_user') ) {
         wp_enqueue_style( 'jobs-public-profile', JOBS_PLUGIN_URL . 'assets/css/public-profile.css', array(), '1.0.0' );
     }
+
+    // Job Seekers page specific
+    if ( is_page('job-seekers') ) {
+        wp_enqueue_style( 'jobs-seekers-style', JOBS_PLUGIN_URL . 'assets/css/job-seekers.css', array(), '1.0.0' );
+        wp_enqueue_script( 'jobs-seekers-script', JOBS_PLUGIN_URL . 'assets/js/job-seekers.js', array('jquery', 'jobs-base-script'), '1.0.0', true );
+    }
 }
 add_action( 'wp_enqueue_scripts', 'jobs_enqueue_assets' );
+
+/**
+ * Defer non-critical scripts for better performance
+ */
+function jobs_defer_scripts( $tag, $handle, $src ) {
+    $defer_handles = array(
+        'jobs-base-script',
+        'jobs-module-loader',
+        'jobs-search-engine',
+        'jobs-auth-system',
+        'jobs-seekers-script'
+    );
+
+    if ( in_array( $handle, $defer_handles ) ) {
+        return str_replace( ' src', ' defer src', $tag );
+    }
+
+    return $tag;
+}
+add_filter( 'script_loader_tag', 'jobs_defer_scripts', 10, 3 );

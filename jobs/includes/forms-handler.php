@@ -40,6 +40,16 @@ function jobs_handle_forms() {
         if ( ! is_wp_error( $user_id ) ) {
             $user = new WP_User( $user_id );
             $user->set_role( $role );
+
+            // Save First and Last Name
+            if ( isset( $_POST['first_name'] ) ) {
+                wp_update_user( array(
+                    'ID'         => $user_id,
+                    'first_name' => sanitize_text_field( $_POST['first_name'] ),
+                    'last_name'  => sanitize_text_field( $_POST['last_name'] ?? '' ),
+                ) );
+            }
+
             wp_set_auth_cookie( $user_id );
 
             $redirect = ! empty( $_POST['_wp_http_referer'] ) ? esc_url_raw( $_POST['_wp_http_referer'] ) : home_url();
@@ -304,6 +314,14 @@ function jobs_ajax_save_cv_handler() {
 
     update_user_meta( $user_id, 'jobs_cv_data', $cv_data );
 
+    // Also update individual meta for filtering
+    update_user_meta( $user_id, '_nationality', sanitize_text_field( $_POST['cv_nationality'] ) );
+    update_user_meta( $user_id, '_gender', sanitize_text_field( $_POST['cv_gender'] ) );
+    update_user_meta( $user_id, '_qualification', sanitize_text_field( $_POST['cv_qualification'] ) );
+    update_user_meta( $user_id, '_english_level', sanitize_text_field( $_POST['cv_english_level'] ) );
+    update_user_meta( $user_id, '_experience', intval( $_POST['cv_experience_years'] ) );
+    update_user_meta( $user_id, '_specialization', sanitize_text_field( $_POST['cv_specialization'] ) );
+
     wp_send_json_success( 'CV updated successfully.' );
 }
 add_action( 'wp_ajax_jobs_save_cv_handler', 'jobs_ajax_save_cv_handler' );
@@ -460,4 +478,111 @@ function jobs_ajax_get_draft_data() {
     );
 
     wp_send_json_success( $data );
+}
+
+/**
+ * AJAX Handler: Filter Job Seekers
+ */
+add_action( 'wp_ajax_jobs_filter_seekers', 'jobs_ajax_filter_seekers' );
+add_action( 'wp_ajax_nopriv_jobs_filter_seekers', 'jobs_ajax_filter_seekers' );
+function jobs_ajax_filter_seekers() {
+    $specialization = isset($_POST['specialization']) ? sanitize_text_field($_POST['specialization']) : '';
+    $qualification  = isset($_POST['qualification']) ? sanitize_text_field($_POST['qualification']) : '';
+    $nationality    = isset($_POST['nationality']) ? sanitize_text_field($_POST['nationality']) : '';
+    $experience     = isset($_POST['experience']) ? intval($_POST['experience']) : '';
+    $gender         = isset($_POST['gender']) ? sanitize_text_field($_POST['gender']) : '';
+    $english_level  = isset($_POST['english_level']) ? sanitize_text_field($_POST['english_level']) : '';
+
+    $args = array(
+        'role' => 'job_seeker',
+        'meta_query' => array('relation' => 'AND')
+    );
+
+    if ($specialization) {
+        $args['meta_query'][] = array(
+            'key' => '_specialization',
+            'value' => $specialization,
+            'compare' => '='
+        );
+    }
+    if ($qualification) {
+        $args['meta_query'][] = array(
+            'key' => '_qualification',
+            'value' => $qualification,
+            'compare' => '='
+        );
+    }
+    if ($nationality) {
+        $args['meta_query'][] = array(
+            'key' => '_nationality',
+            'value' => $nationality,
+            'compare' => 'LIKE'
+        );
+    }
+    if ($experience !== '') {
+        $args['meta_query'][] = array(
+            'key' => '_experience',
+            'value' => $experience,
+            'compare' => '>=',
+            'type' => 'NUMERIC'
+        );
+    }
+    if ($gender) {
+        $args['meta_query'][] = array(
+            'key' => '_gender',
+            'value' => $gender,
+            'compare' => '='
+        );
+    }
+    if ($english_level) {
+        $args['meta_query'][] = array(
+            'key' => '_english_level',
+            'value' => $english_level,
+            'compare' => '='
+        );
+    }
+
+    $user_query = new WP_User_Query( $args );
+    $seekers = $user_query->get_results();
+
+    if ( ! empty( $seekers ) ) {
+        foreach ( $seekers as $seeker ) {
+            include JOBS_PLUGIN_DIR . 'templates/seeker-card.php';
+        }
+    } else {
+        echo '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">No candidates found matching your criteria.</p>';
+    }
+    wp_die();
+}
+
+/**
+ * AJAX Handler: Send Direct Job Offer
+ */
+add_action( 'wp_ajax_jobs_send_job_offer', 'jobs_ajax_send_job_offer' );
+function jobs_ajax_send_job_offer() {
+    Jobs_Permission_Service::check_ajax_nonce( 'jobs_main_nonce', 'nonce' );
+
+    if ( ! Jobs_Permission_Service::can_post_job() ) {
+        wp_send_json_error( 'Only Employers or Admins can send job offers.' );
+    }
+
+    $seeker_id = intval( $_POST['seeker_id'] );
+    $message   = sanitize_textarea_field( $_POST['message'] );
+
+    if ( ! $seeker_id || ! $message ) {
+        wp_send_json_error( 'Invalid request.' );
+    }
+
+    global $wpdb;
+    $table = Jobs_DB_Service::get_table( 'messages' );
+    $wpdb->insert( $table, array(
+        'sender_id'   => get_current_user_id(),
+        'receiver_id' => $seeker_id,
+        'message'     => 'DIRECT JOB OFFER: ' . $message,
+    ) );
+
+    // Notify seeker
+    Jobs_Job_Service::add_notification( $seeker_id, 'You have received a direct job offer!' );
+
+    wp_send_json_success( 'Job offer sent successfully.' );
 }

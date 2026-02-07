@@ -29,6 +29,7 @@ function jobs_register_settings() {
     register_setting( 'jobs_settings_group', 'jobs_archive_days' );
     register_setting( 'jobs_settings_group', 'jobs_visible_modules' );
     register_setting( 'jobs_settings_group', 'jobs_adsense_code' );
+    register_setting( 'jobs_settings_group', 'jobs_adsense_placements' );
 
     add_settings_section( 'jobs_general_section', 'General Settings', null, 'jobs-settings' );
 
@@ -36,6 +37,7 @@ function jobs_register_settings() {
     add_settings_field( 'jobs_logo_width', 'Logo Width (px)', 'jobs_width_callback', 'jobs-settings', 'jobs_general_section' );
     add_settings_field( 'jobs_search_placeholder', 'Search Placeholder', 'jobs_placeholder_callback', 'jobs-settings', 'jobs_general_section' );
     add_settings_field( 'jobs_visible_modules', 'Globally Visible Modules', 'jobs_modules_callback', 'jobs-settings', 'jobs_general_section' );
+    add_settings_field( 'jobs_adsense_placements', 'AdSense Placements', 'jobs_ads_placements_callback', 'jobs-settings', 'jobs_general_section' );
 }
 add_action( 'admin_init', 'jobs_register_settings' );
 
@@ -50,6 +52,21 @@ function jobs_width_callback() {
 function jobs_placeholder_callback() {
     $val = get_option( 'jobs_search_placeholder' );
     echo '<input type="text" name="jobs_search_placeholder" value="' . esc_attr( $val ) . '" class="regular-text">';
+}
+
+function jobs_ads_placements_callback() {
+    $placements = array(
+        'search_results' => 'Within Search Results',
+        'job_details'    => 'Single Job Page',
+        'company_profile'=> 'Company Profiles',
+        'user_profile'   => 'User Profiles',
+        'sidebar'        => 'Sidebar Widgets'
+    );
+    $val = get_option( 'jobs_adsense_placements', array() );
+    foreach ( $placements as $key => $label ) {
+        $checked = ! empty( $val[$key]['enabled'] ) ? 'checked' : '';
+        echo '<label style="display:block; margin-bottom:5px;"><input type="checkbox" name="jobs_adsense_placements['.$key.'][enabled]" value="1" '.$checked.'> ' . $label . '</label>';
+    }
 }
 
 function jobs_modules_callback() {

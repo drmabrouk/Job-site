@@ -61,6 +61,10 @@ $format_pdf = isset( $_GET['format'] ) && $_GET['format'] === 'pdf';
     </header>
 
     <div class="profile-content">
+        <?php
+        require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-ads-service.php';
+        Jobs_Ads_Service::display_ad( 'user_profile' );
+        ?>
         <?php if ( $role === 'job_seeker' ) : ?>
             <section class="cv-section">
                 <h2>Education</h2>

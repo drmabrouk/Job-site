@@ -22,6 +22,10 @@ require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-db-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-activity-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-search-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-job-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-seo-service.php';
+
+// Initialize Services
+Jobs_SEO_Service::init();
 
 // Include components
 require_once JOBS_PLUGIN_DIR . 'includes/roles.php';

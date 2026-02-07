@@ -17,9 +17,16 @@ function jobs_ajax_filter_results() {
                 echo '<div class="jobs-results-grid">';
             }
 
+            require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-ads-service.php';
+            $count = 0;
             while ( $query->have_posts() ) {
                 $query->the_post();
                 include JOBS_PLUGIN_DIR . 'templates/job-card.php';
+
+                $count++;
+                if ( $count % 3 == 0 ) {
+                    Jobs_Ads_Service::display_ad( 'search_results' );
+                }
             }
 
             if ( ! isset($_GET['load_more']) ) {
