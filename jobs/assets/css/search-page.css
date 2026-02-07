@@ -41,22 +41,23 @@
 
 .search-main-field input {
     width: 100%;
-    padding: 20px 25px 20px 65px;
-    font-size: 1.15em;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    background: white !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 22px 30px 22px 75px;
+    font-size: 1.1em;
+    border: 1px solid rgba(29, 52, 105, 0.08);
+    border-radius: 20px;
+    background: #ffffff !important;
+    box-shadow: 0 10px 40px rgba(29, 52, 105, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
     outline: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #1e293b;
-    font-weight: 400;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    color: #1a202c;
+    font-weight: 500;
+    letter-spacing: -0.01em;
 }
 
 .search-main-field input:focus {
     border-color: var(--jobs-primary-color);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transform: translateY(-1px);
+    box-shadow: 0 20px 50px rgba(29, 52, 105, 0.12);
+    transform: translateY(-2px);
 }
 
 .search-main-field input::placeholder {
@@ -86,20 +87,22 @@
 
 .search-field-item select {
     width: 100%;
-    padding: 18px 25px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    background: white !important;
-    color: #475569;
+    padding: 20px 30px;
+    border: 1px solid rgba(29, 52, 105, 0.08);
+    border-radius: 18px;
+    background: #ffffff !important;
+    color: #2d3748;
     font-family: 'Rubik', sans-serif;
     outline: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%231d3469' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 20px center;
-    font-size: 0.95em;
+    background-position: right 25px center;
+    font-size: 0.9em;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
 
 .search-field-item select:hover {

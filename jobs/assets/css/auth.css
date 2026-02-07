@@ -67,10 +67,7 @@
 }
 
 #jobs-login-form-custom label {
-    display: block;
-    font-size: 0.9em;
-    font-weight: 500;
-    margin-bottom: 5px;
+    display: none;
 }
 
 #jobs-login-form-custom input[type="text"],

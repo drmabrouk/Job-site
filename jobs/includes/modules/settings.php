@@ -19,22 +19,19 @@ $current_user = wp_get_current_user();
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div class="form-group">
-                <label style="font-weight: 600; font-size: 0.9em; margin-bottom: 8px; display: block;">Display Name</label>
-                <input type="text" name="display_name" value="<?php echo esc_attr( $current_user->display_name ); ?>" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
+                <input type="text" name="display_name" value="<?php echo esc_attr( $current_user->display_name ); ?>" placeholder="Full Name" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
             </div>
 
             <div class="form-group">
-                <label style="font-weight: 600; font-size: 0.9em; margin-bottom: 8px; display: block;">Email Address</label>
-                <input type="email" name="user_email" value="<?php echo esc_attr( $current_user->user_email ); ?>" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
+                <input type="email" name="user_email" value="<?php echo esc_attr( $current_user->user_email ); ?>" placeholder="Email Address" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
             </div>
 
             <div class="form-group">
-                <label style="font-weight: 600; font-size: 0.9em; margin-bottom: 8px; display: block;">Username (Once/Month)</label>
-                <input type="text" name="user_login_change" value="<?php echo esc_attr( $current_user->user_login ); ?>" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px; background: #f1f5f9;">
+                <input type="text" name="user_login_change" value="<?php echo esc_attr( $current_user->user_login ); ?>" placeholder="Username" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px; background: #f1f5f9;">
+                <small style="font-size: 0.7em; color: #999;">Changeable once per month</small>
             </div>
 
             <div class="form-group">
-                <label style="font-weight: 600; font-size: 0.9em; margin-bottom: 8px; display: block;">Profile Privacy</label>
                 <select name="profile_visibility" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
                     <option value="public" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'public' ); ?>>Public Profile</option>
                     <option value="private" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'private' ); ?>>Private (Hidden)</option>
@@ -42,12 +39,12 @@ $current_user = wp_get_current_user();
             </div>
 
             <div class="form-group" style="grid-column: span 2;">
-                <label style="font-weight: 600; font-size: 0.9em; margin-bottom: 8px; display: block;">Change Password</label>
-                <input type="password" name="user_pass" placeholder="Enter new password if you wish to change it" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
+                <input type="password" name="user_pass" placeholder="New Password (Leave blank to keep current)" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
             </div>
         </div>
 
         <button type="submit" name="jobs_save_account" class="jobs-btn" style="margin-top: 20px; width: 100%;">Save Changes</button>
+        <div id="jobs-settings-status" style="margin-top:10px; text-align:center;"></div>
     </form>
 
     <hr>

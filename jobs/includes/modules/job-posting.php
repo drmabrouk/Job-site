@@ -85,38 +85,3 @@ if ( ! defined( 'ABSPATH' ) ) {
     <div id="jobs-post-status"></div>
 </div>
 
-<script>
-jQuery(document).ready(function($) {
-    $('#jobs-post-job-form').on('submit', function(e) {
-        e.preventDefault();
-        var form = $(this);
-        var data = form.serialize() + '&action=jobs_post_job_handler';
-
-        $('#jobs-post-status').html('<p>Submitting...</p>');
-
-        $.post('<?php echo admin_url('admin-ajax.php'); ?>', data, function(response) {
-            if(response.success) {
-                $('#jobs-post-status').html('<p style="color: green;">' + response.data + '</p>');
-                form[0].reset();
-            } else {
-                $('#jobs-post-status').html('<p style="color: red;">' + response.data + '</p>');
-            }
-        });
-    });
-
-    $('#jobs-save-draft-btn').on('click', function() {
-        var form = $('#jobs-post-job-form');
-        var data = form.serialize() + '&action=jobs_post_job_handler&is_draft=1';
-
-        $('#jobs-post-status').html('<p>Saving draft...</p>');
-
-        $.post('<?php echo admin_url('admin-ajax.php'); ?>', data, function(response) {
-            if(response.success) {
-                $('#jobs-post-status').html('<p style="color: blue;">Draft saved successfully.</p>');
-            } else {
-                $('#jobs-post-status').html('<p style="color: red;">' + response.data + '</p>');
-            }
-        });
-    });
-});
-</script>

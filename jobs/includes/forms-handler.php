@@ -429,6 +429,37 @@ function jobs_ajax_get_unread_count() {
     wp_send_json_success( intval($count) );
 }
 
+/**
+ * AJAX Handler: Get Notifications for Dropdown
+ */
+add_action( 'wp_ajax_jobs_get_notifications', 'jobs_ajax_get_notifications' );
+function jobs_ajax_get_notifications() {
+    Jobs_Permission_Service::check_ajax_nonce( 'jobs_main_nonce', 'nonce' );
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) wp_send_json_error();
+
+    global $wpdb;
+    $table = Jobs_DB_Service::get_table( 'notifications' );
+    $notifs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE user_id = %d ORDER BY timestamp DESC LIMIT 10", $user_id ) );
+
+    ob_start();
+    if ( $notifs ) {
+        foreach ( $notifs as $n ) {
+            $class = $n->is_read ? '' : 'unread';
+            echo '<div class="notif-item ' . $class . '">';
+            echo '<div class="notif-content">' . esc_html($n->content) . '</div>';
+            echo '<div style="font-size: 0.7em; color: #999; margin-top: 5px;">' . human_time_diff(strtotime($n->timestamp), current_time('timestamp')) . ' ago</div>';
+            echo '</div>';
+        }
+        // Mark all as read after fetching for dropdown
+        $wpdb->update( $table, array('is_read' => 1), array('user_id' => $user_id) );
+    } else {
+        echo '<p style="padding:20px; text-align:center; color:#999;">No notifications yet.</p>';
+    }
+    $content = ob_get_clean();
+    wp_send_json_success( $content );
+}
+
 add_action( 'wp_ajax_jobs_toggle_favorite', 'jobs_ajax_toggle_favorite' );
 function jobs_ajax_toggle_favorite() {
     Jobs_Permission_Service::check_ajax_nonce( 'jobs_main_nonce', 'nonce' );

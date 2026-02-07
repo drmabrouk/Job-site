@@ -34,10 +34,6 @@ function jobs_render_top_bar() {
                         <span class="dashicons dashicons-grid-view"></span>
                     </div>
 
-                    <div class="top-bar-icon-item jobs-module-link" data-module="favorites" data-type="modal" title="Saved Jobs">
-                        <span class="dashicons dashicons-heart"></span>
-                    </div>
-
                     <?php
                     global $wpdb;
                     $table_notifications = Jobs_DB_Service::get_table( 'notifications' );
@@ -48,6 +44,15 @@ function jobs_render_top_bar() {
                         <?php if ($unread_count > 0) : ?>
                             <span class="notif-badge"><?php echo $unread_count; ?></span>
                         <?php endif; ?>
+
+                        <div class="jobs-notif-dropdown" id="jobs-notif-menu">
+                            <div class="dropdown-header">
+                                <strong>Notifications</strong>
+                            </div>
+                            <div id="jobs-notif-list" class="notif-list">
+                                <p style="padding:20px; text-align:center; color:#999;">Loading...</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="top-bar-user-item">
