@@ -11,7 +11,7 @@ function jobs_redirect_admin_to_custom_panel() {
     }
 
     if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
-        if ( current_user_can( 'system_admin' ) || current_user_can( 'administrator' ) ) {
+        if ( Jobs_Permission_Service::is_admin() ) {
             $admin_page = get_page_by_path( 'jobs-admin-panel' );
             if ( $admin_page ) {
                 wp_safe_redirect( get_permalink( $admin_page->ID ) );
@@ -28,34 +28,16 @@ add_action( 'admin_init', 'jobs_redirect_admin_to_custom_panel' );
 
 // Also hide admin bar for non-admins
 add_filter( 'show_admin_bar', function($show) {
-    if ( ! current_user_can( 'administrator' ) && ! current_user_can( 'system_admin' ) ) {
+    if ( ! Jobs_Permission_Service::is_admin() ) {
         return false;
     }
     return $show;
 });
 
 /**
- * Activity Logger
- */
-function jobs_log_activity( $user_id, $type, $message ) {
-    global $wpdb;
-    $table = $wpdb->prefix . 'jobs_activity_log';
-
-    // Check if table exists
-    if ( $wpdb->get_var( "SHOW TABLES LIKE '$table'" ) ) {
-        $wpdb->insert( $table, array(
-            'user_id' => $user_id,
-            'type'    => $type,
-            'message' => $message,
-            'time'    => current_time( 'mysql' )
-        ) );
-    }
-}
-
-/**
  * Log Login
  */
 add_action( 'wp_login', 'jobs_log_login', 10, 2 );
 function jobs_log_login( $user_login, $user ) {
-    jobs_log_activity( $user->ID, 'login', 'User logged in: ' . $user_login );
+    Jobs_Activity_Service::log( $user->ID, 'login', 'User logged in: ' . $user_login );
 }

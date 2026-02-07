@@ -14,8 +14,9 @@ function jobs_enqueue_assets() {
     // Main JS
     wp_enqueue_script( 'jobs-main-script', JOBS_PLUGIN_URL . 'assets/js/jobs-script.js', array( 'jquery' ), '1.0.0', true );
     wp_localize_script( 'jobs-main-script', 'jobs_vars', array(
-        'ajax_url' => admin_url( 'admin-ajax.php' ),
-        'nonce'    => wp_create_nonce( 'jobs_main_nonce' ),
+        'ajax_url'  => admin_url( 'admin-ajax.php' ),
+        'admin_url' => get_permalink( get_page_by_path( 'jobs-admin-panel' ) ),
+        'nonce'     => wp_create_nonce( 'jobs_main_nonce' ),
     ) );
 }
 add_action( 'wp_enqueue_scripts', 'jobs_enqueue_assets' );

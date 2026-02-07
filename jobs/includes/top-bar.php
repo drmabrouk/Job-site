@@ -95,9 +95,8 @@ add_action( 'astra_header_after', 'jobs_render_top_bar' );
 add_action( 'wp_body_open', 'jobs_render_top_bar' );
 
 function jobs_render_modules_grid() {
-    $current_user = wp_get_current_user();
     if ( ! is_user_logged_in() ) return;
-    $roles = $current_user->roles;
+    $user_id = get_current_user_id();
 
     $modules = array(
         'job-posting' => array(
@@ -105,91 +104,91 @@ function jobs_render_modules_grid() {
             'icon' => 'plus',
             'bg' => '#e3f2fd',
             'color' => '#1976d2',
-            'roles' => array( 'employer', 'reviewer', 'system_admin' )
+            'check' => 'can_post_job'
         ),
         'job-listings-history' => array(
             'label' => 'Job History',
             'icon' => 'backup',
             'bg' => '#e8f5e9',
             'color' => '#388e3c',
-            'roles' => array( 'employer', 'reviewer', 'system_admin' )
+            'check' => 'can_post_job'
         ),
         'job-requests' => array(
             'label' => 'Job Requests',
             'icon' => 'portfolio',
             'bg' => '#fff3e0',
             'color' => '#f57c00',
-            'roles' => array( 'employer', 'reviewer', 'system_admin' )
+            'check' => 'can_review_jobs'
         ),
         'public-profile' => array(
             'label' => 'Public Profile',
             'icon' => 'admin-users',
             'bg' => '#e0f2f1',
             'color' => '#00796b',
-            'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' )
+            'check' => 'is_user_logged_in'
         ),
         'applications-submitted' => array(
             'label' => 'Applications',
             'icon' => 'paper-plane',
             'bg' => '#f3e5f5',
             'color' => '#7b1fa2',
-            'roles' => array( 'job_seeker' )
+            'check' => 'can_apply_job'
         ),
         'cv-resume' => array(
             'label' => 'CV / Resume',
             'icon' => 'media-text',
             'bg' => '#ffebee',
             'color' => '#d32f2f',
-            'roles' => array( 'job_seeker' )
+            'check' => 'can_apply_job'
         ),
         'company-profile' => array(
             'label' => 'Company Profile',
             'icon' => 'building',
             'bg' => '#efebe9',
             'color' => '#5d4037',
-            'roles' => array( 'employer' )
+            'check' => 'can_post_job'
         ),
         'favorites' => array(
             'label' => 'Favorites',
             'icon' => 'heart',
             'bg' => '#fce4ec',
             'color' => '#c2185b',
-            'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' )
+            'check' => 'is_user_logged_in'
         ),
         'drafts' => array(
             'label' => 'Drafts',
             'icon' => 'edit',
             'bg' => '#eceff1',
             'color' => '#455a64',
-            'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' )
+            'check' => 'is_user_logged_in'
         ),
         'support' => array(
             'label' => 'Support',
             'icon' => 'headset',
             'bg' => '#e1f5fe',
             'color' => '#0288d1',
-            'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' )
+            'check' => 'is_user_logged_in'
         ),
         'advanced-settings' => array(
             'label' => 'Advanced',
             'icon' => 'shield',
             'bg' => '#e8eaf6',
             'color' => '#303f9f',
-            'roles' => array( 'system_admin' )
+            'check' => 'is_admin'
         ),
         'terms-conditions' => array(
             'label' => 'Terms',
             'icon' => 'media-spreadsheet',
             'bg' => '#f5f5f5',
             'color' => '#616161',
-            'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' )
+            'check' => 'is_user_logged_in'
         ),
         'articles' => array(
             'label' => 'Articles',
             'icon' => 'welcome-widgets-menus',
             'bg' => '#fafafa',
             'color' => '#9e9e9e',
-            'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' )
+            'check' => 'is_user_logged_in'
         ),
     );
 
@@ -199,11 +198,11 @@ function jobs_render_modules_grid() {
         if ( ! in_array( $slug, $visible_modules ) && $slug !== 'advanced-settings' ) continue;
 
         $allowed = false;
-        foreach ( $roles as $role ) {
-            if ( in_array( $role, $data['roles'] ) ) {
-                $allowed = true;
-                break;
-            }
+        $check = $data['check'];
+        if ( $check === 'is_user_logged_in' ) {
+            $allowed = is_user_logged_in();
+        } elseif ( method_exists( 'Jobs_Permission_Service', $check ) ) {
+            $allowed = Jobs_Permission_Service::$check( $user_id );
         }
 
         if ( $allowed ) {

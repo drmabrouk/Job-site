@@ -16,7 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'JOBS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'JOBS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Include files
+// Load Services
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-permission-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-db-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-activity-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-search-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-job-service.php';
+
+// Include components
 require_once JOBS_PLUGIN_DIR . 'includes/roles.php';
 require_once JOBS_PLUGIN_DIR . 'includes/cpt.php';
 require_once JOBS_PLUGIN_DIR . 'includes/pages.php';
@@ -36,8 +43,11 @@ register_deactivation_hook( __FILE__, 'jobs_plugin_deactivate' );
 function jobs_plugin_activate() {
     jobs_create_roles();
     jobs_create_pages();
-    require_once JOBS_PLUGIN_DIR . 'includes/cpt.php';
-    jobs_database_setup();
+
+    // Ensure services are loaded
+    require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-db-service.php';
+    Jobs_DB_Service::setup_tables();
+
     flush_rewrite_rules();
 }
 

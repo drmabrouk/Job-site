@@ -55,9 +55,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 </thead>
                 <tbody>
                     <?php
-                    global $wpdb;
-                    $table = $wpdb->prefix . 'jobs_activity_log';
-                    $logs = $wpdb->get_results( "SELECT * FROM $table ORDER BY time DESC LIMIT 20" );
+                    $logs = Jobs_Activity_Service::get_recent_logs();
                     if ( $logs ) : foreach ( $logs as $log ) : ?>
                     <tr>
                         <td><?php echo $log->time; ?></td>
