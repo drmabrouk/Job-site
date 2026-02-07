@@ -116,14 +116,14 @@
 .capsule {
     display: inline-flex;
     align-items: center;
-    padding: 4px 10px;
+    padding: 3px 8px; /* Slightly reduced */
     border-radius: 20px;
-    font-size: 0.65em;
+    font-size: 0.6em; /* Slightly reduced */
     font-weight: 600;
     text-transform: capitalize;
-    border: 1.5px solid;
+    border: 1.2px solid; /* Slightly reduced */
     background: transparent !important;
-    gap: 4px;
+    gap: 3px;
 }
 
 .capsule .dashicons {
