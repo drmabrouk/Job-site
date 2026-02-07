@@ -75,17 +75,17 @@ function jobs_render_top_bar() {
                 <?php endif; ?>
             </div>
         </div>
+    </div>
 
-        <!-- Grid-based Applications Menu -->
-        <div class="jobs-apps-overlay-container" id="jobs-apps-menu">
-            <div class="apps-grid-card">
-                <div class="apps-grid-header">
-                    <h3>Applications</h3>
-                    <span class="apps-grid-close" id="jobs-apps-close">&times;</span>
-                </div>
-                <div class="apps-grid-content">
-                    <?php jobs_render_modules_grid(); ?>
-                </div>
+    <!-- Grid-based Applications Menu -->
+    <div class="jobs-apps-overlay-container" id="jobs-apps-menu">
+        <div class="apps-grid-card">
+            <div class="apps-grid-header">
+                <h3>Applications</h3>
+                <span class="apps-grid-close" id="jobs-apps-close">&times;</span>
+            </div>
+            <div class="apps-grid-content">
+                <?php jobs_render_modules_grid(); ?>
             </div>
         </div>
     </div>
