@@ -191,7 +191,8 @@ function jobs_render_modules_grid() {
             'bg' => '#e1f5fe',
             'color' => '#0288d1',
             'check' => 'is_user_logged_in',
-            'type' => 'modal'
+            'type' => 'direct',
+            'url' => home_url('/support')
         ),
         'settings' => array(
             'label' => 'Settings',

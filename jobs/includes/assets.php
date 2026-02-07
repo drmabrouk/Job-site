@@ -58,6 +58,11 @@ function jobs_enqueue_assets() {
         wp_enqueue_script( 'jobs-search-engine', JOBS_PLUGIN_URL . 'assets/js/search.js', array('jquery', 'jobs-base-script'), JOBS_VERSION, true );
     }
 
+    // Single Job specific
+    if ( is_singular('job') ) {
+        wp_enqueue_style( 'jobs-details-style', JOBS_PLUGIN_URL . 'assets/css/job-details.css', array(), JOBS_VERSION );
+    }
+
 
     // Auth specific
     if ( is_page('login-registration') ) {
