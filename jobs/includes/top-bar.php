@@ -99,96 +99,117 @@ function jobs_render_modules_grid() {
     $user_id = get_current_user_id();
 
     $modules = array(
-        'job-posting' => array(
-            'label' => 'Post a Job',
-            'icon' => 'plus',
-            'bg' => '#e3f2fd',
-            'color' => '#1976d2',
-            'check' => 'can_post_job'
-        ),
-        'job-listings-history' => array(
-            'label' => 'Job History',
-            'icon' => 'backup',
-            'bg' => '#e8f5e9',
-            'color' => '#388e3c',
-            'check' => 'can_post_job'
-        ),
         'job-requests' => array(
             'label' => 'Job Requests',
             'icon' => 'portfolio',
             'bg' => '#fff3e0',
             'color' => '#f57c00',
-            'check' => 'can_review_jobs'
+            'check' => 'is_user_logged_in', // View differently for seekers handled inside
+            'type' => 'page'
         ),
         'public-profile' => array(
             'label' => 'Public Profile',
             'icon' => 'admin-users',
             'bg' => '#e0f2f1',
             'color' => '#00796b',
-            'check' => 'is_user_logged_in'
+            'check' => 'is_user_logged_in',
+            'type' => 'page'
         ),
         'applications-submitted' => array(
-            'label' => 'Applications',
+            'label' => 'Submitted',
             'icon' => 'paper-plane',
             'bg' => '#f3e5f5',
             'color' => '#7b1fa2',
-            'check' => 'can_apply_job'
+            'check' => 'can_apply_job',
+            'type' => 'page'
         ),
         'cv-resume' => array(
             'label' => 'CV / Resume',
             'icon' => 'media-text',
             'bg' => '#ffebee',
             'color' => '#d32f2f',
-            'check' => 'can_apply_job'
+            'check' => 'can_apply_job',
+            'type' => 'modal'
         ),
         'company-profile' => array(
-            'label' => 'Company Profile',
+            'label' => 'Company',
             'icon' => 'building',
             'bg' => '#efebe9',
             'color' => '#5d4037',
-            'check' => 'can_post_job'
+            'check' => 'can_post_job',
+            'type' => 'page'
         ),
         'favorites' => array(
             'label' => 'Favorites',
             'icon' => 'heart',
             'bg' => '#fce4ec',
             'color' => '#c2185b',
-            'check' => 'is_user_logged_in'
+            'check' => 'is_user_logged_in',
+            'type' => 'modal'
         ),
         'drafts' => array(
             'label' => 'Drafts',
             'icon' => 'edit',
             'bg' => '#eceff1',
             'color' => '#455a64',
-            'check' => 'is_user_logged_in'
+            'check' => 'is_user_logged_in',
+            'type' => 'modal'
         ),
         'support' => array(
             'label' => 'Support',
             'icon' => 'headset',
             'bg' => '#e1f5fe',
             'color' => '#0288d1',
-            'check' => 'is_user_logged_in'
+            'check' => 'is_user_logged_in',
+            'type' => 'modal'
+        ),
+        'settings' => array(
+            'label' => 'Settings',
+            'icon' => 'admin-generic',
+            'bg' => '#f3e5f5',
+            'color' => '#7b1fa2',
+            'check' => 'is_user_logged_in',
+            'type' => 'modal'
         ),
         'advanced-settings' => array(
             'label' => 'Advanced',
             'icon' => 'shield',
             'bg' => '#e8eaf6',
             'color' => '#303f9f',
-            'check' => 'is_admin'
+            'check' => 'is_admin',
+            'type' => 'page'
         ),
         'terms-conditions' => array(
             'label' => 'Terms',
             'icon' => 'media-spreadsheet',
             'bg' => '#f5f5f5',
             'color' => '#616161',
-            'check' => 'is_user_logged_in'
+            'check' => 'is_user_logged_in',
+            'type' => 'page'
         ),
         'articles' => array(
             'label' => 'Articles',
             'icon' => 'welcome-widgets-menus',
             'bg' => '#fafafa',
             'color' => '#9e9e9e',
-            'check' => 'is_user_logged_in'
+            'check' => 'is_user_logged_in',
+            'type' => 'page'
+        ),
+        'notifications' => array(
+            'label' => 'Alerts',
+            'icon' => 'bell',
+            'bg' => '#fff9c4',
+            'color' => '#fbc02d',
+            'check' => 'is_user_logged_in',
+            'type' => 'modal'
+        ),
+        'analytics-insights' => array(
+            'label' => 'Insights',
+            'icon' => 'chart-area',
+            'bg' => '#e1f5fe',
+            'color' => '#0288d1',
+            'check' => 'can_post_job',
+            'type' => 'page'
         ),
     );
 
@@ -208,7 +229,7 @@ function jobs_render_modules_grid() {
         if ( $allowed ) {
             ?>
             <div class="apps-grid-item">
-                <a href="#" class="jobs-module-link" data-module="<?php echo $slug; ?>">
+                <a href="#" class="jobs-module-link" data-module="<?php echo $slug; ?>" data-type="<?php echo $data['type']; ?>">
                     <div class="apps-icon-wrapper" style="background-color: <?php echo $data['bg']; ?>; color: <?php echo $data['color']; ?>;">
                         <span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
                     </div>

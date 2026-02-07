@@ -1,9 +1,10 @@
 jQuery(document).ready(function($) {
     $(document).on('click', '.jobs-module-link', function(e) {
         var module = $(this).data('module');
+        var type = $(this).data('type') || 'modal';
 
-        if (module === 'advanced-settings') {
-            window.location.href = jobs_vars.admin_url;
+        if (type === 'page') {
+            window.location.href = jobs_vars.admin_url + '#' + module;
             return;
         }
 
@@ -92,6 +93,61 @@ jQuery(document).ready(function($) {
                 container.html('<p style="color: green;">Application submitted successfully!</p>');
             } else {
                 alert('Error: ' + response.data);
+            }
+        });
+    });
+
+    // Resume Job Draft
+    $(document).on('click', '.resume-draft-job', function() {
+        var draftId = $(this).data('id');
+
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_load_module',
+            module: 'job-posting',
+            nonce: jobs_vars.nonce
+        }, function(response) {
+            if(response.success) {
+                $('#jobs-module-container').html(response.data);
+
+                $.post(jobs_vars.ajax_url, {
+                    action: 'jobs_get_draft_data',
+                    draft_id: draftId,
+                    nonce: jobs_vars.nonce
+                }, function(dataResponse) {
+                    if (dataResponse.success) {
+                        var data = dataResponse.data;
+                        $('[name="job_title"]').val(data.title);
+                        $('[name="specialization"]').val(data.specialization);
+                        $('[name="company_name"]').val(data.company_name);
+                        $('[name="company_logo"]').val(data.company_logo || '');
+                        $('[name="job_description"]').val(data.job_description);
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'draft_id',
+                            value: draftId
+                        }).appendTo('#job-posting-form');
+                    }
+                });
+            }
+        });
+    });
+
+    // Favorite Toggle
+    $(document).on('click', '.jobs-favorite-toggle', function() {
+        var $btn = $(this);
+        var jobId = $btn.data('job-id');
+
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_toggle_favorite',
+            job_id: jobId,
+            nonce: jobs_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                if (response.data.status === 'added') {
+                    $btn.css('color', '#e91e63');
+                } else {
+                    $btn.css('color', '#ccc');
+                }
             }
         });
     });

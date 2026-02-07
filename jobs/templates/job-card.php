@@ -22,7 +22,12 @@ $currency        = get_post_meta( get_the_ID(), '_job_currency', true ) ?: '$';
         </div>
         <div class="job-title-area">
             <h3 class="job-title"><?php the_title(); ?></h3>
-            <p class="company-name"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <p class="company-name" style="margin:0;"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></p>
+                <?php if ( is_user_logged_in() ) : ?>
+                    <span class="jobs-favorite-toggle dashicons dashicons-heart" data-job-id="<?php the_ID(); ?>" style="cursor: pointer; color: #ccc;"></span>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 

@@ -146,3 +146,29 @@
     padding: 10px;
     background: transparent;
 }
+
+/* Module Modal Specific Content Styling */
+.jobs-module-content h3 {
+    font-size: 1.6em;
+    color: var(--jobs-primary-color);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.jobs-module-content p {
+    color: #777;
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+/* Scrollbar styling for modals */
+#jobs-module-modal::-webkit-scrollbar {
+    width: 6px;
+}
+#jobs-module-modal::-webkit-scrollbar-track {
+    background: transparent;
+}
+#jobs-module-modal::-webkit-scrollbar-thumb {
+    background: rgba(29, 52, 105, 0.1);
+    border-radius: 10px;
+}

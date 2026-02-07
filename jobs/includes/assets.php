@@ -36,6 +36,15 @@ function jobs_enqueue_assets() {
                     'css' => 'assets/css/modules/company-profile.css',
                     'js'  => 'assets/js/modules/company-profile.js'
                 ),
+                'support' => array(
+                    'js' => 'assets/js/modules/support.js'
+                ),
+                'job-requests' => array(
+                    'js' => 'assets/js/modules/job-requests.js'
+                ),
+                'settings' => array(
+                    'js' => 'assets/js/modules/settings.js'
+                ),
             )
         ) );
     }
@@ -47,10 +56,10 @@ function jobs_enqueue_assets() {
         wp_enqueue_script( 'jobs-search-engine', JOBS_PLUGIN_URL . 'assets/js/search.js', array('jquery', 'jobs-base-script'), '1.0.0', true );
     }
 
-    // Admin Panel specific (Frontend custom dashboard)
-    if ( is_page('jobs-admin-panel') ) {
-        wp_enqueue_style( 'jobs-admin-panel', JOBS_PLUGIN_URL . 'assets/css/admin-panel.css', array(), '1.0.0' );
-        wp_enqueue_script( 'jobs-admin-dashboard', JOBS_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), '1.0.0', true );
+    // Dashboard specific
+    if ( is_page('jobs-dashboard') ) {
+        wp_enqueue_style( 'jobs-dashboard', JOBS_PLUGIN_URL . 'assets/css/dashboard.css', array(), '1.0.0' );
+        wp_enqueue_script( 'jobs-dashboard', JOBS_PLUGIN_URL . 'assets/js/dashboard.js', array('jquery'), '1.0.0', true );
     }
 
     // Auth specific

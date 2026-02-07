@@ -109,43 +109,15 @@ $is_employer = in_array( 'employer', $current_user->roles );
             ?>
         </section>
     <?php endif; ?>
+
+    <?php if ( in_array( 'job_seeker', $current_user->roles ) ) : ?>
+        <section class="seeker-section">
+            <h3>Direct Job Offers</h3>
+            <p>View exclusive job offers and invitations sent directly to you by employers.</p>
+            <div class="offers-placeholder" style="text-align: center; color: #999; padding: 60px 0;">
+                <span class="dashicons dashicons-email-alt" style="font-size: 48px; width:48px; height:48px;"></span>
+                <p>No direct offers at this time. Keep your profile updated to attract employers!</p>
+            </div>
+        </section>
+    <?php endif; ?>
 </div>
-
-<script>
-jQuery(document).ready(function($) {
-    $('.approve-job-btn').on('click', function() {
-        var btn = $(this);
-        var jobId = btn.data('job-id');
-
-        $.post(jobs_vars.ajax_url, {
-            action: 'jobs_approve_job',
-            job_id: jobId,
-            nonce: '<?php echo wp_create_nonce("jobs_approve_nonce"); ?>'
-        }, function(response) {
-            if(response.success) {
-                btn.closest('.job-review-card').fadeOut();
-            } else {
-                alert('Error: ' + response.data);
-            }
-        });
-    });
-
-    $('.reject-job-btn').on('click', function() {
-        var btn = $(this);
-        var id = btn.data('job-id');
-        if(!confirm('Reject and delete this job listing?')) return;
-
-        $.post(jobs_vars.ajax_url, {
-            action: 'jobs_delete_job',
-            job_id: id,
-            nonce: jobs_vars.nonce
-        }, function(response) {
-            if(response.success) {
-                btn.closest('.job-review-card').fadeOut();
-            } else {
-                alert('Error: ' + response.data);
-            }
-        });
-    });
-});
-</script>

@@ -1,0 +1,103 @@
+.jobs-dashboard-wrapper {
+    display: flex;
+    min-height: 80vh;
+    background: transparent !important;
+    font-family: 'Rubik', sans-serif;
+}
+
+.jobs-dashboard-sidebar {
+    width: 260px;
+    background: rgba(255, 255, 255, 0.02);
+    border-right: 1px solid rgba(29, 52, 105, 0.08);
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.jobs-dashboard-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    color: var(--jobs-primary-color);
+    margin-bottom: 40px;
+    padding: 0 10px;
+}
+
+.jobs-dashboard-logo img {
+    height: 35px;
+    width: auto;
+}
+
+.jobs-dashboard-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.jobs-dashboard-nav li {
+    margin-bottom: 8px;
+}
+
+.jobs-dash-tab {
+    text-decoration: none;
+    color: #666;
+    display: block;
+    padding: 12px 18px;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+}
+
+.jobs-dash-tab:hover {
+    background: rgba(29, 52, 105, 0.04);
+    color: var(--jobs-primary-color);
+}
+
+.jobs-dash-tab.active {
+    background: var(--jobs-primary-color);
+    color: white;
+    box-shadow: 0 8px 20px rgba(29, 52, 105, 0.15);
+}
+
+.jobs-dashboard-main {
+    flex: 1;
+    padding: 40px;
+    background: transparent !important;
+}
+
+#jobs-dash-content-area {
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dash-loader {
+    text-align: center;
+    padding: 100px 0;
+    color: #999;
+}
+
+@media (max-width: 991px) {
+    .jobs-dashboard-wrapper {
+        flex-direction: column;
+    }
+    .jobs-dashboard-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(29, 52, 105, 0.08);
+        padding: 20px;
+    }
+    .jobs-dashboard-nav ul {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        gap: 10px;
+    }
+    .jobs-dash-tab {
+        white-space: nowrap;
+    }
+}

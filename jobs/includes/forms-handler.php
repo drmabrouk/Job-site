@@ -103,7 +103,22 @@ function jobs_handle_forms() {
         update_user_meta( $user_id, 'profile_visibility', $visibility );
         update_user_meta( $user_id, 'jobs_last_profile_update', time() );
 
-        // Add activity log entry here if needed
+        Jobs_Activity_Service::log( $user_id, 'account_update', 'Updated personal information' );
+    }
+
+    // Handle Account Deletion
+    if ( isset( $_POST['jobs_delete_account'] ) ) {
+        if ( ! Jobs_Permission_Service::verify_nonce( 'jobs_account_nonce', 'jobs_update_account' ) ) {
+            return;
+        }
+
+        $user_id = get_current_user_id();
+        if ( ! $user_id ) return;
+
+        require_once( ABSPATH . 'wp-admin/includes/user.php' );
+        wp_delete_user( $user_id );
+        wp_safe_redirect( home_url() );
+        exit;
     }
 }
 add_action( 'init', 'jobs_handle_forms' );
@@ -277,7 +292,7 @@ function jobs_ajax_load_module() {
         $allowed_modules = array(
             'job-posting', 'job-listings-history', 'public-profile', 'applications-submitted',
             'job-requests', 'cv-resume', 'company-profile', 'favorites', 'drafts',
-            'support', 'settings', 'user-management', 'terms-conditions', 'articles'
+            'support', 'settings', 'user-management', 'terms-conditions', 'articles', 'analytics-insights', 'notifications'
         );
 
         if ( ! in_array( $module, $allowed_modules ) ) {
@@ -350,6 +365,48 @@ add_action( 'wp_ajax_jobs_delete_job', 'jobs_ajax_delete_job' );
 /**
  * AJAX Handler: Get Draft Data
  */
+/**
+ * AJAX Handler: Toggle Favorite
+ */
+/**
+ * AJAX Handler: Get Unread Notification Count
+ */
+add_action( 'wp_ajax_jobs_get_unread_count', 'jobs_ajax_get_unread_count' );
+function jobs_ajax_get_unread_count() {
+    Jobs_Permission_Service::check_ajax_nonce( 'jobs_main_nonce', 'nonce' );
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) wp_send_json_error();
+
+    global $wpdb;
+    $table = Jobs_DB_Service::get_table( 'notifications' );
+    $count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE user_id = %d AND is_read = 0", $user_id ) );
+    wp_send_json_success( intval($count) );
+}
+
+add_action( 'wp_ajax_jobs_toggle_favorite', 'jobs_ajax_toggle_favorite' );
+function jobs_ajax_toggle_favorite() {
+    Jobs_Permission_Service::check_ajax_nonce( 'jobs_main_nonce', 'nonce' );
+
+    $user_id = get_current_user_id();
+    $job_id = intval( $_POST['job_id'] );
+
+    if ( ! $user_id || ! $job_id ) wp_send_json_error( 'Unauthorized' );
+
+    $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
+
+    if ( ( $key = array_search( $job_id, $favorites ) ) !== false ) {
+        unset( $favorites[$key] );
+        $status = 'removed';
+    } else {
+        array_unshift( $favorites, $job_id );
+        $favorites = array_slice( $favorites, 0, 50 ); // Keep up to 50
+        $status = 'added';
+    }
+
+    update_user_meta( $user_id, 'jobs_favorites', $favorites );
+    wp_send_json_success( array( 'status' => $status ) );
+}
+
 add_action( 'wp_ajax_jobs_get_draft_data', 'jobs_ajax_get_draft_data' );
 function jobs_ajax_get_draft_data() {
     check_ajax_referer( 'jobs_main_nonce', 'nonce' );

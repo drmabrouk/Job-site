@@ -1,65 +1,45 @@
 <?php
 /**
- * Module: Support (Internal Messaging)
+ * Module: Support (Integrated Messaging)
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$current_user_id = get_current_user_id();
+$user_id = get_current_user_id();
 global $wpdb;
-$table = $wpdb->prefix . 'jobs_messages';
-$messages = $wpdb->get_results( $wpdb->prepare(
-    "SELECT * FROM $table WHERE receiver_id = %d OR sender_id = %d ORDER BY timestamp DESC LIMIT 20",
-    $current_user_id, $current_user_id
-) );
+$table = Jobs_DB_Service::get_table( 'messages' );
+
+// Get messages where user is sender or receiver (communicating with admin/system)
+$messages = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE sender_id = %d OR receiver_id = %d ORDER BY timestamp ASC", $user_id, $user_id ) );
 ?>
 <div class="jobs-module-content" id="jobs-support-module">
-    <h3>Technical Support & Messages</h3>
+    <h3>Technical Support</h3>
+    <p>Message our administrators for assistance.</p>
 
-    <div class="jobs-messaging-interface">
-        <div class="jobs-message-list" style="max-height: 300px; overflow-y: auto; border: 1px solid rgba(0,0,0,0.1); padding: 10px; margin-bottom: 20px;">
-            <?php if ( $messages ) : foreach ( $messages as $msg ) : ?>
-                <div class="jobs-message <?php echo ($msg->sender_id == $current_user_id) ? 'sent' : 'received'; ?>" style="margin-bottom: 10px; padding: 10px; border-radius: 8px; background: <?php echo ($msg->sender_id == $current_user_id) ? 'rgba(29, 52, 105, 0.1)' : 'rgba(0,0,0,0.05)'; ?>;">
-                    <strong><?php echo ($msg->sender_id == $current_user_id) ? 'Me' : get_userdata($msg->sender_id)->display_name; ?>:</strong>
-                    <p style="margin: 5px 0;"><?php echo esc_html($msg->message); ?></p>
-                    <small style="font-size: 0.8em; opacity: 0.6;"><?php echo $msg->timestamp; ?></small>
+    <div class="support-chat-box" style="height: 300px; overflow-y: auto; background: #f9f9f9; border-radius: 12px; padding: 20px; margin-top: 20px; border: 1px solid rgba(0,0,0,0.05);">
+        <?php if ( $messages ) : foreach ( $messages as $m ) :
+            $is_me = ($m->sender_id == $user_id);
+        ?>
+            <div class="chat-message <?php echo $is_me ? 'me' : 'them'; ?>" style="margin-bottom: 15px; text-align: <?php echo $is_me ? 'right' : 'left'; ?>;">
+                <div class="msg-bubble" style="display: inline-block; padding: 10px 15px; border-radius: 15px; background: <?php echo $is_me ? 'var(--jobs-primary-color)' : '#eee'; ?>; color: <?php echo $is_me ? 'white' : '#333'; ?>; max-width: 80%;">
+                    <?php echo esc_html($m->message); ?>
                 </div>
-            <?php endforeach; else : ?>
-                <p>No messages yet.</p>
-            <?php endif; ?>
-        </div>
-
-        <form id="jobs-send-support-form">
-            <?php wp_nonce_field( 'jobs_messaging_nonce', 'messaging_nonce' ); ?>
-            <textarea name="message" id="jobs-support-msg-text" placeholder="Type your message to administration..." style="width:100%; height: 80px; margin-bottom: 10px; background: transparent; border: 1px solid var(--jobs-primary-color);"></textarea>
-            <input type="hidden" name="receiver_id" value="1"> <!-- Assuming Admin ID is 1 for support -->
-            <button type="button" id="jobs-send-msg-btn" class="jobs-btn">Send Message</button>
-        </form>
+                <div style="font-size: 0.7em; color: #999; margin-top: 4px;">
+                    <?php echo date('H:i', strtotime($m->timestamp)); ?>
+                </div>
+            </div>
+        <?php endforeach; else : ?>
+            <p style="text-align: center; color: #999; padding-top: 100px;">No messages yet. Start a conversation below.</p>
+        <?php endif; ?>
     </div>
+
+    <form id="jobs-support-form" style="margin-top: 20px; display: flex; gap: 10px;">
+        <?php wp_nonce_field( 'jobs_messaging_nonce', 'nonce' ); ?>
+        <input type="hidden" name="receiver_id" value="1"> <!-- Admin is usually 1 -->
+        <input type="text" name="message" placeholder="Type your message..." required style="flex: 1; border: 1px solid #ddd; border-radius: 25px; padding: 10px 20px;">
+        <button type="submit" class="jobs-btn" style="border-radius: 50%; width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <span class="dashicons dashicons-paper-plane"></span>
+        </button>
+    </form>
 </div>
-
-<script>
-jQuery(document).ready(function($) {
-    $('#jobs-send-msg-btn').on('click', function() {
-        var msg = $('#jobs-support-msg-text').val();
-        if(!msg) return;
-
-        var data = {
-            action: 'jobs_send_message',
-            nonce: $('#messaging_nonce').val(),
-            message: msg,
-            receiver_id: $('input[name="receiver_id"]').val()
-        };
-
-        $.post('<?php echo admin_url('admin-ajax.php'); ?>', data, function(response) {
-            if(response.success) {
-                alert('Message sent successfully!');
-                location.reload(); // Simple refresh to show new message
-            } else {
-                alert('Error: ' + response.data);
-            }
-        });
-    });
-});
-</script>
