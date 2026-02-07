@@ -149,9 +149,9 @@ jQuery(document).ready(function($) {
         }, function(response) {
             if (response.success) {
                 if (response.data.status === 'added') {
-                    $btn.css('color', '#e91e63');
+                    $btn.addClass('active');
                 } else {
-                    $btn.css('color', '#ccc');
+                    $btn.removeClass('active');
                 }
             }
         });
