@@ -59,6 +59,9 @@ function jobs_plugin_activate() {
     require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-db-service.php';
     Jobs_DB_Service::setup_tables();
 
+    // Ensure rewrite rules are registered before flushing
+    Jobs_SEO_Service::register_sitemap();
+
     flush_rewrite_rules();
 }
 

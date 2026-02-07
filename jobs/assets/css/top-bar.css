@@ -117,8 +117,45 @@
     z-index: 1000;
 }
 
-.jobs-profile-dropdown.active {
+.jobs-profile-dropdown.active,
+.jobs-notif-dropdown.active {
     display: block;
+}
+
+.jobs-notif-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    margin-top: 15px;
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notif-list {
+    padding: 0;
+}
+
+.notif-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.85em;
+    color: #444;
+    transition: background 0.2s;
+}
+
+.notif-item:hover {
+    background: #f8fafc;
+}
+
+.notif-item.unread {
+    background: rgba(29, 52, 105, 0.02);
+    border-left: 3px solid var(--jobs-primary-color);
 }
 
 .jobs-profile-dropdown .dropdown-header {

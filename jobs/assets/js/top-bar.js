@@ -15,7 +15,36 @@ jQuery(document).ready(function($) {
         e.stopPropagation();
         $('#jobs-profile-menu').toggleClass('active');
         $('#jobs-apps-menu').removeClass('active');
+        $('#jobs-notif-menu').removeClass('active');
     });
+
+    $('#jobs-notif-toggle').on('click', function(e) {
+        if ($(e.target).closest('#jobs-notif-menu').length) return; // Don't toggle if clicking inside the menu
+
+        e.stopPropagation();
+        $('#jobs-notif-menu').toggleClass('active');
+        $('#jobs-profile-menu').removeClass('active');
+        $('#jobs-apps-menu').removeClass('active');
+
+        if ($('#jobs-notif-menu').hasClass('active')) {
+            loadNotifications();
+        }
+    });
+
+    $('#jobs-notif-menu').on('click', function(e) {
+        e.stopPropagation();
+    });
+
+    function loadNotifications() {
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_get_notifications',
+            nonce: jobs_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                $('#jobs-notif-list').html(response.data);
+            }
+        });
+    }
 
     $(document).on('click', function(event) {
         // Click outside apps menu
@@ -30,11 +59,13 @@ jQuery(document).ready(function($) {
         if (!$(event.target).closest('#jobs-profile-menu').length && !$(event.target).closest('#jobs-profile-toggle').length) {
             $('#jobs-profile-menu').removeClass('active');
         }
+
+        // Click outside notifications menu
+        if (!$(event.target).closest('#jobs-notif-menu').length && !$(event.target).closest('#jobs-notif-toggle').length) {
+            $('#jobs-notif-menu').removeClass('active');
+        }
     });
 
-    $('.apps-grid-card, #jobs-profile-menu').on('click', function(e) {
-        e.stopPropagation();
-    });
 
     // Simple Polling for Notifications
     function checkNotifications() {

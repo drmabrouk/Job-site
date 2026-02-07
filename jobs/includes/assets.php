@@ -26,7 +26,10 @@ function jobs_enqueue_assets() {
             'nonce'         => wp_create_nonce( 'jobs_main_nonce' ),
             'plugin_url'    => JOBS_PLUGIN_URL,
             'module_assets' => array(
-                'job-posting' => array( 'css' => 'assets/css/modules/job-posting.css' ),
+                'job-posting' => array(
+                    'css' => 'assets/css/modules/job-posting.css',
+                    'js'  => 'assets/js/modules/job-posting.js'
+                ),
                 'cv-resume'   => array(
                     'css' => 'assets/css/modules/cv-resume.css',
                     'js'  => 'assets/js/modules/cv-resume.js'
