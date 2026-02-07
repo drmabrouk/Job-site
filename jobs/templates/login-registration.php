@@ -11,12 +11,16 @@ if ( is_user_logged_in() ) {
     ?>
     <div class="jobs-auth-container">
         <div class="jobs-auth-card">
+            <?php
+            global $jobs_registration_error;
+            $show_register = ! empty( $jobs_registration_error );
+            ?>
             <div class="auth-tabs">
-                <button class="auth-tab active" data-target="login">Login</button>
-                <button class="auth-tab" data-target="register">Register</button>
+                <button class="auth-tab <?php echo $show_register ? '' : 'active'; ?>" data-target="login">Login</button>
+                <button class="auth-tab <?php echo $show_register ? 'active' : ''; ?>" data-target="register">Register</button>
             </div>
 
-            <div id="auth-login" class="auth-panel active">
+            <div id="auth-login" class="auth-panel <?php echo $show_register ? '' : 'active'; ?>">
                 <div class="auth-header">
                     <h3>Welcome Back</h3>
                     <p>Enter your credentials to access your account</p>
@@ -33,11 +37,18 @@ if ( is_user_logged_in() ) {
                 ?>
             </div>
 
-            <div id="auth-register" class="auth-panel">
+            <div id="auth-register" class="auth-panel <?php echo $show_register ? 'active' : ''; ?>">
                 <div class="auth-header">
                     <h3>Create Account</h3>
                     <p>Join our community of professionals and employers</p>
                 </div>
+
+                <?php if ( $show_register ) : ?>
+                    <div class="jobs-error-message" style="background: #fff5f5; color: #d32f2f; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em; border: 1px solid #ffcdd2;">
+                        <?php echo esc_html( $jobs_registration_error ); ?>
+                    </div>
+                <?php endif; ?>
+
                 <form id="jobs-register-form" action="" method="POST" class="jobs-auth-form">
                     <?php wp_nonce_field( 'jobs_register_user', 'jobs_registration_nonce' ); ?>
                     <div class="form-group">

@@ -36,7 +36,7 @@ function jobs_render_top_bar() {
 
                     <?php
                     global $wpdb;
-                    $table_notifications = $wpdb->prefix . 'jobs_notifications';
+                    $table_notifications = Jobs_DB_Service::get_table( 'notifications' );
                     $unread_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_notifications WHERE user_id = %d AND is_read = 0", $current_user->ID ) );
                     ?>
                     <div class="top-bar-icon-item" id="jobs-notif-toggle" title="Notifications">
@@ -113,7 +113,8 @@ function jobs_render_modules_grid() {
             'bg' => '#fff3e0',
             'color' => '#f57c00',
             'check' => 'is_user_logged_in',
-            'type' => 'page'
+            'type' => 'page',
+            'url' => home_url('/job-requests/')
         ),
         'public-profile' => array(
             'label' => 'Public Profile',
@@ -121,7 +122,8 @@ function jobs_render_modules_grid() {
             'bg' => '#e0f2f1',
             'color' => '#00796b',
             'check' => 'is_user_logged_in',
-            'type' => 'page'
+            'type' => 'page',
+            'url' => home_url('/profile/')
         ),
         'applications-submitted' => array(
             'label' => 'Submitted',
@@ -129,7 +131,8 @@ function jobs_render_modules_grid() {
             'bg' => '#f3e5f5',
             'color' => '#7b1fa2',
             'check' => 'can_apply_job',
-            'type' => 'page'
+            'type' => 'page',
+            'url' => home_url('/applications-submitted/')
         ),
         'cv-resume' => array(
             'label' => 'CV / Resume',
@@ -145,7 +148,8 @@ function jobs_render_modules_grid() {
             'bg' => '#efebe9',
             'color' => '#5d4037',
             'check' => 'can_post_job',
-            'type' => 'page'
+            'type' => 'page',
+            'url' => home_url('/company-profile/')
         ),
         'favorites' => array(
             'label' => 'Favorites',
@@ -185,7 +189,8 @@ function jobs_render_modules_grid() {
             'bg' => '#e8eaf6',
             'color' => '#303f9f',
             'check' => 'is_admin',
-            'type' => 'page'
+            'type' => 'page',
+            'url' => home_url('/advanced-settings/')
         ),
         'terms-conditions' => array(
             'label' => 'Terms',
@@ -193,7 +198,8 @@ function jobs_render_modules_grid() {
             'bg' => '#f5f5f5',
             'color' => '#616161',
             'check' => 'is_user_logged_in',
-            'type' => 'page'
+            'type' => 'page',
+            'url' => home_url('/terms-conditions/')
         ),
         'articles' => array(
             'label' => 'Articles',
@@ -218,7 +224,8 @@ function jobs_render_modules_grid() {
             'bg' => '#e1f5fe',
             'color' => '#0288d1',
             'check' => 'can_post_job',
-            'type' => 'page'
+            'type' => 'page',
+            'url' => home_url('/analytics-insights/')
         ),
     );
 
