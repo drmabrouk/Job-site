@@ -13,9 +13,11 @@ $is_employer = in_array( 'employer', $current_user->roles );
 ?>
 <div class="jobs-module-content" id="jobs-requests-module">
     <?php if ( $is_reviewer ) : ?>
-        <section class="reviewer-section">
-            <h3>Job Approval Queue</h3>
-            <p>Review and approve new job listings before they go live.</p>
+        <section class="reviewer-section" style="margin-bottom: 50px;">
+            <div style="margin-bottom: 25px;">
+                <h3 style="margin: 0;">Job Approval Queue</h3>
+                <p style="font-size: 0.9em; color: #64748b;">Review and approve new job listings before they go live.</p>
+            </div>
             <?php
             $pending_jobs = new WP_Query( array(
                 'post_type'   => 'job',
@@ -46,11 +48,13 @@ $is_employer = in_array( 'employer', $current_user->roles );
     <?php endif; ?>
 
     <?php if ( $is_employer ) : ?>
-        <?php if ( $is_reviewer ) echo '<hr style="margin: 40px 0;">'; ?>
+        <?php if ( $is_reviewer ) echo '<hr style="margin: 50px 0; border: none; border-top: 1px solid #e2e8f0;">'; ?>
 
         <section class="employer-section">
-            <h3>Applications Received</h3>
-            <p>Review candidates who have applied to your job listings.</p>
+            <div style="margin-bottom: 25px;">
+                <h3 style="margin: 0;">Applications Received</h3>
+                <p style="font-size: 0.9em; color: #64748b;">Review candidates who have applied to your job listings.</p>
+            </div>
             <?php
             $employer_jobs = get_posts( array(
                 'post_type' => 'job',
@@ -112,8 +116,10 @@ $is_employer = in_array( 'employer', $current_user->roles );
 
     <?php if ( in_array( 'job_seeker', $current_user->roles ) ) : ?>
         <section class="seeker-section">
-            <h3>Direct Job Offers</h3>
-            <p>View exclusive job offers and invitations sent directly to you by employers.</p>
+            <div style="margin-bottom: 25px;">
+                <h3 style="margin: 0;">Direct Job Offers</h3>
+                <p style="font-size: 0.9em; color: #64748b;">View exclusive job offers and invitations sent directly to you by employers.</p>
+            </div>
             <div class="offers-placeholder" style="text-align: center; color: #999; padding: 60px 0;">
                 <span class="dashicons dashicons-email-alt" style="font-size: 48px; width:48px; height:48px;"></span>
                 <p>No direct offers at this time. Keep your profile updated to attract employers!</p>

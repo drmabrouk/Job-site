@@ -62,7 +62,7 @@ $currency        = get_post_meta( get_the_ID(), '_job_currency', true ) ?: '$';
     </div>
 
     <div class="job-card-actions">
-        <a href="<?php the_permalink(); ?>" class="jobs-btn-small view-job-btn">Details</a>
-        <button class="jobs-btn-small quick-apply-toggle" data-job-id="<?php the_ID(); ?>">Apply</button>
+        <a href="<?php the_permalink(); ?>" class="jobs-btn-minimal view-job-btn">Details</a>
+        <button class="jobs-btn-minimal quick-apply-toggle" data-job-id="<?php the_ID(); ?>">Quick Apply</button>
     </div>
 </div>

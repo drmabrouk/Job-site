@@ -54,10 +54,10 @@ function jobs_render_top_bar() {
                                 <span><?php echo esc_html( $current_user->user_email ); ?></span>
                             </div>
                             <ul>
-                                <li><a href="#" class="jobs-module-link" data-module="settings">Account Settings</a></li>
-                                <li><a href="#" class="jobs-module-link" data-module="public-profile">Activity / Profile</a></li>
+                                <li><a href="#" class="jobs-module-link" data-module="settings"><span class="dashicons dashicons-admin-generic"></span> Account Settings</a></li>
+                                <li><a href="#" class="jobs-module-link" data-module="public-profile"><span class="dashicons dashicons-admin-users"></span> Activity / Profile</a></li>
                                 <li class="divider"></li>
-                                <li><a href="<?php echo wp_logout_url(); ?>">Logout</a></li>
+                                <li><a href="<?php echo wp_logout_url(); ?>"><span class="dashicons dashicons-exit"></span> Logout</a></li>
                             </ul>
                         </div>
                     </div>
@@ -235,6 +235,15 @@ function jobs_render_modules_grid() {
             'check' => 'can_post_job',
             'type' => 'page',
             'url' => home_url('/analytics-insights/')
+        ),
+        'wp-admin' => array(
+            'label' => 'Dashboard',
+            'icon' => 'dashboard',
+            'bg' => '#f5f5f5',
+            'color' => '#333',
+            'check' => 'is_user_logged_in',
+            'type' => 'direct',
+            'url' => admin_url()
         ),
     );
 
