@@ -11,7 +11,27 @@ jQuery(document).ready(function($) {
         "bahrain": ["Manama", "Riffa", "Muharraq", "Hamad Town"]
     };
 
-    function updateSearchResults(page = 1) {
+    function getPerPage() {
+        const width = $(window).width();
+        if (width > 991) return 6; // Desktop initial
+        if (width > 767) return 4; // Tablet initial
+        return 3; // Mobile initial
+    }
+
+    function getLoadMoreCount() {
+        const width = $(window).width();
+        if (width > 991) return 3;
+        return 2;
+    }
+
+    function getMaxCards() {
+        const width = $(window).width();
+        if (width > 991) return 12;
+        if (width > 767) return 8;
+        return 6;
+    }
+
+    function updateSearchResults(page = 1, append = false) {
         if (window.JobsState.ui.isSearching) return;
 
         window.JobsState.search.job_search = $('#jobs-input-search').val();
@@ -19,23 +39,34 @@ jQuery(document).ready(function($) {
         window.JobsState.search.country = $('#jobs-input-country').val();
         window.JobsState.search.city = $('#jobs-input-city').val();
         window.JobsState.search.paged = page;
+        window.JobsState.search.per_page = append ? getLoadMoreCount() : getPerPage();
 
-        // Requirement: live search triggers after first 3 characters in Job Title (after selecting specialization)
-        // I will interpret this as: if Job Title has 1-2 chars, don't search. If 0 or 3+, search.
         if (window.JobsState.search.job_search.length > 0 && window.JobsState.search.job_search.length < 3) return;
 
         window.JobsState.ui.isSearching = true;
-        $('#jobs-status-indicator').fadeIn();
+        if (!append) $('#jobs-status-indicator').fadeIn();
 
         const data = {
             action: 'jobs_filter',
             ...window.JobsState.search
         };
+        if (append) data.load_more = 1;
 
         $.get(jobs_vars.ajax_url, data, function(response) {
-            $('#jobs-results-container').html(response);
+            if (append) {
+                $('.jobs-results-grid').append(response);
+            } else {
+                $('#jobs-results-container').html(response);
+            }
+
             $('#jobs-status-indicator').fadeOut();
             window.JobsState.ui.isSearching = false;
+
+            // Check if we reached max limit
+            const currentCount = $('.job-card').length;
+            if (currentCount >= getMaxCards()) {
+                $('#jobs-load-more-btn').hide();
+            }
         });
     }
 
@@ -61,10 +92,12 @@ jQuery(document).ready(function($) {
 
     $('#jobs-input-specialization, #jobs-input-city').on('change', () => updateSearchResults(1));
 
-    $(document).on('click', '.jobs-pagination a', function(e) {
+    $(document).on('click', '#jobs-load-more-btn', function(e) {
         e.preventDefault();
-        updateSearchResults($(this).data('page'));
-        $('html, body').animate({ scrollTop: $('#jobs-search-form').offset().top - 100 }, 500);
+        const $btn = $(this);
+        const page = parseInt($btn.data('page'));
+        updateSearchResults(page, true);
+        $btn.data('page', page + 1);
     });
 
     if (navigator.geolocation) {

@@ -112,7 +112,7 @@ function jobs_render_modules_grid() {
             'icon' => 'portfolio',
             'bg' => '#fff3e0',
             'color' => '#f57c00',
-            'check' => 'is_user_logged_in', // View differently for seekers handled inside
+            'check' => 'is_user_logged_in',
             'type' => 'page'
         ),
         'public-profile' => array(
@@ -223,9 +223,11 @@ function jobs_render_modules_grid() {
     );
 
     $visible_modules = get_option( 'jobs_visible_modules', array_keys( $modules ) );
+    $restricted_modules = get_user_meta( $user_id, 'jobs_restricted_modules', true ) ?: array();
 
     foreach ( $modules as $slug => $data ) {
         if ( ! in_array( $slug, $visible_modules ) && $slug !== 'advanced-settings' ) continue;
+        if ( in_array( $slug, $restricted_modules ) ) continue;
 
         $allowed = false;
         $check = $data['check'];

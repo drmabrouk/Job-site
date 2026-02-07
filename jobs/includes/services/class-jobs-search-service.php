@@ -14,11 +14,12 @@ class Jobs_Search_Service {
         $country        = isset( $params['country'] ) ? sanitize_text_field( $params['country'] ) : '';
         $city           = isset( $params['city'] ) ? sanitize_text_field( $params['city'] ) : '';
         $paged          = isset( $params['paged'] ) ? intval( $params['paged'] ) : 1;
+        $per_page       = isset( $params['per_page'] ) ? intval( $params['per_page'] ) : 12;
         $lat            = isset( $params['lat'] ) ? floatval( $params['lat'] ) : 0;
         $lng            = isset( $params['lng'] ) ? floatval( $params['lng'] ) : 0;
 
         // Create a unique cache key based on params
-        $cache_key = 'jobs_search_' . md5( serialize( array( $search, $specialization, $country, $city, $paged, round($lat, 2), round($lng, 2) ) ) );
+        $cache_key = 'jobs_search_' . md5( serialize( array( $search, $specialization, $country, $city, $paged, $per_page, round($lat, 2), round($lng, 2) ) ) );
         $cached_results = get_transient( $cache_key );
 
         if ( $cached_results !== false ) {
@@ -27,7 +28,7 @@ class Jobs_Search_Service {
 
         $args = array(
             'post_type'      => 'job',
-            'posts_per_page' => 12,
+            'posts_per_page' => $per_page,
             'paged'          => $paged,
             's'              => $search,
             'post_status'    => 'publish',

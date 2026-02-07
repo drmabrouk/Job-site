@@ -13,8 +13,12 @@ $currency        = get_post_meta( get_the_ID(), '_job_currency', true ) ?: '$';
 ?>
 <div class="job-card">
     <div class="job-card-top-actions">
-        <?php if ( is_user_logged_in() ) : ?>
-            <span class="jobs-favorite-toggle dashicons dashicons-archive" data-job-id="<?php the_ID(); ?>" title="Save to Favorites"></span>
+        <?php if ( is_user_logged_in() ) :
+            $user_id = get_current_user_id();
+            $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
+            $is_fav = in_array( get_the_ID(), $favorites );
+        ?>
+            <span class="jobs-favorite-toggle dashicons <?php echo $is_fav ? 'dashicons-heart' : 'dashicons-heart'; ?> <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Save to Favorites"></span>
         <?php endif; ?>
     </div>
 

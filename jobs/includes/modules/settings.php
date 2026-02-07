@@ -24,6 +24,11 @@ $current_user = wp_get_current_user();
         </div>
 
         <div class="form-group">
+            <label>Username (Changeable once per month)</label>
+            <input type="text" name="user_login_change" value="<?php echo esc_attr( $current_user->user_login ); ?>">
+        </div>
+
+        <div class="form-group">
             <label>Public Profile Visibility</label>
             <select name="profile_visibility">
                 <option value="public" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'public' ); ?>>Public</option>
@@ -38,6 +43,23 @@ $current_user = wp_get_current_user();
 
         <button type="submit" name="jobs_save_account" class="jobs-btn">Update Account</button>
     </form>
+
+    <hr>
+    <div class="activity-log-section">
+        <h4>My Activity Log</h4>
+        <div style="max-height: 200px; overflow-y: auto; font-size: 0.85em; background: #f5f5f5; padding: 15px; border-radius: 8px;">
+            <?php
+            $logs = Jobs_Activity_Service::get_recent_logs( 10 );
+            foreach ( $logs as $log ) {
+                if ( $log->user_id == $current_user->ID ) {
+                    echo '<div style="margin-bottom:8px; border-bottom:1px solid #ddd; padding-bottom:4px;">';
+                    echo '<strong>' . $log->time . ':</strong> ' . esc_html($log->message);
+                    echo '</div>';
+                }
+            }
+            ?>
+        </div>
+    </div>
 
     <hr>
     <div class="danger-zone">

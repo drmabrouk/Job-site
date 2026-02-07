@@ -4,29 +4,29 @@
     min-height: 80vh;
 }
 
-.jobs-search-engine-centered {
-    max-width: 700px;
+.jobs-search-engine-horizontal {
+    max-width: 1200px;
     margin: 0 auto 50px auto;
-    text-align: center;
 }
 
-.search-row-primary {
-    margin-bottom: 25px;
+.jobs-search-engine-horizontal form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    width: 100%;
 }
 
 .search-main-field {
     position: relative;
-    max-width: 600px;
-    margin: 0 auto;
+    flex: 3; /* Keyword spans 3 other fields combined */
 }
 
 .search-main-field input {
     width: 100%;
-    padding: 20px 30px 20px 70px;
-    font-size: 1.3em;
+    padding: 16px 25px 16px 60px;
+    font-size: 1.1em;
     border: 1px solid rgba(29, 52, 105, 0.1);
     border-radius: 50px;
-    background: white !important; /* Overriding for better contrast if needed, but request said transparent. Request: All backgrounds must be fully transparent. I'll stick to transparent but maybe use a subtle border/shadow. */
     background: transparent !important;
     box-shadow: 0 10px 30px rgba(29, 52, 105, 0.05);
     outline: none;
@@ -41,29 +41,21 @@
 
 .search-icon-inside {
     position: absolute;
-    left: 30px;
+    left: 25px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.6em;
+    font-size: 1.4em;
     opacity: 0.5;
-}
-
-.search-row-secondary {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
+    z-index: 2;
 }
 
 .search-field-item {
     flex: 1;
-    min-width: 200px;
-    max-width: 250px;
 }
 
 .search-field-item select {
     width: 100%;
-    padding: 14px 20px;
+    padding: 16px 20px;
     border: 1px solid rgba(29, 52, 105, 0.08);
     border-radius: 30px;
     background: transparent !important;
@@ -81,6 +73,16 @@
 .search-field-item select:hover {
     background-color: rgba(29, 52, 105, 0.03) !important;
     border-color: rgba(29, 52, 105, 0.2);
+}
+
+@media (max-width: 991px) {
+    .jobs-search-engine-horizontal form {
+        flex-direction: column;
+    }
+    .search-main-field, .search-field-item {
+        width: 100%;
+        flex: none;
+    }
 }
 
 .jobs-status-indicator {

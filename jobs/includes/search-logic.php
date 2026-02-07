@@ -13,34 +13,23 @@ function jobs_ajax_filter_results() {
         }
 
         if ( $query->have_posts() ) {
-            $paged = max( 1, intval( $_GET['paged'] ?? 1 ) );
-            echo '<div class="jobs-results-grid">';
+            if ( ! isset($_GET['load_more']) ) {
+                echo '<div class="jobs-results-grid">';
+            }
+
             while ( $query->have_posts() ) {
                 $query->the_post();
                 include JOBS_PLUGIN_DIR . 'templates/job-card.php';
             }
-            echo '</div>';
 
-            // Intuitive Circular Pagination (Max 5 numbers)
-            $total_pages = $query->max_num_pages;
-            if ( $total_pages > 1 ) {
-                echo '<div class="jobs-pagination">';
-
-                $range = 2;
-                $showitems = ($range * 2) + 1;
-
-                if($paged > 1) echo '<a href="#" class="page-numbers prev" data-page="'.($paged - 1).'">&laquo;</a>';
-
-                for ($i=1; $i <= $total_pages; $i++) {
-                    if (1 != $total_pages && (!($i >= $paged+$range+1 || $i <= $paged-$range-1) || $total_pages <= $showitems )) {
-                        $active = ($paged == $i) ? 'active' : '';
-                        echo '<a href="#" class="page-numbers '.$active.'" data-page="'.$i.'">'.$i.'</a>';
-                    }
-                }
-
-                if($paged < $total_pages) echo '<a href="#" class="page-numbers next" data-page="'.($paged + 1).'">&raquo;</a>';
-
+            if ( ! isset($_GET['load_more']) ) {
                 echo '</div>';
+
+                if ( $query->max_num_pages > 1 ) {
+                    echo '<div class="jobs-load-more-wrapper" style="text-align:center; margin-top:30px;">';
+                    echo '<button id="jobs-load-more-btn" class="jobs-btn" data-page="2" data-max="' . $query->max_num_pages . '">Load More</button>';
+                    echo '</div>';
+                }
             }
             wp_reset_postdata();
         } else {

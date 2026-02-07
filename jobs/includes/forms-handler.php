@@ -89,12 +89,24 @@ function jobs_handle_forms() {
         $email = sanitize_email( $_POST['user_email'] );
         $display_name = sanitize_text_field( $_POST['display_name'] );
         $visibility = sanitize_text_field( $_POST['profile_visibility'] );
+        $new_username = sanitize_user( $_POST['user_login_change'] );
 
-        wp_update_user( array(
+        $update_data = array(
             'ID'           => $user_id,
             'user_email'   => $email,
             'display_name' => $display_name,
-        ) );
+        );
+
+        // Update username if changed and allowed
+        $current_user = get_userdata( $user_id );
+        if ( $new_username !== $current_user->user_login ) {
+            if ( ! username_exists( $new_username ) ) {
+                global $wpdb;
+                $wpdb->update( $wpdb->users, array( 'user_login' => $new_username ), array( 'ID' => $user_id ) );
+            }
+        }
+
+        wp_update_user( $update_data );
 
         if ( ! empty( $_POST['user_pass'] ) ) {
             wp_set_password( $_POST['user_pass'], $user_id );

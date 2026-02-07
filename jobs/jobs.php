@@ -33,6 +33,7 @@ require_once JOBS_PLUGIN_DIR . 'includes/search-logic.php';
 require_once JOBS_PLUGIN_DIR . 'includes/forms-handler.php';
 require_once JOBS_PLUGIN_DIR . 'includes/top-bar.php';
 require_once JOBS_PLUGIN_DIR . 'includes/admin-panel.php';
+require_once JOBS_PLUGIN_DIR . 'includes/admin-settings.php';
 require_once JOBS_PLUGIN_DIR . 'includes/assets.php';
 require_once JOBS_PLUGIN_DIR . 'includes/cache-prevention.php';
 

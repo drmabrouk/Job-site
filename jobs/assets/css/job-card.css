@@ -175,12 +175,12 @@
 
 .jobs-results-grid {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
     padding: 20px 0;
 }
 
-.jobs-pagination {
+.jobs-load-more-wrapper {
     display: flex;
     justify-content: center;
     gap: 8px;
@@ -204,14 +204,6 @@
 .jobs-pagination a.active, .jobs-pagination a:hover {
     background: var(--jobs-primary-color);
     color: white;
-}
-
-@media (max-width: 1800px) {
-    .jobs-results-grid { grid-template-columns: repeat(6, 1fr); }
-}
-
-@media (max-width: 1400px) {
-    .jobs-results-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 @media (max-width: 991px) {

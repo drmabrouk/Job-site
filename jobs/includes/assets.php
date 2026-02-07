@@ -23,7 +23,6 @@ function jobs_enqueue_assets() {
         // Pass global variables and module assets map
         wp_localize_script( 'jobs-module-loader', 'jobs_vars', array(
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
-            'admin_url'     => get_permalink( get_page_by_path( 'jobs-admin-panel' ) ),
             'nonce'         => wp_create_nonce( 'jobs_main_nonce' ),
             'plugin_url'    => JOBS_PLUGIN_URL,
             'module_assets' => array(
@@ -56,11 +55,6 @@ function jobs_enqueue_assets() {
         wp_enqueue_script( 'jobs-search-engine', JOBS_PLUGIN_URL . 'assets/js/search.js', array('jquery', 'jobs-base-script'), '1.0.0', true );
     }
 
-    // Dashboard specific
-    if ( is_page('jobs-dashboard') ) {
-        wp_enqueue_style( 'jobs-dashboard', JOBS_PLUGIN_URL . 'assets/css/dashboard.css', array(), '1.0.0' );
-        wp_enqueue_script( 'jobs-dashboard', JOBS_PLUGIN_URL . 'assets/js/dashboard.js', array('jquery'), '1.0.0', true );
-    }
 
     // Auth specific
     if ( is_page('login-registration') ) {

@@ -4,26 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-function jobs_redirect_admin_to_custom_panel() {
-    // Allow access to standard admin if specifically requested via URL parameter
-    if ( isset( $_GET['bypass_custom_admin'] ) ) {
-        return;
-    }
-
-    if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
-        $dashboard_page = get_page_by_path( 'jobs-dashboard' );
-        if ( $dashboard_page ) {
-            wp_safe_redirect( get_permalink( $dashboard_page->ID ) );
-            exit;
-        } else {
-            wp_safe_redirect( home_url() );
-            exit;
-        }
-    }
-}
-add_action( 'admin_init', 'jobs_redirect_admin_to_custom_panel' );
-
-// Also hide admin bar for non-admins
+// Hide admin bar for non-admins to keep focus on Top-Bar
 add_filter( 'show_admin_bar', function($show) {
     if ( ! Jobs_Permission_Service::is_admin() ) {
         return false;
