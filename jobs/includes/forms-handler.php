@@ -63,6 +63,9 @@ function jobs_handle_forms() {
             } else {
                 update_option( 'jobs_visible_modules', array() );
             }
+            if ( isset( $_POST['jobs_adsense_code'] ) ) {
+                update_option( 'jobs_adsense_code', wp_kses_post( $_POST['jobs_adsense_code'] ) );
+            }
         }
     }
 
@@ -74,6 +77,14 @@ function jobs_handle_forms() {
 
         $user_id = get_current_user_id();
         if ( ! $user_id ) return;
+
+        // Check "once per month" constraint for non-admins
+        if ( ! current_user_can( 'administrator' ) && ! current_user_can( 'system_admin' ) ) {
+            $last_update = get_user_meta( $user_id, 'jobs_last_profile_update', true );
+            if ( $last_update && ( time() - $last_update ) < 30 * DAY_IN_SECONDS ) {
+                wp_die( 'You can only update your account once per month.' );
+            }
+        }
 
         $email = sanitize_email( $_POST['user_email'] );
         $display_name = sanitize_text_field( $_POST['display_name'] );
@@ -90,6 +101,7 @@ function jobs_handle_forms() {
         }
 
         update_user_meta( $user_id, 'profile_visibility', $visibility );
+        update_user_meta( $user_id, 'jobs_last_profile_update', time() );
 
         // Add activity log entry here if needed
     }
@@ -166,6 +178,40 @@ function jobs_ajax_quick_apply() {
 }
 add_action( 'wp_ajax_jobs_quick_apply', 'jobs_ajax_quick_apply' );
 
+// AJAX Quick Apply Form Loader
+function jobs_ajax_load_quick_apply_form() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+
+    $job_id = intval( $_POST['job_id'] );
+    if ( ! $job_id ) wp_send_json_error( 'Invalid job.' );
+
+    ob_start();
+    ?>
+    <div class="quick-apply-modal-content">
+        <h3>Apply for: <?php echo get_the_title($job_id); ?></h3>
+        <?php if ( is_user_logged_in() ) : ?>
+            <form class="jobs-quick-apply-form">
+                <?php wp_nonce_field( 'jobs_quick_apply', 'quick_apply_nonce' ); ?>
+                <input type="hidden" name="job_id" value="<?php echo $job_id; ?>">
+                <div class="form-group">
+                    <label>Cover Letter (Optional)</label>
+                    <textarea name="cover_letter" style="width:100%; height: 150px; border: 1px solid #ddd; border-radius: 8px; padding:10px;"></textarea>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button type="button" class="jobs-btn submit-quick-apply">Submit Application</button>
+                </div>
+            </form>
+        <?php else : ?>
+            <p>Please <a href="<?php echo get_permalink( get_page_by_path('login-registration') ); ?>">login</a> to apply.</p>
+        <?php endif; ?>
+    </div>
+    <?php
+    $content = ob_get_clean();
+    wp_send_json_success( $content );
+}
+add_action( 'wp_ajax_jobs_load_quick_apply_form', 'jobs_ajax_load_quick_apply_form' );
+add_action( 'wp_ajax_nopriv_jobs_load_quick_apply_form', 'jobs_ajax_load_quick_apply_form' );
+
 // Handle Job Submission (Frontend)
 function jobs_ajax_post_job_handler() {
     check_ajax_referer( 'jobs_post_job', 'jobs_post_nonce' );
@@ -176,6 +222,7 @@ function jobs_ajax_post_job_handler() {
 
     $title = sanitize_text_field( $_POST['job_title'] );
     $company = sanitize_text_field( $_POST['company_name'] );
+    $logo = esc_url_raw( $_POST['company_logo'] );
     $description = wp_kses_post( $_POST['job_description'] );
     $specialization = sanitize_text_field( $_POST['specialization'] );
     $category = sanitize_text_field( $_POST['category'] );
@@ -184,19 +231,34 @@ function jobs_ajax_post_job_handler() {
 
     $is_draft = isset( $_POST['is_draft'] ) && $_POST['is_draft'] == '1';
     $status = $is_draft ? 'draft' : 'pending';
+    $draft_id = isset( $_POST['draft_id'] ) ? intval( $_POST['draft_id'] ) : 0;
 
-    $job_id = wp_insert_post( array(
+    $job_data = array(
         'post_title'   => $title,
         'post_content' => $description,
         'post_status'  => $status,
         'post_type'    => 'job',
-    ) );
+    );
 
-    if ( is_wp_error( $job_id ) ) {
+    if ( $draft_id ) {
+        // Verify owner
+        $draft_post = get_post( $draft_id );
+        if ( $draft_post && $draft_post->post_author == get_current_user_id() ) {
+            $job_data['ID'] = $draft_id;
+            $job_id = wp_update_post( $job_data );
+        } else {
+            $job_id = wp_insert_post( $job_data );
+        }
+    } else {
+        $job_id = wp_insert_post( $job_data );
+    }
+
+    if ( ! $job_id || is_wp_error( $job_id ) ) {
         wp_send_json_error( 'Failed to create job.' );
     }
 
     update_post_meta( $job_id, '_company_name', $company );
+    update_post_meta( $job_id, '_company_logo', $logo );
     update_post_meta( $job_id, '_location_country', $country );
     update_post_meta( $job_id, '_location_city', $city );
 
@@ -335,3 +397,33 @@ function jobs_ajax_delete_job() {
     wp_send_json_success( 'Job deleted successfully.' );
 }
 add_action( 'wp_ajax_jobs_delete_job', 'jobs_ajax_delete_job' );
+
+/**
+ * AJAX Handler: Get Draft Data
+ */
+add_action( 'wp_ajax_jobs_get_draft_data', 'jobs_ajax_get_draft_data' );
+function jobs_ajax_get_draft_data() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+
+    $draft_id = intval( $_POST['draft_id'] );
+    if ( ! $draft_id ) {
+        wp_send_json_error( 'Invalid draft ID' );
+    }
+
+    $post = get_post( $draft_id );
+    if ( ! $post || $post->post_author != get_current_user_id() ) {
+        wp_send_json_error( 'Unauthorized' );
+    }
+
+    $data = array(
+        'title'           => $post->post_title,
+        'specialization'  => get_post_meta( $draft_id, '_specialization', true ),
+        'country'         => get_post_meta( $draft_id, '_location_country', true ),
+        'city'            => get_post_meta( $draft_id, '_location_city', true ),
+        'company_name'    => get_post_meta( $draft_id, '_company_name', true ),
+        'company_logo'    => get_post_meta( $draft_id, '_company_logo', true ),
+        'job_description' => $post->post_content,
+    );
+
+    wp_send_json_success( $data );
+}

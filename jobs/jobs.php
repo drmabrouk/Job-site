@@ -42,8 +42,19 @@ function jobs_plugin_activate() {
 }
 
 function jobs_plugin_deactivate() {
-    jobs_remove_pages();
-    // Roles are typically not removed on deactivation to avoid data loss,
-    // but the prompt says pages must be removed.
+    // Roles and pages are typically not removed on deactivation to avoid data loss.
+    // They will be removed on uninstallation as handled in uninstall.php.
     flush_rewrite_rules();
 }
+
+// Template Loader for Single Job
+function jobs_template_loader( $template ) {
+    if ( is_singular( 'job' ) ) {
+        $plugin_template = JOBS_PLUGIN_DIR . 'templates/single-job.php';
+        if ( file_exists( $plugin_template ) ) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+add_filter( 'template_include', 'jobs_template_loader' );

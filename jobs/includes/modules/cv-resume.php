@@ -90,7 +90,7 @@ jQuery(document).ready(function($) {
 
         $('#jobs-cv-status').html('<p>Saving updates...</p>');
 
-        $.post('<?php echo admin_url('admin-ajax.php'); ?>', data, function(response) {
+        $.post(jobs_vars.ajax_url, data, function(response) {
             if(response.success) {
                 $('#jobs-cv-status').html('<p style="color: green;">' + response.data + '</p>');
             } else {

@@ -65,7 +65,7 @@ jQuery(document).ready(function($) {
 
         $('#jobs-company-status').html('<p>Saving company details...</p>');
 
-        $.post('<?php echo admin_url('admin-ajax.php'); ?>', data, function(response) {
+        $.post(jobs_vars.ajax_url, data, function(response) {
             if(response.success) {
                 $('#jobs-company-status').html('<p style="color: green;">' + response.data + '</p>');
             } else {

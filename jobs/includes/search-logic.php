@@ -25,25 +25,12 @@ function jobs_ajax_filter_results() {
         'order'          => 'DESC'
     );
 
-    // Prioritize results matching user's location
+    // Prioritization logic:
     if ( $user_country || $user_city ) {
-        $args['meta_query'] = array(
-            'relation' => 'OR',
-            array(
-                'key'     => '_location_country',
-                'value'   => $user_country,
-                'compare' => 'LIKE'
-            ),
-            array(
-                'key'     => '_location_city',
-                'value'   => $user_city,
-                'compare' => 'LIKE'
-            )
-        );
-        $args['orderby'] = array(
-            'meta_value' => 'DESC',
-            'date'       => 'DESC'
-        );
+        add_filter( 'posts_join', 'jobs_search_location_join' );
+        add_filter( 'posts_orderby', 'jobs_search_location_orderby' );
+        set_query_var( 'jobs_user_country', $user_country );
+        set_query_var( 'jobs_user_city', $user_city );
     }
 
     if ( $category ) {
@@ -85,8 +72,13 @@ function jobs_ajax_filter_results() {
 
     $query = new WP_Query( $args );
 
+    if ( $user_country || $user_city ) {
+        remove_filter( 'posts_join', 'jobs_search_location_join' );
+        remove_filter( 'posts_orderby', 'jobs_search_location_orderby' );
+    }
+
     if ( $query->have_posts() ) {
-        echo '<div class="jobs-results-container">';
+        echo '<div class="jobs-results-grid">';
         while ( $query->have_posts() ) {
             $query->the_post();
             include JOBS_PLUGIN_DIR . 'templates/job-card.php';
@@ -123,3 +115,23 @@ function jobs_ajax_filter_results() {
 }
 add_action( 'wp_ajax_jobs_filter', 'jobs_ajax_filter_results' );
 add_action( 'wp_ajax_nopriv_jobs_filter', 'jobs_ajax_filter_results' );
+
+function jobs_search_location_join( $join ) {
+    global $wpdb;
+    $join .= " LEFT JOIN {$wpdb->postmeta} AS mt1 ON ({$wpdb->posts}.ID = mt1.post_id AND mt1.meta_key = '_location_country') ";
+    $join .= " LEFT JOIN {$wpdb->postmeta} AS mt2 ON ({$wpdb->posts}.ID = mt2.post_id AND mt2.meta_key = '_location_city') ";
+    return $join;
+}
+
+function jobs_search_location_orderby( $orderby ) {
+    $user_country = esc_sql( get_query_var( 'jobs_user_country' ) );
+    $user_city = esc_sql( get_query_var( 'jobs_user_city' ) );
+
+    $priority = "CASE
+        WHEN mt2.meta_value LIKE '%$user_city%' THEN 1
+        WHEN mt1.meta_value LIKE '%$user_country%' THEN 2
+        ELSE 3
+    END ASC, ";
+
+    return $priority . $orderby;
+}

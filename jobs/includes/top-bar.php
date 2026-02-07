@@ -1,70 +1,100 @@
 <?php
-
+/**
+ * Top Bar Implementation
+ */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 function jobs_render_top_bar() {
     static $rendered = false;
-    if ( $rendered ) {
-        return;
-    }
-
-    if ( ! is_user_logged_in() ) {
-        return;
-    }
+    if ( $rendered ) return;
     $rendered = true;
 
     $current_user = wp_get_current_user();
-    $roles = $current_user->roles;
-
-    // Only for Job Seekers and Employers as per prompt (Reviewers and Admins might have it too?)
-    // "Job Seekers and Employers will use a custom transparent top bar"
-    // "The admin control panel is visible only to System Administrators."
-
-    // I will show it for all logged-in users for now, and filter modules by role.
+    $is_logged_in = is_user_logged_in();
 
     ob_start();
     ?>
-    <div class="jobs-top-bar">
-        <div class="jobs-logo">
-            <!-- Logo will be here -->
-        </div>
-        <div class="jobs-user-menu">
-            <?php
-            global $wpdb;
-            $table_notifications = $wpdb->prefix . 'jobs_notifications';
-            $unread_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_notifications WHERE user_id = %d AND is_read = 0", $current_user->ID ) );
-            ?>
-            <div class="jobs-notification-icon" id="jobs-notif-toggle" style="position:relative; margin-right: 15px; cursor: pointer;">
-                <span class="dashicons dashicons-bell" style="font-size: 24px; color: var(--jobs-primary-color);"></span>
-                <?php if ($unread_count > 0) : ?>
-                    <span class="notif-count" style="position:absolute; top:-5px; right:-5px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px;"><?php echo $unread_count; ?></span>
+    <div class="jobs-top-bar-fixed">
+        <div class="top-bar-content">
+            <div class="top-bar-left">
+                <!-- Branding or Home Link -->
+                <a href="<?php echo home_url(); ?>" class="top-bar-home">
+                    <span class="dashicons dashicons-admin-site"></span>
+                    <span class="site-name"><?php bloginfo('name'); ?></span>
+                </a>
+            </div>
+
+            <div class="top-bar-right">
+                <?php if ( $is_logged_in ) : ?>
+                    <!-- Applications Menu Toggle -->
+                    <div class="top-bar-icon-item" id="jobs-apps-toggle" title="Applications">
+                        <span class="dashicons dashicons-grid-view"></span>
+                    </div>
+
+                    <!-- Notifications -->
+                    <?php
+                    global $wpdb;
+                    $table_notifications = $wpdb->prefix . 'jobs_notifications';
+                    $unread_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_notifications WHERE user_id = %d AND is_read = 0", $current_user->ID ) );
+                    ?>
+                    <div class="top-bar-icon-item" id="jobs-notif-toggle" title="Notifications">
+                        <span class="dashicons dashicons-bell"></span>
+                        <?php if ($unread_count > 0) : ?>
+                            <span class="notif-badge"><?php echo $unread_count; ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="top-bar-user-item">
+                        <img src="<?php echo get_avatar_url( $current_user->ID ); ?>" class="user-avatar-small" id="jobs-profile-toggle">
+                        <div class="jobs-profile-dropdown" id="jobs-profile-menu">
+                            <div class="dropdown-header">
+                                <strong><?php echo esc_html( $current_user->display_name ); ?></strong>
+                                <span><?php echo esc_html( $current_user->user_email ); ?></span>
+                            </div>
+                            <ul>
+                                <li><a href="#" class="jobs-module-link" data-module="settings">Account Settings</a></li>
+                                <li><a href="#" class="jobs-module-link" data-module="public-profile">Activity / Profile</a></li>
+                                <li class="divider"></li>
+                                <li><a href="<?php echo wp_logout_url(); ?>">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                <?php else : ?>
+                    <!-- Logged out view -->
+                    <a href="<?php echo get_permalink( get_page_by_path('login-registration') ); ?>" class="jobs-btn-small">Login / Register</a>
                 <?php endif; ?>
             </div>
-            <img src="<?php echo get_avatar_url( $current_user->ID ); ?>" class="user-avatar" id="jobs-avatar-toggle">
-            <div class="jobs-dropdown-menu" id="jobs-dropdown">
+        </div>
+
+        <!-- Applications Dropdown Menu -->
+        <div class="jobs-apps-dropdown" id="jobs-apps-menu">
+            <div class="dropdown-inner">
+                <h4>Applications</h4>
                 <?php jobs_render_modules_menu(); ?>
             </div>
         </div>
     </div>
 
     <!-- Module Overlay -->
-    <div id="jobs-module-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;">
-        <div id="jobs-module-modal" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:800px; max-height:90%; background:white; padding:30px; border-radius:12px; overflow-y:auto;">
-            <span id="jobs-close-module" style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:24px;">&times;</span>
+    <div id="jobs-module-overlay" style="display:none;">
+        <div id="jobs-module-modal">
+            <span id="jobs-close-module">&times;</span>
             <div id="jobs-module-container"></div>
         </div>
     </div>
-
     <?php
     echo ob_get_clean();
 }
 add_action( 'astra_header_after', 'jobs_render_top_bar' );
-add_action( 'wp_body_open', 'jobs_render_top_bar' ); // Fallback if not using Astra
+add_action( 'wp_body_open', 'jobs_render_top_bar' );
 
 function jobs_render_modules_menu() {
     $current_user = wp_get_current_user();
+    if ( ! is_user_logged_in() ) return;
     $roles = $current_user->roles;
 
     $modules = array(
@@ -79,7 +109,6 @@ function jobs_render_modules_menu() {
         'drafts' => array( 'label' => 'Drafts', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
         'support' => array( 'label' => 'Support', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
         'settings' => array( 'label' => 'Settings', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
-        'advanced-settings' => array( 'label' => 'Advanced Settings', 'roles' => array( 'system_admin' ) ),
         'user-management' => array( 'label' => 'User Management', 'roles' => array( 'system_admin' ) ),
         'terms-conditions' => array( 'label' => 'Terms & Conditions', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
         'articles' => array( 'label' => 'Articles', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
@@ -103,6 +132,5 @@ function jobs_render_modules_menu() {
             echo '<li><a href="#" class="jobs-module-link" data-module="' . $slug . '">' . $data['label'] . '</a></li>';
         }
     }
-    echo '<li><a href="' . wp_logout_url() . '">Logout</a></li>';
     echo '</ul>';
 }

@@ -5,12 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function jobs_redirect_admin_to_custom_panel() {
+    // Allow access to standard admin if specifically requested via URL parameter
+    if ( isset( $_GET['bypass_custom_admin'] ) ) {
+        return;
+    }
+
     if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
         if ( current_user_can( 'system_admin' ) || current_user_can( 'administrator' ) ) {
             $admin_page = get_page_by_path( 'jobs-admin-panel' );
             if ( $admin_page ) {
-                // If not already on a specific admin subpage we want to keep?
-                // For now, redirect all.
                 wp_safe_redirect( get_permalink( $admin_page->ID ) );
                 exit;
             }

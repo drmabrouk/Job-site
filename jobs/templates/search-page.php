@@ -7,7 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     <?php if ( is_front_page() || get_the_ID() == get_option('page_on_front') || (isset($is_job_homepage) && $is_job_homepage) ) : ?>
     <div class="jobs-google-header">
         <?php
-        $logo_url = get_option( 'jobs_site_logo' );
+        $custom_logo_id = get_theme_mod( 'custom_logo' );
+        $logo_url = $custom_logo_id ? wp_get_attachment_image_src( $custom_logo_id , 'full' )[0] : get_option( 'jobs_site_logo' );
         $logo_width = get_option( 'jobs_logo_width', '300' );
         $logo_height = get_option( 'jobs_logo_height', 'auto' );
         ?>
@@ -45,8 +46,10 @@ if ( ! defined( 'ABSPATH' ) ) {
         </form>
     </div>
 
-    <div id="jobs-results-container" class="jobs-results-grid">
-        <p class="jobs-loader" style="display:none;">Searching jobs...</p>
+    <div id="jobs-search-results-wrapper">
+        <div id="jobs-results-container">
+            <p class="jobs-loader" style="display:none;">Searching jobs...</p>
+        </div>
     </div>
 </div>
 

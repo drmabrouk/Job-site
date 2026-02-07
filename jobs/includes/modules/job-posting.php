@@ -22,6 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
         </div>
 
         <div class="form-group">
+            <label>Company Logo URL</label>
+            <input type="text" name="company_logo" placeholder="https://example.com/logo.png">
+        </div>
+
+        <div class="form-group">
             <label>Description</label>
             <textarea name="job_description" required style="width:100%; height: 150px;"></textarea>
         </div>

@@ -1,15 +1,22 @@
 jQuery(document).ready(function($) {
-    // Toggle dropdown menu
-    $('#jobs-avatar-toggle').on('click', function(e) {
+    // Toggles for Top Bar
+    $('#jobs-apps-toggle').on('click', function(e) {
         e.stopPropagation();
-        $('#jobs-dropdown').toggleClass('active');
+        $('#jobs-apps-menu').toggleClass('active');
+        $('#jobs-profile-menu').removeClass('active');
+    });
+
+    $('#jobs-profile-toggle').on('click', function(e) {
+        e.stopPropagation();
+        $('#jobs-profile-menu').toggleClass('active');
+        $('#jobs-apps-menu').removeClass('active');
     });
 
     $(document).on('click', function() {
-        $('#jobs-dropdown').removeClass('active');
+        $('#jobs-apps-menu, #jobs-profile-menu').removeClass('active');
     });
 
-    $('#jobs-dropdown').on('click', function(e) {
+    $('#jobs-apps-menu, #jobs-profile-menu').on('click', function(e) {
         e.stopPropagation();
     });
 
@@ -58,7 +65,23 @@ jQuery(document).ready(function($) {
     // Job Card Scripts
     $(document).on('click', '.quick-apply-toggle', function() {
         var jobId = $(this).data('job-id');
-        $('#quick-apply-' + jobId).slideToggle();
+
+        // Open central modal instead of card slideToggle
+        $('#jobs-module-overlay').fadeIn();
+        $('#jobs-module-container').html('<p>Loading application form...</p>');
+
+        // Fetch application form via AJAX
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_load_quick_apply_form',
+            job_id: jobId,
+            nonce: jobs_vars.nonce
+        }, function(response) {
+            if(response.success) {
+                $('#jobs-module-container').html(response.data);
+            } else {
+                $('#jobs-module-container').html('<p style="color:red;">' + response.data + '</p>');
+            }
+        });
     });
 
     $(document).on('click', '.submit-quick-apply', function() {
@@ -71,6 +94,45 @@ jQuery(document).ready(function($) {
                 container.html('<p style="color: green;">Application submitted successfully!</p>');
             } else {
                 alert('Error: ' + response.data);
+            }
+        });
+    });
+
+    // Resume Job Draft
+    $(document).on('click', '.resume-draft-job', function() {
+        var draftId = $(this).data('id');
+
+        // First load the posting module
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_load_module',
+            module: 'job-posting',
+            nonce: jobs_vars.nonce
+        }, function(response) {
+            if(response.success) {
+                $('#jobs-module-container').html(response.data);
+
+                // Then fetch draft data
+                $.post(jobs_vars.ajax_url, {
+                    action: 'jobs_get_draft_data',
+                    draft_id: draftId,
+                    nonce: jobs_vars.nonce
+                }, function(dataResponse) {
+                    if (dataResponse.success) {
+                        var data = dataResponse.data;
+                        $('[name="job_title"]').val(data.title);
+                        $('[name="specialization"]').val(data.specialization);
+                        $('[name="country"]').val(data.country);
+                        $('[name="city"]').val(data.city);
+                        $('[name="company_name"]').val(data.company_name);
+                        $('[name="company_logo"]').val(data.company_logo || '');
+                        $('[name="job_description"]').val(data.job_description);
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'draft_id',
+                            value: draftId
+                        }).appendTo('#job-posting-form');
+                    }
+                });
             }
         });
     });

@@ -154,14 +154,42 @@ body {
 /* Job Cards */
 .job-card {
     border: 1px solid rgba(29, 52, 105, 0.1);
-    border-radius: 16px;
-    padding: 30px;
+    border-radius: 12px;
+    padding: 25px;
     margin-bottom: 25px;
     background: transparent !important;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition: all 0.3s ease;
     font-family: 'Rubik', sans-serif;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.job-card-header {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.job-company-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
     overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid rgba(29, 52, 105, 0.05);
+}
+
+.job-company-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.logo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(29, 52, 105, 0.05);
 }
 
 .job-card:hover {
@@ -195,31 +223,33 @@ body {
 .capsule {
     display: inline-flex;
     align-items: center;
-    padding: 6px 16px;
-    border-radius: 50px;
-    font-size: 0.75em;
-    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     border: 1px solid;
     background: transparent !important;
 }
 
-/* Pastel theme for capsules */
-.capsule-category {
+/* Specific Pastel themes */
+.capsule-category, .capsule-specialization {
     border-color: #ffd1dc;
-    color: #e57373;
-    background: rgba(255, 209, 220, 0.15) !important;
+    color: #d88191;
+    background: rgba(255, 209, 220, 0.1) !important;
 }
-.capsule-specialization {
-    border-color: #b3e5fc;
-    color: #039be5;
-    background: rgba(179, 229, 252, 0.15) !important;
-}
-.capsule-location {
+
+.capsule-country {
     border-color: #c8e6c9;
-    color: #43a047;
-    background: rgba(200, 230, 201, 0.15) !important;
+    color: #6fb973;
+    background: rgba(200, 230, 201, 0.1) !important;
+}
+
+.capsule-city {
+    border-color: #fff9c4;
+    color: #b5a41d;
+    background: rgba(255, 249, 196, 0.1) !important;
 }
 
 .job-excerpt {
@@ -267,9 +297,21 @@ body {
 
 .jobs-results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 20px 0;
+    grid-template-columns: repeat(3, 1fr); /* Default desktop 3 per row to handle 12 cards nicely */
+    gap: 25px;
+    padding: 30px 0;
+}
+
+@media (max-width: 1024px) {
+    .jobs-results-grid {
+        grid-template-columns: repeat(2, 1fr); /* Tablet 2 per row */
+    }
+}
+
+@media (max-width: 767px) {
+    .jobs-results-grid {
+        grid-template-columns: 1fr; /* Mobile 1 per row */
+    }
 }
 
 .view-job-btn {
@@ -292,6 +334,9 @@ body {
 .jobs-google-header {
     text-align: center;
     margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .jobs-main-logo {
@@ -403,37 +448,203 @@ body {
     margin-bottom: 5px;
 }
 
-/* Top bar styles */
-.jobs-top-bar {
+/* Top Bar Enhanced Styles */
+.jobs-top-bar-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    z-index: 9999;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(29, 52, 105, 0.05);
+}
+
+.top-bar-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    border-bottom: none; /* No separators */
+    padding: 0 20px;
 }
 
-.jobs-top-bar .user-avatar {
-    width: 40px;
-    height: 40px;
+.top-bar-home {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--jobs-primary-color);
+    font-weight: 700;
+}
+
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.top-bar-icon-item {
+    cursor: pointer;
+    color: var(--jobs-primary-color);
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.top-bar-icon-item:hover {
+    transform: scale(1.1);
+}
+
+.notif-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff5252;
+    color: white;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.user-avatar-small {
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     cursor: pointer;
+    border: 2px solid rgba(29, 52, 105, 0.1);
 }
 
-.jobs-dropdown-menu {
+.top-bar-user-item {
+    position: relative;
+}
+
+.jobs-profile-dropdown {
     display: none;
     position: absolute;
-    right: 20px;
-    top: 60px;
-    background: white; /* Menu needs a background to be readable, but the prompt says ALL backgrounds must be transparent... wait */
-    /* "All backgrounds (site elements and shortcodes) must be fully transparent, with no background colors applied." */
-    /* If the menu is transparent, it might be hard to read over content.
-       But I'll follow instructions. */
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    top: 100%;
+    right: 0;
+    width: 220px;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    margin-top: 15px;
+    padding: 10px 0;
     z-index: 1000;
 }
 
-.jobs-dropdown-menu.active {
+.jobs-profile-dropdown.active {
     display: block;
+}
+
+.jobs-profile-dropdown .dropdown-header {
+    padding: 10px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 5px;
+}
+
+.jobs-profile-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.jobs-profile-dropdown li a {
+    display: block;
+    padding: 10px 20px;
+    color: #444;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: background 0.2s;
+}
+
+.jobs-profile-dropdown li a:hover {
+    background: #f8f9fa;
+}
+
+.jobs-profile-dropdown .divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin: 5px 0;
+}
+
+/* Applications Dropdown */
+.jobs-apps-dropdown {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 60px;
+    width: 300px;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    padding: 20px;
+    z-index: 9998;
+}
+
+.jobs-apps-dropdown.active {
+    display: block;
+}
+
+.jobs-apps-dropdown ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    list-style: none;
+    padding: 0;
+}
+
+.jobs-apps-dropdown li a {
+    padding: 12px 15px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    display: block;
+    text-decoration: none;
+    color: var(--jobs-primary-color);
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+.jobs-apps-dropdown li a:hover {
+    background: var(--jobs-primary-color);
+    color: white;
+}
+
+/* Module Overlay Refinement */
+#jobs-module-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#jobs-module-modal {
+    width: 90%;
+    max-width: 800px;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+}
+
+#jobs-close-module {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
 }

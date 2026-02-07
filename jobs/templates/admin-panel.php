@@ -3,6 +3,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
+<div class="jobs-admin-top-actions" style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+    <a href="<?php echo admin_url( '?bypass_custom_admin=1' ); ?>" class="jobs-btn-small" style="background: #555;">Switch to WordPress Admin</a>
+</div>
+
 <div class="jobs-admin-wrapper">
     <aside class="jobs-admin-sidebar">
         <div class="jobs-admin-logo">
@@ -143,10 +147,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <div id="tab-ads" class="jobs-tab-content" style="display:none;">
             <h2>External Ads & Google AdSense</h2>
-            <div class="ads-config">
-                <label>Google AdSense Code</label>
-                <textarea style="width:100%; height:100px;"><?php echo esc_textarea( get_option( 'jobs_adsense_code' ) ); ?></textarea>
-            </div>
+            <form method="POST" action="">
+                <?php wp_nonce_field( 'jobs_save_settings', 'jobs_admin_settings_nonce' ); ?>
+                <div class="ads-config">
+                    <label>Google AdSense Code</label>
+                    <textarea name="jobs_adsense_code" style="width:100%; height:100px;"><?php echo esc_textarea( get_option( 'jobs_adsense_code' ) ); ?></textarea>
+                </div>
+                <button type="submit" name="save_jobs_settings" class="jobs-btn" style="margin-top:10px;">Save Ads Settings</button>
+            </form>
         </div>
     </main>
 </div>
