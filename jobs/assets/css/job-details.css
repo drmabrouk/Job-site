@@ -1,0 +1,248 @@
+.jobs-single-wrapper {
+    padding: 60px 20px;
+}
+
+.jobs-single-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 40px;
+}
+
+.job-hero-section {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    margin-bottom: 30px;
+}
+
+.job-header-flex {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.single-logo-box {
+    width: 100px;
+    height: 100px;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    padding: 10px;
+    background: #fff;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.single-logo-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.logo-placeholder {
+    color: #cbd5e1;
+}
+
+.logo-placeholder .dashicons {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+}
+
+.job-title-area h1 {
+    margin: 0;
+    font-size: 2.4em;
+    color: #1d3469;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.company-subname {
+    margin: 10px 0 20px 0;
+    font-size: 1.2em;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.job-meta-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.meta-pill {
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 0.85em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pill-spec { background: #eef2ff; color: #4f46e5; }
+.pill-loc { background: #f0fdf4; color: #16a34a; }
+.pill-salary { background: #fff7ed; color: #ea580c; }
+
+.job-details-content-card {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.content-section {
+    margin-bottom: 40px;
+}
+
+.content-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 1.4em;
+    color: #1e293b;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.entry-content {
+    line-height: 1.8;
+    color: #475569;
+    font-size: 1.1em;
+}
+
+.entry-content p {
+    margin-bottom: 20px;
+}
+
+/* Sidebar Styling */
+.sidebar-sticky-wrapper {
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.apply-action-card, .job-info-sidebar-card, .company-quick-card {
+    background: white;
+    padding: 30px;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 30px rgba(29, 52, 105, 0.04);
+}
+
+.apply-action-card h4 {
+    margin: 0 0 10px 0;
+    color: #1e293b;
+    font-size: 1.3em;
+}
+
+.apply-action-card p {
+    color: #64748b;
+    font-size: 0.95em;
+    margin-bottom: 25px;
+}
+
+.jobs-favorite-toggle-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.jobs-favorite-toggle-btn:hover {
+    background: #f1f5f9;
+    color: #1d3469;
+}
+
+.jobs-favorite-toggle-btn.active {
+    color: #e11d48;
+    border-color: #fecdd3;
+    background: #fff1f2;
+}
+
+.sidebar-info-title {
+    margin: 0 0 20px 0;
+    color: #1e293b;
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95em;
+}
+
+.info-label {
+    color: #94a3b8;
+}
+
+.info-value {
+    color: #475569;
+    font-weight: 600;
+}
+
+.view-profile-link {
+    display: inline-block;
+    margin-top: 15px;
+    color: #1d3469;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9em;
+    border-bottom: 1px solid transparent;
+}
+
+.view-profile-link:hover {
+    border-bottom-color: #1d3469;
+}
+
+@media (max-width: 1024px) {
+    .jobs-single-container {
+        grid-template-columns: 1fr;
+    }
+    .job-sidebar {
+        order: -1;
+    }
+    .sidebar-sticky-wrapper {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .job-header-flex {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .job-meta-pills {
+        justify-content: center;
+    }
+}

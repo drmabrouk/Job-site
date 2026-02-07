@@ -81,6 +81,18 @@
     background: #fafafa;
 }
 
+.jobs-auth-form .form-group {
+    margin-bottom: 20px;
+}
+
+.jobs-auth-form .form-row {
+    margin-bottom: 20px;
+}
+
+.jobs-auth-form .form-row .form-group {
+    margin-bottom: 0;
+}
+
 #jobs-login-form-custom input[type="submit"],
 .auth-submit {
     width: 100%;

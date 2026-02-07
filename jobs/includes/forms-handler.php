@@ -204,43 +204,109 @@ function jobs_ajax_quick_apply() {
         wp_send_json_error( $result->get_error_message() );
     }
 
-    wp_send_json_success( 'Application submitted.' );
+    wp_send_json_success( 'Application submitted successfully!' );
 }
 add_action( 'wp_ajax_jobs_quick_apply', 'jobs_ajax_quick_apply' );
 
-// AJAX Quick Apply Form Loader
+// AJAX Quick Apply Form Loader (Multi-step)
 function jobs_ajax_load_quick_apply_form() {
     check_ajax_referer( 'jobs_main_nonce', 'nonce' );
 
     $job_id = intval( $_POST['job_id'] );
     if ( ! $job_id ) wp_send_json_error( 'Invalid job.' );
 
+    $user_id = get_current_user_id();
+    $saved_letters = get_user_meta( $user_id, 'jobs_cover_letters', true ) ?: array('', '');
+
     ob_start();
     ?>
-    <div class="quick-apply-modal-content">
-        <h3>Apply for: <?php echo get_the_title($job_id); ?></h3>
-        <?php if ( is_user_logged_in() ) : ?>
+    <div class="quick-apply-multi-step">
+        <div class="apply-steps-header">
+            <div class="apply-step-indicator active" data-step="1">1. Letter</div>
+            <div class="apply-step-indicator" data-step="2">2. Review</div>
+            <div class="apply-step-indicator" data-step="3">3. Submit</div>
+        </div>
+
+        <div class="apply-step-panel active" id="apply-step-1">
+            <h3>Choose or Write Cover Letter</h3>
+            <p style="font-size: 0.85em; color: #64748b; margin-bottom: 20px;">Select one of your saved letters or write a new one for this application.</p>
+
+            <div class="saved-letters-selector" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button type="button" class="jobs-btn-small select-saved-letter" data-index="0">Letter 1</button>
+                <button type="button" class="jobs-btn-small select-saved-letter" data-index="1">Letter 2</button>
+            </div>
+
             <form class="jobs-quick-apply-form">
                 <?php wp_nonce_field( 'jobs_quick_apply', 'quick_apply_nonce' ); ?>
                 <input type="hidden" name="job_id" value="<?php echo $job_id; ?>">
+
                 <div class="form-group">
-                    <label>Cover Letter (Optional)</label>
-                    <textarea name="cover_letter" style="width:100%; height: 150px; border: 1px solid #ddd; border-radius: 8px; padding:10px;"></textarea>
+                    <textarea name="cover_letter" id="apply-cover-letter-text" placeholder="Write your cover letter here..." style="width:100%; height: 250px; border: 1px solid #e2e8f0; border-radius: 12px; padding:15px;"></textarea>
                 </div>
-                <div style="margin-top: 20px;">
-                    <button type="button" class="jobs-btn submit-quick-apply">Submit Application</button>
+
+                <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="save-letter-actions">
+                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="0" style="font-size: 0.75em;">Save to Slot 1</button>
+                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="1" style="font-size: 0.75em;">Save to Slot 2</button>
+                    </div>
+                    <button type="button" class="jobs-btn next-apply-step" data-next="2">Next Step</button>
                 </div>
             </form>
-        <?php else : ?>
-            <p>Please <a href="<?php echo get_permalink( get_page_by_path('login-registration') ); ?>">login</a> to apply.</p>
-        <?php endif; ?>
+        </div>
+
+        <div class="apply-step-panel" id="apply-step-2">
+            <h3>Review Application</h3>
+            <div class="review-box" style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+                <div id="review-letter-content" style="white-space: pre-wrap; font-size: 0.95em; color: #334155;"></div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="jobs-btn-minimal export-pdf-letter">Export as PDF</button>
+                <button type="button" class="jobs-btn-minimal print-letter">Print Preview</button>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                <button type="button" class="jobs-btn-minimal next-apply-step" data-next="1">Back</button>
+                <button type="button" class="jobs-btn next-apply-step" data-next="3">Finalize</button>
+            </div>
+        </div>
+
+        <div class="apply-step-panel" id="apply-step-3">
+            <h3>Ready to Submit?</h3>
+            <p>You are about to apply for <strong><?php echo get_the_title($job_id); ?></strong>. Your professional profile and cover letter will be sent to the employer.</p>
+
+            <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
+                <button type="button" class="jobs-btn submit-quick-apply" style="width: 100%; padding: 18px;">Confirm and Send Application</button>
+                <button type="button" class="jobs-btn-minimal next-apply-step" data-next="2" style="width: 100%;">Wait, let me check again</button>
+            </div>
+        </div>
+
+        <script>
+            window.savedCoverLetters = <?php echo json_encode($saved_letters); ?>;
+        </script>
     </div>
     <?php
     $content = ob_get_clean();
     wp_send_json_success( $content );
 }
 add_action( 'wp_ajax_jobs_load_quick_apply_form', 'jobs_ajax_load_quick_apply_form' );
-add_action( 'wp_ajax_nopriv_jobs_load_quick_apply_form', 'jobs_ajax_load_quick_apply_form' );
+
+// AJAX Handler: Save Cover Letter
+function jobs_ajax_save_cover_letter() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) wp_send_json_error( 'Not logged in' );
+
+    $index = intval( $_POST['index'] );
+    $content = sanitize_textarea_field( $_POST['content'] );
+
+    $letters = get_user_meta( $user_id, 'jobs_cover_letters', true ) ?: array('', '');
+    $letters[$index] = $content;
+    update_user_meta( $user_id, 'jobs_cover_letters', $letters );
+
+    wp_send_json_success( 'Letter saved successfully.' );
+}
+add_action( 'wp_ajax_jobs_save_cover_letter', 'jobs_ajax_save_cover_letter' );
 
 // Handle Job Submission (Frontend)
 function jobs_ajax_post_job_handler() {

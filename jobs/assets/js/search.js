@@ -27,7 +27,19 @@ jQuery(document).ready(function($) {
         if (window.JobsState.search.job_search.length > 0 && window.JobsState.search.job_search.length < 3) return;
 
         window.JobsState.ui.isSearching = true;
-        if (!append) $('#jobs-status-indicator').fadeIn();
+
+        const $indicator = $('#jobs-status-indicator');
+        const $results = $('#jobs-results-container');
+
+        if (!append) {
+            $indicator.fadeIn();
+        } else {
+            // Show bottom loader for append
+            if (!$('#jobs-bottom-loader').length) {
+                $('.jobs-results-grid').after('<div id="jobs-bottom-loader" class="jobs-status-indicator"><div class="indicator-spinner"></div><p>Loading more opportunities...</p></div>');
+            }
+            $('#jobs-bottom-loader').fadeIn();
+        }
 
         const data = {
             action: 'jobs_filter',
@@ -35,19 +47,22 @@ jQuery(document).ready(function($) {
         };
         if (append) data.load_more = 1;
 
-        $.get(jobs_vars.ajax_url, data, function(response) {
-            if (append) {
-                $('.jobs-results-grid').append(response);
-                // Update hidden next page flag
-                const nextPage = page + 1;
-                $('#jobs-has-more').data('next-page', nextPage);
-            } else {
-                $('#jobs-results-container').html(response);
-            }
+        const delay = append ? 3000 : 0; // 3-second delay for professional feel on scroll
 
-            $('#jobs-status-indicator').fadeOut();
-            window.JobsState.ui.isSearching = false;
-        });
+        setTimeout(function() {
+            $.get(jobs_vars.ajax_url, data, function(response) {
+                if (append) {
+                    $('.jobs-results-grid').append(response);
+                    const nextPage = page + 1;
+                    $('#jobs-has-more').data('next-page', nextPage);
+                    $('#jobs-bottom-loader').fadeOut();
+                } else {
+                    $results.html(response);
+                    $indicator.fadeOut();
+                }
+                window.JobsState.ui.isSearching = false;
+            });
+        }, delay);
     }
 
     // Country change logic

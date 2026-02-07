@@ -89,17 +89,74 @@ jQuery(document).ready(function($) {
     });
 
     $(document).on('click', '.submit-quick-apply', function() {
-        const form = $(this).closest('form');
-        const container = form.closest('.quick-apply-modal-content');
-        const data = form.serialize() + '&action=jobs_quick_apply';
+        const $btn = $(this);
+        const form = $('.jobs-quick-apply-form');
+        const data = form.serialize() + '&action=jobs_quick_apply' + '&nonce=' + jobs_vars.nonce;
+
+        $btn.prop('disabled', true).text('Submitting...');
 
         $.post(jobs_vars.ajax_url, data, function(response) {
             if(response.success) {
-                container.html('<p style="color: green;">Application submitted successfully!</p>');
+                $('.quick-apply-multi-step').html('<div style="text-align:center; padding: 40px;"><span class="dashicons dashicons-yes-alt" style="font-size: 60px; width: 60px; height: 60px; color: #16a34a; margin-bottom: 20px;"></span><h3>Success!</h3><p>' + response.data + '</p><button class="jobs-btn" onclick="jQuery(\'#jobs-module-overlay\').fadeOut()" style="margin-top: 20px;">Close</button></div>');
             } else {
+                $btn.prop('disabled', false).text('Confirm and Send Application');
                 alert('Error: ' + response.data);
             }
         });
+    });
+
+    // Multi-step Apply Logic
+    $(document).on('click', '.next-apply-step', function() {
+        const nextStep = $(this).data('next');
+
+        if (nextStep == 2) {
+            const letter = $('#apply-cover-letter-text').val();
+            $('#review-letter-content').text(letter);
+        }
+
+        $('.apply-step-panel').removeClass('active');
+        $('#apply-step-' + nextStep).addClass('active');
+
+        $('.apply-step-indicator').removeClass('active');
+        $('.apply-step-indicator[data-step="' + nextStep + '"]').addClass('active');
+    });
+
+    $(document).on('click', '.select-saved-letter', function() {
+        const index = $(this).data('index');
+        const letter = window.savedCoverLetters[index];
+        $('#apply-cover-letter-text').val(letter);
+
+        $('.select-saved-letter').removeClass('active');
+        $(this).addClass('active');
+    });
+
+    $(document).on('click', '.save-current-letter', function() {
+        const $btn = $(this);
+        const index = $btn.data('index');
+        const content = $('#apply-cover-letter-text').val();
+
+        if (!content) return alert('Letter is empty!');
+
+        $btn.text('Saving...');
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_save_cover_letter',
+            index: index,
+            content: content,
+            nonce: jobs_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                $btn.text('Saved to Slot ' + (index + 1));
+                window.savedCoverLetters[index] = content;
+                setTimeout(() => $btn.text('Save to Slot ' + (index + 1)), 2000);
+            }
+        });
+    });
+
+    $(document).on('click', '.print-letter, .export-pdf-letter', function() {
+        const content = $('#apply-cover-letter-text').val();
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write('<html><head><title>Cover Letter Export</title><style>body{font-family: "Rubik", sans-serif; padding: 60px; line-height: 1.8; color: #333; max-width: 800px; margin: 0 auto;} .header{border-bottom: 2px solid #1d3469; margin-bottom: 30px; padding-bottom: 10px;} h1{color: #1d3469; margin:0;} .content{white-space: pre-wrap;}</style></head><body><div class="header"><h1>Cover Letter</h1></div><div class="content">' + content + '</div><script>window.onload = function() { window.print(); }</script></body></html>');
+        printWindow.document.close();
     });
 
     // Resume Job Draft

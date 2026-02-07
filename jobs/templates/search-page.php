@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <?php
         $custom_logo_id = get_theme_mod( 'custom_logo' );
         $logo_url = $custom_logo_id ? wp_get_attachment_image_src( $custom_logo_id , 'full' )[0] : get_option( 'jobs_site_logo' );
-        $logo_width = get_option( 'jobs_logo_width', '240' ); // Slightly reduced from 300
+        $logo_width = get_option( 'jobs_logo_width', '180' ); // Reduced for professional balance
         $logo_height = get_option( 'jobs_logo_height', 'auto' );
         ?>
         <img src="<?php echo esc_url( $logo_url ); ?>" alt="Site Logo" class="jobs-main-logo" style="width:<?php echo esc_attr($logo_width); ?>px; height:<?php echo esc_attr($logo_height); ?>;">
