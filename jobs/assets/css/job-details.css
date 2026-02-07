@@ -236,6 +236,19 @@
     }
 }
 
+@media (max-width: 768px) {
+    .jobs-single-wrapper {
+        padding: 30px 15px;
+    }
+    .job-hero-section, .job-details-content-card, .apply-action-card, .job-info-sidebar-card, .company-quick-card {
+        padding: 25px 20px;
+        border-radius: 16px;
+    }
+    .job-title-area h1 {
+        font-size: 1.8em;
+    }
+}
+
 @media (max-width: 640px) {
     .job-header-flex {
         flex-direction: column;
@@ -244,5 +257,9 @@
     }
     .job-meta-pills {
         justify-content: center;
+    }
+    .single-logo-box {
+        width: 80px;
+        height: 80px;
     }
 }

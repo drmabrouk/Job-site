@@ -10,3 +10,15 @@ body {
     background-color: transparent !important;
     background: transparent !important;
 }
+
+@media (max-width: 768px) {
+    .jobs-btn, .jobs-btn-small {
+        padding: 10px 18px;
+        font-size: 0.85em;
+    }
+}
+
+/* Ensure Dashicons inherit properly */
+.dashicons {
+    font-family: dashicons !important;
+}

@@ -22,7 +22,7 @@ jQuery(document).ready(function($) {
         window.JobsState.search.country = $('#jobs-input-country').val();
         window.JobsState.search.city = $('#jobs-input-city').val();
         window.JobsState.search.paged = page;
-        window.JobsState.search.per_page = 6; // Always 6 per chunk
+        window.JobsState.search.per_page = 3; // Progressive loading: 3 at a time
 
         if (window.JobsState.search.job_search.length > 0 && window.JobsState.search.job_search.length < 3) return;
 
