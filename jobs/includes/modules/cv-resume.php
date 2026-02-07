@@ -11,11 +11,17 @@ $cv_data = get_user_meta( $current_user_id, 'jobs_cv_data', true ) ?: array();
 $profile_link = jobs_get_profile_link( $current_user_id );
 ?>
 <div class="jobs-module-content" id="jobs-cv-module">
-    <h3>Professional CV Setup</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h3 style="margin: 0;">Professional CV Setup</h3>
+        <div class="jobs-visibility-badge" style="font-size: 0.75em; padding: 5px 12px; border-radius: 20px; background: <?php echo (get_user_meta($current_user_id, 'profile_visibility', true) === 'private' ? '#fee2e2' : '#dcfce7'); ?>; color: <?php echo (get_user_meta($current_user_id, 'profile_visibility', true) === 'private' ? '#991b1b' : '#166534'); ?>;">
+            <span class="dashicons <?php echo (get_user_meta($current_user_id, 'profile_visibility', true) === 'private' ? 'dashicons-hidden' : 'dashicons-visibility'); ?>" style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;"></span>
+            <?php echo (get_user_meta($current_user_id, 'profile_visibility', true) === 'private' ? 'Private Profile' : 'Public Profile'); ?>
+        </div>
+    </div>
 
-    <div class="jobs-share-link-box" style="margin-bottom: 20px; padding: 15px; border: 1px dashed var(--jobs-primary-color); border-radius: 8px;">
-        <strong>Your Shareable Profile Link:</strong><br>
-        <a href="<?php echo esc_url( $profile_link ); ?>" target="_blank"><?php echo esc_html( $profile_link ); ?></a>
+    <div class="jobs-share-link-box" style="margin-bottom: 30px; padding: 15px; border: 1px dashed var(--jobs-primary-color); border-radius: 12px; background: rgba(29, 52, 105, 0.02);">
+        <strong style="font-size: 0.85em; color: #555;">Shareable Profile Link:</strong><br>
+        <a href="<?php echo esc_url( $profile_link ); ?>" target="_blank" style="font-size: 0.9em; word-break: break-all;"><?php echo esc_html( $profile_link ); ?></a>
     </div>
 
     <form id="jobs-cv-form" method="POST">
@@ -24,12 +30,14 @@ $profile_link = jobs_get_profile_link( $current_user_id );
         <div class="cv-steps-container">
             <!-- Step 0: Professional Profile -->
             <div class="cv-step-item">
-                <div class="cv-step-header" onclick="toggleCvStep(0)">
-                    <span class="step-num">0</span>
-                    <h4>Professional Profile</h4>
+                <div class="cv-step-header" onclick="toggleCvStep(0)" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: #f8fafc; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+                    <div style="display:flex; align-items: center; gap: 15px;">
+                        <span class="step-num" style="width: 24px; height: 24px; border-radius: 50%; background: var(--jobs-primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">1</span>
+                        <h4 style="margin: 0; font-size: 1em; font-weight: 600;">Personal Information</h4>
+                    </div>
                     <span class="step-toggle-icon">▼</span>
                 </div>
-                <div class="cv-step-content" id="cv-step-0">
+                <div class="cv-step-content" id="cv-step-0" style="padding: 10px 20px 20px 20px;">
                     <div class="form-row" style="display:flex; gap:10px; margin-bottom: 15px;">
                         <div class="form-group" style="flex:1;">
                             <label>Nationality</label>
@@ -92,48 +100,56 @@ $profile_link = jobs_get_profile_link( $current_user_id );
 
             <!-- Step 1: Education -->
             <div class="cv-step-item">
-                <div class="cv-step-header" onclick="toggleCvStep(1)">
-                    <span class="step-num">1</span>
-                    <h4>Education</h4>
+                <div class="cv-step-header" onclick="toggleCvStep(1)" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: #f8fafc; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+                    <div style="display:flex; align-items: center; gap: 15px;">
+                        <span class="step-num" style="width: 24px; height: 24px; border-radius: 50%; background: var(--jobs-primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">2</span>
+                        <h4 style="margin: 0; font-size: 1em; font-weight: 600;">Education History</h4>
+                    </div>
                     <span class="step-toggle-icon">▼</span>
                 </div>
-                <div class="cv-step-content" id="cv-step-1">
+                <div class="cv-step-content" id="cv-step-1" style="display:none; padding: 10px 20px 20px 20px;">
                     <textarea name="cv_education" placeholder="Describe your educational background..."><?php echo esc_textarea($cv_data['education'] ?? ''); ?></textarea>
                 </div>
             </div>
 
             <!-- Step 2: Experience -->
             <div class="cv-step-item">
-                <div class="cv-step-header" onclick="toggleCvStep(2)">
-                    <span class="step-num">2</span>
-                    <h4>Work Experience</h4>
+                <div class="cv-step-header" onclick="toggleCvStep(2)" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: #f8fafc; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+                    <div style="display:flex; align-items: center; gap: 15px;">
+                        <span class="step-num" style="width: 24px; height: 24px; border-radius: 50%; background: var(--jobs-primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">3</span>
+                        <h4 style="margin: 0; font-size: 1em; font-weight: 600;">Professional Experience</h4>
+                    </div>
                     <span class="step-toggle-icon">▼</span>
                 </div>
-                <div class="cv-step-content" id="cv-step-2" style="display:none;">
+                <div class="cv-step-content" id="cv-step-2" style="display:none; padding: 10px 20px 20px 20px;">
                     <textarea name="cv_experience" placeholder="Detail your previous roles and responsibilities..."><?php echo esc_textarea($cv_data['experience'] ?? ''); ?></textarea>
                 </div>
             </div>
 
             <!-- Step 3: Skills -->
             <div class="cv-step-item">
-                <div class="cv-step-header" onclick="toggleCvStep(3)">
-                    <span class="step-num">3</span>
-                    <h4>Skills</h4>
+                <div class="cv-step-header" onclick="toggleCvStep(3)" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: #f8fafc; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+                    <div style="display:flex; align-items: center; gap: 15px;">
+                        <span class="step-num" style="width: 24px; height: 24px; border-radius: 50%; background: var(--jobs-primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">4</span>
+                        <h4 style="margin: 0; font-size: 1em; font-weight: 600;">Skills & Expertise</h4>
+                    </div>
                     <span class="step-toggle-icon">▼</span>
                 </div>
-                <div class="cv-step-content" id="cv-step-3" style="display:none;">
+                <div class="cv-step-content" id="cv-step-3" style="display:none; padding: 10px 20px 20px 20px;">
                     <input type="text" name="cv_skills" value="<?php echo esc_attr($cv_data['skills'] ?? ''); ?>" style="width:100%;" placeholder="e.g. PHP, JavaScript, Project Management">
                 </div>
             </div>
 
             <!-- Step 4: Certifications -->
             <div class="cv-step-item">
-                <div class="cv-step-header" onclick="toggleCvStep(4)">
-                    <span class="step-num">4</span>
-                    <h4>Certifications & Courses</h4>
+                <div class="cv-step-header" onclick="toggleCvStep(4)" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: #f8fafc; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+                    <div style="display:flex; align-items: center; gap: 15px;">
+                        <span class="step-num" style="width: 24px; height: 24px; border-radius: 50%; background: var(--jobs-primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">5</span>
+                        <h4 style="margin: 0; font-size: 1em; font-weight: 600;">Certifications & Awards</h4>
+                    </div>
                     <span class="step-toggle-icon">▼</span>
                 </div>
-                <div class="cv-step-content" id="cv-step-4" style="display:none;">
+                <div class="cv-step-content" id="cv-step-4" style="display:none; padding: 10px 20px 20px 20px;">
                     <textarea name="cv_certifications" placeholder="List any certifications, courses, or licenses..."><?php echo esc_textarea($cv_data['certifications'] ?? ''); ?></textarea>
                 </div>
             </div>

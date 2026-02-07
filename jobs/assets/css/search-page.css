@@ -41,19 +41,24 @@
 
 .search-main-field input {
     width: 100%;
-    padding: 16px 25px 16px 60px;
+    padding: 18px 25px 18px 60px;
     font-size: 1.1em;
-    border: 1px solid rgba(29, 52, 105, 0.1);
+    border: 2px solid rgba(29, 52, 105, 0.08);
     border-radius: 50px;
-    background: transparent !important;
-    box-shadow: 0 10px 30px rgba(29, 52, 105, 0.05);
+    background: white !important;
+    box-shadow: 0 10px 30px rgba(29, 52, 105, 0.08);
     outline: none;
     transition: all 0.4s ease;
     color: var(--jobs-primary-color);
 }
 
+.search-main-field input::placeholder {
+    color: #a0aec0;
+    opacity: 1;
+}
+
 .search-main-field input:focus {
-    box-shadow: 0 15px 40px rgba(29, 52, 105, 0.12);
+    box-shadow: 0 15px 40px rgba(29, 52, 105, 0.15);
     border-color: var(--jobs-primary-color);
 }
 
@@ -74,10 +79,10 @@
 
 .search-field-item select {
     width: 100%;
-    padding: 16px 20px;
-    border: 1px solid rgba(29, 52, 105, 0.08);
+    padding: 18px 20px;
+    border: 2px solid rgba(29, 52, 105, 0.08);
     border-radius: 30px;
-    background: transparent !important;
+    background: white !important;
     color: var(--jobs-primary-color);
     font-family: 'Rubik', sans-serif;
     outline: none;
@@ -86,7 +91,7 @@
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%231d3469' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 20px center;
+    background-position: right 25px center;
 }
 
 .search-field-item select:hover {
@@ -191,7 +196,7 @@
 }
 
 .jobs-main-logo {
-    max-height: 180px; /* Larger logo for Google-like homepage */
+    max-height: 120px; /* Reduced from 180px for better balance */
     width: auto !important;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }

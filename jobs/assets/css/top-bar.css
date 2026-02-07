@@ -58,24 +58,37 @@
     cursor: pointer;
     color: var(--jobs-primary-color);
     position: relative;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
 }
 
 .top-bar-icon-item:hover {
-    transform: scale(1.1);
+    background: rgba(29, 52, 105, 0.05);
+}
+
+.top-bar-icon-item .dashicons {
+    font-size: 22px;
 }
 
 .notif-badge {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #ff5252;
+    top: 5px;
+    right: 5px;
+    background: #f56565;
     color: white;
-    font-size: 10px;
-    padding: 2px 5px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 3px 5px;
     border-radius: 10px;
-    min-width: 18px;
+    min-width: 16px;
     text-align: center;
+    border: 2px solid white;
 }
 
 .user-avatar-small {
@@ -121,12 +134,21 @@
 }
 
 .jobs-profile-dropdown li a {
-    display: block;
-    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
     color: #444;
     text-decoration: none;
     font-size: 0.9em;
     transition: background 0.2s;
+}
+
+.jobs-profile-dropdown li a .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #888;
 }
 
 .jobs-profile-dropdown li a:hover {

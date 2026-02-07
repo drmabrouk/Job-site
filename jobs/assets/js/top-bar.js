@@ -54,4 +54,9 @@ jQuery(document).ready(function($) {
             }
         });
     }
+
+    // Run every 30 seconds
+    if (jobs_vars.nonce) {
+        setInterval(checkNotifications, 30000);
+    }
 });

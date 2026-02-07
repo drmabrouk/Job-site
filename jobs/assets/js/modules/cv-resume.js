@@ -1,8 +1,16 @@
 window.toggleCvStep = function(step) {
-    jQuery('.cv-step-content').slideUp();
-    jQuery('#cv-step-' + step).slideDown();
-    jQuery('.cv-step-item').removeClass('active');
-    jQuery('#cv-step-' + step).closest('.cv-step-item').addClass('active');
+    var $content = jQuery('#cv-step-' + step);
+    var $item = $content.closest('.cv-step-item');
+
+    if ($content.is(':visible')) {
+        $content.slideUp();
+        $item.removeClass('active');
+    } else {
+        jQuery('.cv-step-content').slideUp();
+        jQuery('.cv-step-item').removeClass('active');
+        $content.slideDown();
+        $item.addClass('active');
+    }
 };
 
 (function($) {

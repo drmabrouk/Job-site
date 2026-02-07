@@ -60,16 +60,17 @@
 }
 
 .job-company-logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
+    width: 60px; /* Increased from 48px */
+    height: 60px;
+    border-radius: 12px;
     overflow: hidden;
     flex-shrink: 0;
-    border: 1.5px solid rgba(29, 52, 105, 0.05);
+    border: 1.5px solid rgba(29, 52, 105, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
     background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
 }
 
 .job-company-logo img {
@@ -85,8 +86,8 @@
 
 .job-title {
     color: var(--jobs-primary-color);
-    margin: 0 0 4px 0;
-    font-size: 1.05em;
+    margin: 0 0 2px 0;
+    font-size: 1.1em;
     font-weight: 700;
     line-height: 1.2;
     white-space: nowrap;
@@ -95,13 +96,14 @@
 }
 
 .company-name {
-    color: #777;
+    color: #888;
     margin: 0;
-    font-size: 0.8em;
+    font-size: 0.75em; /* Smaller font */
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: 0.02em;
 }
 
 .job-meta {
@@ -168,44 +170,40 @@
 
 .job-card-actions {
     display: flex;
-    gap: 6px;
+    gap: 10px;
     margin-top: auto;
+    justify-content: flex-end; /* Positioned at bottom-right */
 }
 
-.jobs-btn-small {
-    flex: 1;
-    padding: 10px 8px;
-    font-size: 0.75em;
-    border-radius: 10px;
+.jobs-btn-minimal {
+    padding: 8px 16px;
+    font-size: 0.7em; /* Reduced size */
+    border-radius: 8px;
     text-align: center;
     text-decoration: none;
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     cursor: pointer;
+    border: none;
 }
 
 .view-job-btn {
-    background-color: #fff;
-    color: var(--jobs-primary-color);
-    border: 1.5px solid var(--jobs-primary-color);
+    background-color: #f1f5f9;
+    color: #475569;
 }
 
 .view-job-btn:hover {
-    background-color: rgba(29, 52, 105, 0.03);
-    border-color: var(--jobs-primary-color);
+    background-color: #e2e8f0;
 }
 
 .quick-apply-toggle {
     background-color: var(--jobs-primary-color);
     color: white;
-    border: 1.5px solid var(--jobs-primary-color);
 }
 
 .quick-apply-toggle:hover {
     background-color: #152a55;
-    border-color: #152a55;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(29, 52, 105, 0.2);
+    opacity: 0.9;
 }
 
 .jobs-results-grid {

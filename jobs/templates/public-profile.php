@@ -53,7 +53,12 @@ $format_pdf = isset( $_GET['format'] ) && $_GET['format'] === 'pdf';
         </div>
         <div class="profile-basic-info">
             <h1><?php echo esc_html( $user->display_name ); ?></h1>
-            <p class="role-badge"><?php echo ucfirst( str_replace('_', ' ', $role) ); ?></p>
+            <div style="display:flex; align-items: center; gap: 10px; margin-top: 5px;">
+                <p class="role-badge" style="margin:0;"><?php echo ucfirst( str_replace('_', ' ', $role) ); ?></p>
+                <?php if ($role === 'job_seeker' && $spec = get_user_meta($user_id, '_specialization', true)) : ?>
+                    <span class="spec-badge" style="background: rgba(29, 52, 105, 0.05); padding: 2px 10px; border-radius: 20px; font-size: 0.8em; color: var(--jobs-primary-color);"><?php echo esc_html($spec); ?></span>
+                <?php endif; ?>
+            </div>
             <?php if ( $role === 'employer' ) : ?>
                 <p class="company-tagline"><?php echo esc_html( $company_data['name'] ?? '' ); ?></p>
             <?php endif; ?>
@@ -65,7 +70,27 @@ $format_pdf = isset( $_GET['format'] ) && $_GET['format'] === 'pdf';
         require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-ads-service.php';
         Jobs_Ads_Service::display_ad( 'user_profile' );
         ?>
+
         <?php if ( $role === 'job_seeker' ) : ?>
+            <section class="personal-highlights" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 40px; background: #f8fafc; padding: 25px; border-radius: 16px;">
+                <div class="highlight-item">
+                    <small style="display:block; color: #64748b; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7em; font-weight: 700;">Nationality</small>
+                    <strong style="color: #1e293b;"><?php echo esc_html(get_user_meta($user_id, '_nationality', true) ?: 'N/A'); ?></strong>
+                </div>
+                <div class="highlight-item">
+                    <small style="display:block; color: #64748b; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7em; font-weight: 700;">Experience</small>
+                    <strong style="color: #1e293b;"><?php echo esc_html(get_user_meta($user_id, '_experience', true) ?: '0'); ?> Years</strong>
+                </div>
+                <div class="highlight-item">
+                    <small style="display:block; color: #64748b; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7em; font-weight: 700;">English Level</small>
+                    <strong style="color: #1e293b;"><?php echo ucfirst(esc_html(get_user_meta($user_id, '_english_level', true) ?: 'N/A')); ?></strong>
+                </div>
+                <div class="highlight-item">
+                    <small style="display:block; color: #64748b; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7em; font-weight: 700;">Qualification</small>
+                    <strong style="color: #1e293b;"><?php echo ucfirst(esc_html(get_user_meta($user_id, '_qualification', true) ?: 'N/A')); ?></strong>
+                </div>
+            </section>
+
             <section class="cv-section">
                 <h2>Education</h2>
                 <div class="cv-item"><?php echo nl2br( esc_html( $cv_data['education'] ?? 'No education details provided.' ) ); ?></div>
