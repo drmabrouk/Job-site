@@ -99,6 +99,14 @@ function jobs_render_modules_grid() {
     $user_id = get_current_user_id();
 
     $modules = array(
+        'job-posting' => array(
+            'label' => 'Post a Job',
+            'icon' => 'plus',
+            'bg' => '#e3f2fd',
+            'color' => '#1976d2',
+            'check' => 'can_post_job',
+            'type' => 'modal'
+        ),
         'job-requests' => array(
             'label' => 'Job Requests',
             'icon' => 'portfolio',
@@ -193,7 +201,8 @@ function jobs_render_modules_grid() {
             'bg' => '#fafafa',
             'color' => '#9e9e9e',
             'check' => 'is_user_logged_in',
-            'type' => 'page'
+            'type' => 'direct',
+            'url' => get_post_type_archive_link('post') ?: home_url('/blog')
         ),
         'notifications' => array(
             'label' => 'Alerts',
@@ -227,9 +236,10 @@ function jobs_render_modules_grid() {
         }
 
         if ( $allowed ) {
+            $url = $data['url'] ?? '#';
             ?>
             <div class="apps-grid-item">
-                <a href="#" class="jobs-module-link" data-module="<?php echo $slug; ?>" data-type="<?php echo $data['type']; ?>">
+                <a href="<?php echo esc_url($url); ?>" class="jobs-module-link" data-module="<?php echo $slug; ?>" data-type="<?php echo $data['type']; ?>">
                     <div class="apps-icon-wrapper" style="background-color: <?php echo $data['bg']; ?>; color: <?php echo $data['color']; ?>;">
                         <span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
                     </div>

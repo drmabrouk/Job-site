@@ -17,11 +17,22 @@ jQuery(document).ready(function($) {
         $('#jobs-apps-menu').removeClass('active');
     });
 
-    $(document).on('click', function() {
-        $('#jobs-apps-menu, #jobs-profile-menu').removeClass('active');
+    $(document).on('click', function(event) {
+        // Click outside apps menu
+        if (!$(event.target).closest('.apps-grid-card').length && !$(event.target).closest('#jobs-apps-toggle').length) {
+            if ($('#jobs-apps-menu').hasClass('active')) {
+                $('#jobs-apps-menu').removeClass('active');
+                $('body').css('overflow', '');
+            }
+        }
+
+        // Click outside profile menu
+        if (!$(event.target).closest('#jobs-profile-menu').length && !$(event.target).closest('#jobs-profile-toggle').length) {
+            $('#jobs-profile-menu').removeClass('active');
+        }
     });
 
-    $('#jobs-apps-menu, #jobs-profile-menu').on('click', function(e) {
+    $('.apps-grid-card, #jobs-profile-menu').on('click', function(e) {
         e.stopPropagation();
     });
 
@@ -43,5 +54,4 @@ jQuery(document).ready(function($) {
             }
         });
     }
-    // setInterval(checkNotifications, 30000); // Check every 30 seconds
 });

@@ -11,12 +11,14 @@ class Jobs_Search_Service {
     public static function filter_jobs( $params ) {
         $search         = isset( $params['job_search'] ) ? sanitize_text_field( $params['job_search'] ) : '';
         $specialization = isset( $params['specialization'] ) ? sanitize_text_field( $params['specialization'] ) : '';
+        $country        = isset( $params['country'] ) ? sanitize_text_field( $params['country'] ) : '';
+        $city           = isset( $params['city'] ) ? sanitize_text_field( $params['city'] ) : '';
         $paged          = isset( $params['paged'] ) ? intval( $params['paged'] ) : 1;
         $lat            = isset( $params['lat'] ) ? floatval( $params['lat'] ) : 0;
         $lng            = isset( $params['lng'] ) ? floatval( $params['lng'] ) : 0;
 
         // Create a unique cache key based on params
-        $cache_key = 'jobs_search_' . md5( serialize( array( $search, $specialization, $paged, round($lat, 2), round($lng, 2) ) ) );
+        $cache_key = 'jobs_search_' . md5( serialize( array( $search, $specialization, $country, $city, $paged, round($lat, 2), round($lng, 2) ) ) );
         $cached_results = get_transient( $cache_key );
 
         if ( $cached_results !== false ) {
@@ -37,6 +39,22 @@ class Jobs_Search_Service {
                 'taxonomy' => 'specialization',
                 'field'    => 'slug',
                 'terms'    => $specialization,
+            );
+        }
+
+        if ( $country ) {
+            $args['tax_query'][] = array(
+                'taxonomy' => 'country',
+                'field'    => 'slug',
+                'terms'    => $country,
+            );
+        }
+
+        if ( $city ) {
+            $args['tax_query'][] = array(
+                'taxonomy' => 'city',
+                'field'    => 'slug',
+                'terms'    => $city,
             );
         }
 

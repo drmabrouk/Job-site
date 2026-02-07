@@ -1,5 +1,7 @@
 .jobs-search-page {
     background-color: transparent !important;
+    padding-top: 100px; /* Perfectly centered on homepage */
+    min-height: 80vh;
 }
 
 .jobs-search-engine-centered {
@@ -8,52 +10,77 @@
     text-align: center;
 }
 
+.search-row-primary {
+    margin-bottom: 25px;
+}
+
 .search-main-field {
     position: relative;
-    margin-bottom: 20px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .search-main-field input {
     width: 100%;
-    padding: 18px 25px 18px 60px;
-    font-size: 1.2em;
-    border: 1px solid rgba(29, 52, 105, 0.15);
-    border-radius: 40px;
-    background: transparent;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    padding: 20px 30px 20px 70px;
+    font-size: 1.3em;
+    border: 1px solid rgba(29, 52, 105, 0.1);
+    border-radius: 50px;
+    background: white !important; /* Overriding for better contrast if needed, but request said transparent. Request: All backgrounds must be fully transparent. I'll stick to transparent but maybe use a subtle border/shadow. */
+    background: transparent !important;
+    box-shadow: 0 10px 30px rgba(29, 52, 105, 0.05);
     outline: none;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     color: var(--jobs-primary-color);
 }
 
 .search-main-field input:focus {
-    box-shadow: 0 10px 30px rgba(29, 52, 105, 0.1);
+    box-shadow: 0 15px 40px rgba(29, 52, 105, 0.12);
     border-color: var(--jobs-primary-color);
 }
 
 .search-icon-inside {
     position: absolute;
-    left: 25px;
+    left: 30px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.5em;
-    opacity: 0.4;
+    font-size: 1.6em;
+    opacity: 0.5;
 }
 
-.search-secondary-field select {
-    padding: 12px 25px;
-    border: 1px solid rgba(29, 52, 105, 0.1);
+.search-row-secondary {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.search-field-item {
+    flex: 1;
+    min-width: 200px;
+    max-width: 250px;
+}
+
+.search-field-item select {
+    width: 100%;
+    padding: 14px 20px;
+    border: 1px solid rgba(29, 52, 105, 0.08);
     border-radius: 30px;
-    background: transparent;
+    background: transparent !important;
     color: var(--jobs-primary-color);
     font-family: 'Rubik', sans-serif;
     outline: none;
     cursor: pointer;
     transition: all 0.3s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%231d3469' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
 }
 
-.search-secondary-field select:hover {
-    background: rgba(29, 52, 105, 0.03);
+.search-field-item select:hover {
+    background-color: rgba(29, 52, 105, 0.03) !important;
+    border-color: rgba(29, 52, 105, 0.2);
 }
 
 .jobs-status-indicator {

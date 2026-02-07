@@ -3,6 +3,10 @@ jQuery(document).ready(function($) {
         var module = $(this).data('module');
         var type = $(this).data('type') || 'modal';
 
+        if (type === 'direct') {
+            return; // Follow href
+        }
+
         if (type === 'page') {
             window.location.href = jobs_vars.admin_url + '#' + module;
             return;

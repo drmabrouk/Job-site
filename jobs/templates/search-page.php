@@ -18,20 +18,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 
     <div class="jobs-search-engine-centered">
         <form id="jobs-search-form" action="" method="GET">
-            <div class="search-main-field">
-                <input type="text" name="job_search" id="jobs-input-search" placeholder="<?php echo esc_attr( get_option( 'jobs_search_placeholder', 'What job are you looking for?' ) ); ?>" autocomplete="off">
-                <div class="search-icon-inside">🔍</div>
+            <div class="search-row-primary">
+                <div class="search-main-field">
+                    <input type="text" name="job_search" id="jobs-input-search" placeholder="<?php echo esc_attr( get_option( 'jobs_search_placeholder', 'Job title, keywords, or company' ) ); ?>" autocomplete="off">
+                    <div class="search-icon-inside">🔍</div>
+                </div>
             </div>
-            <div class="search-secondary-field">
-                <select name="specialization" id="jobs-input-specialization">
-                    <option value="">All Specializations</option>
-                    <?php
-                    $specializations = get_terms( array( 'taxonomy' => 'specialization', 'hide_empty' => false ) );
-                    foreach ( $specializations as $term ) {
-                        echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
-                    }
-                    ?>
-                </select>
+            <div class="search-row-secondary">
+                <div class="search-field-item">
+                    <select name="specialization" id="jobs-input-specialization">
+                        <option value="">Specialization</option>
+                        <?php
+                        $specializations = get_terms( array( 'taxonomy' => 'specialization', 'hide_empty' => false ) );
+                        foreach ( $specializations as $term ) {
+                            echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="search-field-item">
+                    <select name="country" id="jobs-input-country">
+                        <option value="">Country</option>
+                        <option value="uae">United Arab Emirates</option>
+                        <option value="saudi-arabia">Saudi Arabia</option>
+                        <option value="qatar">Qatar</option>
+                        <option value="kuwait">Kuwait</option>
+                        <option value="egypt">Egypt</option>
+                        <option value="jordan">Jordan</option>
+                        <option value="lebanon">Lebanon</option>
+                        <option value="oman">Oman</option>
+                        <option value="bahrain">Bahrain</option>
+                    </select>
+                </div>
+                <div class="search-field-item">
+                    <select name="city" id="jobs-input-city">
+                        <option value="">City</option>
+                    </select>
+                </div>
             </div>
         </form>
     </div>

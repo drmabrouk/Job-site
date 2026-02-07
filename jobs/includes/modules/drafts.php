@@ -18,14 +18,26 @@ $draft_jobs = new WP_Query( array(
     <p>Resume your unfinished job postings.</p>
 
     <div class="drafts-list" style="margin-top: 20px;">
-        <?php if ( $draft_jobs->have_posts() ) : while ( $draft_jobs->have_posts() ) : $draft_jobs->the_post(); ?>
-            <div class="draft-item" style="padding: 15px; border: 1px solid #b2e2f2; border-radius: 12px; margin-bottom: 10px; background: rgba(178, 226, 242, 0.1);">
+        <?php
+        $colors = array(
+            array('bg' => '#e3f2fd', 'border' => '#90caf9', 'text' => '#1976d2'),
+            array('bg' => '#f3e5f5', 'border' => '#ce93d8', 'text' => '#7b1fa2'),
+            array('bg' => '#e8f5e9', 'border' => '#a5d6a7', 'text' => '#388e3c'),
+            array('bg' => '#fff3e0', 'border' => '#ffcc80', 'text' => '#f57c00'),
+            array('bg' => '#ffebee', 'border' => '#ef9a9a', 'text' => '#d32f2f')
+        );
+        $i = 0;
+        if ( $draft_jobs->have_posts() ) : while ( $draft_jobs->have_posts() ) : $draft_jobs->the_post();
+            $c = $colors[$i % count($colors)];
+            $i++;
+        ?>
+            <div class="draft-item" style="padding: 15px; border: 1px solid <?php echo $c['border']; ?>; border-radius: 12px; margin-bottom: 10px; background: <?php echo $c['bg']; ?>;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong style="color: #4eb0d1;"><?php the_title() ?: '(Untitled Draft)'; ?></strong>
-                    <span style="font-size: 0.7em; background: #b2e2f2; color: #4eb0d1; padding: 2px 8px; border-radius: 4px; font-weight: 600;">DRAFT</span>
+                    <strong style="color: <?php echo $c['text']; ?>;"><?php the_title() ?: '(Untitled Draft)'; ?></strong>
+                    <span style="font-size: 0.7em; background: <?php echo $c['border']; ?>; color: white; padding: 2px 8px; border-radius: 4px; font-weight: 600;">DRAFT</span>
                 </div>
                 <div style="margin-top: 10px;">
-                    <button class="jobs-btn-small resume-draft-job" data-id="<?php the_ID(); ?>" style="background: #4eb0d1; border: none; font-size: 0.75em; padding: 4px 10px;">Continue Editing</button>
+                    <button class="jobs-btn-small resume-draft-job" data-id="<?php the_ID(); ?>" style="background: <?php echo $c['text']; ?>; border: none; color: white; font-size: 0.75em; padding: 4px 10px;">Continue Editing</button>
                 </div>
             </div>
         <?php endwhile; wp_reset_postdata(); else : ?>

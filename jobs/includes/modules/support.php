@@ -34,11 +34,21 @@ $messages = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE send
         <?php endif; ?>
     </div>
 
-    <form id="jobs-support-form" style="margin-top: 20px; display: flex; gap: 10px;">
+    <form id="jobs-support-form" style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
         <?php wp_nonce_field( 'jobs_messaging_nonce', 'nonce' ); ?>
-        <input type="hidden" name="receiver_id" value="1"> <!-- Admin is usually 1 -->
-        <input type="text" name="message" placeholder="Type your message..." required style="flex: 1; border: 1px solid #ddd; border-radius: 25px; padding: 10px 20px;">
-        <button type="submit" class="jobs-btn" style="border-radius: 50%; width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;">
+        <input type="hidden" name="receiver_id" value="1">
+
+        <div style="display:flex; gap: 10px;">
+            <select name="issue_type" required style="border: 1px solid #ddd; border-radius: 25px; padding: 10px 20px; background: white; font-family: 'Rubik', sans-serif; color: #666; font-size: 0.9em;">
+                <option value="">Select Issue Type</option>
+                <option value="technical">Technical Problem</option>
+                <option value="account">Account Access</option>
+                <option value="billing">Billing/Payments</option>
+                <option value="report">Report Content</option>
+                <option value="other">Other Inquiry</option>
+            </select>
+            <input type="text" name="message" placeholder="Describe your issue..." required style="flex: 1; border: 1px solid #ddd; border-radius: 25px; padding: 10px 20px;">
+            <button type="submit" class="jobs-btn" style="border-radius: 50%; width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             <span class="dashicons dashicons-paper-plane"></span>
         </button>
     </form>

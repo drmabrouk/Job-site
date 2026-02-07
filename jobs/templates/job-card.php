@@ -12,22 +12,23 @@ $salary          = get_post_meta( get_the_ID(), '_job_salary', true );
 $currency        = get_post_meta( get_the_ID(), '_job_currency', true ) ?: '$';
 ?>
 <div class="job-card">
+    <div class="job-card-top-actions">
+        <?php if ( is_user_logged_in() ) : ?>
+            <span class="jobs-favorite-toggle dashicons dashicons-archive" data-job-id="<?php the_ID(); ?>" title="Save to Favorites"></span>
+        <?php endif; ?>
+    </div>
+
     <div class="job-card-header">
         <div class="job-company-logo">
             <?php if ( $company_logo ) : ?>
                 <img src="<?php echo esc_url( $company_logo ); ?>" alt="Company Logo">
             <?php else : ?>
-                <div class="logo-placeholder"></div>
+                <div class="logo-placeholder"><span class="dashicons dashicons-building"></span></div>
             <?php endif; ?>
         </div>
         <div class="job-title-area">
             <h3 class="job-title"><?php the_title(); ?></h3>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <p class="company-name" style="margin:0;"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></p>
-                <?php if ( is_user_logged_in() ) : ?>
-                    <span class="jobs-favorite-toggle dashicons dashicons-heart" data-job-id="<?php the_ID(); ?>" style="cursor: pointer; color: #ccc;"></span>
-                <?php endif; ?>
-            </div>
+            <p class="company-name"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></p>
         </div>
     </div>
 
@@ -54,7 +55,7 @@ $currency        = get_post_meta( get_the_ID(), '_job_currency', true ) ?: '$';
     </div>
 
     <div class="job-card-actions">
-        <a href="<?php the_permalink(); ?>" class="jobs-btn-small">Details</a>
+        <a href="<?php the_permalink(); ?>" class="jobs-btn-small view-job-btn">Details</a>
         <button class="jobs-btn-small quick-apply-toggle" data-job-id="<?php the_ID(); ?>">Apply</button>
     </div>
 </div>
