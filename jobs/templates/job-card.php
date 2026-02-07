@@ -18,7 +18,7 @@ $currency        = get_post_meta( get_the_ID(), '_job_currency', true ) ?: '$';
             $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
             $is_fav = in_array( get_the_ID(), $favorites );
         ?>
-            <span class="jobs-favorite-toggle dashicons <?php echo $is_fav ? 'dashicons-heart' : 'dashicons-heart'; ?> <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Save to Favorites"></span>
+            <span class="jobs-favorite-toggle dashicons dashicons-heart <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Save to Favorites"></span>
         <?php endif; ?>
     </div>
 

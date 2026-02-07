@@ -61,6 +61,9 @@ class Jobs_Job_Service {
 
         if ( isset( $data['specialization'] ) ) wp_set_object_terms( $job_id, $data['specialization'], 'specialization' );
         if ( isset( $data['category'] ) ) wp_set_object_terms( $job_id, $data['category'], 'job_category' );
+        if ( isset( $data['country'] ) ) wp_set_object_terms( $job_id, $data['country'], 'country' );
+        if ( isset( $data['city'] ) ) wp_set_object_terms( $job_id, $data['city'], 'city' );
+        if ( isset( $data['state'] ) ) wp_set_object_terms( $job_id, $data['state'], 'state' );
     }
 
     public static function apply_for_job( $job_id, $cover_letter ) {

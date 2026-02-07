@@ -7,7 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 function jobs_handle_forms() {
     // Handle Registration
     if ( isset( $_POST['jobs_register'] ) && isset( $_POST['jobs_registration_nonce'] ) ) {
+        global $jobs_registration_error;
+
         if ( ! wp_verify_nonce( $_POST['jobs_registration_nonce'], 'jobs_register_user' ) ) {
+            $jobs_registration_error = 'Security check failed. Please try again.';
             return;
         }
 
@@ -19,20 +22,31 @@ function jobs_handle_forms() {
         // Validate role
         $allowed_roles = array( 'job_seeker', 'employer' );
         if ( ! in_array( $role, $allowed_roles ) ) {
+            $jobs_registration_error = 'Invalid role selected.';
             return;
         }
 
-        if ( ! username_exists( $username ) && ! email_exists( $email ) ) {
-            $user_id = wp_create_user( $username, $password, $email );
-            if ( ! is_wp_error( $user_id ) ) {
-                $user = new WP_User( $user_id );
-                $user->set_role( $role );
-                wp_set_auth_cookie( $user_id );
+        if ( username_exists( $username ) ) {
+            $jobs_registration_error = 'Username already exists.';
+            return;
+        }
 
-                $redirect = ! empty( $_POST['_wp_http_referer'] ) ? esc_url_raw( $_POST['_wp_http_referer'] ) : home_url();
-                wp_safe_redirect( $redirect );
-                exit;
-            }
+        if ( email_exists( $email ) ) {
+            $jobs_registration_error = 'Email address already registered.';
+            return;
+        }
+
+        $user_id = wp_create_user( $username, $password, $email );
+        if ( ! is_wp_error( $user_id ) ) {
+            $user = new WP_User( $user_id );
+            $user->set_role( $role );
+            wp_set_auth_cookie( $user_id );
+
+            $redirect = ! empty( $_POST['_wp_http_referer'] ) ? esc_url_raw( $_POST['_wp_http_referer'] ) : home_url();
+            wp_safe_redirect( $redirect );
+            exit;
+        } else {
+            $jobs_registration_error = $user_id->get_error_message();
         }
     }
 
@@ -99,10 +113,11 @@ function jobs_handle_forms() {
 
         // Update username if changed and allowed
         $current_user = get_userdata( $user_id );
-        if ( $new_username !== $current_user->user_login ) {
+        if ( ! empty( $new_username ) && $new_username !== $current_user->user_login ) {
             if ( ! username_exists( $new_username ) ) {
                 global $wpdb;
                 $wpdb->update( $wpdb->users, array( 'user_login' => $new_username ), array( 'ID' => $user_id ) );
+                clean_user_cache( $user_id );
             }
         }
 
@@ -148,7 +163,7 @@ function jobs_ajax_send_message() {
     }
 
     global $wpdb;
-    $table = $wpdb->prefix . 'jobs_messages';
+    $table = Jobs_DB_Service::get_table( 'messages' );
     $wpdb->insert( $table, array(
         'sender_id'   => $sender_id,
         'receiver_id' => $receiver_id,
@@ -156,7 +171,7 @@ function jobs_ajax_send_message() {
     ) );
 
     // Also create a notification for the receiver
-    $table_notifications = $wpdb->prefix . 'jobs_notifications';
+    $table_notifications = Jobs_DB_Service::get_table( 'notifications' );
     $wpdb->insert( $table_notifications, array(
         'user_id' => $receiver_id,
         'content' => 'You have a new message from ' . get_userdata($sender_id)->display_name,
@@ -304,7 +319,8 @@ function jobs_ajax_load_module() {
         $allowed_modules = array(
             'job-posting', 'job-listings-history', 'public-profile', 'applications-submitted',
             'job-requests', 'cv-resume', 'company-profile', 'favorites', 'drafts',
-            'support', 'settings', 'user-management', 'terms-conditions', 'articles', 'analytics-insights', 'notifications'
+            'support', 'settings', 'user-management', 'terms-conditions', 'articles', 'analytics-insights', 'notifications',
+            'advanced-settings'
         );
 
         if ( ! in_array( $module, $allowed_modules ) ) {

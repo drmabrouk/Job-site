@@ -8,7 +8,8 @@ jQuery(document).ready(function($) {
         }
 
         if (type === 'page') {
-            window.location.href = jobs_vars.admin_url + '#' + module;
+            // Reverted from SPA dashboard.
+            // The link will be followed if we don't prevent default.
             return;
         }
 

@@ -91,9 +91,9 @@ class Jobs_Search_Service {
 
     public static function proximity_fields( $fields ) {
         global $wpdb;
-        $lat = $GLOBALS['jobs_search_lat'];
-        $lng = $GLOBALS['jobs_search_lng'];
-        $fields .= ", ( 6371 * acos( cos( radians($lat) ) * cos( radians( mt_lat.meta_value ) ) * cos( radians( mt_lng.meta_value ) - radians($lng) ) + sin( radians($lat) ) * sin( radians( mt_lat.meta_value ) ) ) ) AS distance";
+        $lat = (float) $GLOBALS['jobs_search_lat'];
+        $lng = (float) $GLOBALS['jobs_search_lng'];
+        $fields .= ", ( 6371 * acos( LEAST(1.0, GREATEST(-1.0, cos( radians($lat) ) * cos( radians( CAST(mt_lat.meta_value AS DECIMAL(12,8)) ) ) * cos( radians( CAST(mt_lng.meta_value AS DECIMAL(12,8)) ) - radians($lng) ) + sin( radians($lat) ) * sin( radians( CAST(mt_lat.meta_value AS DECIMAL(12,8)) ) ) )) ) ) AS distance";
         return $fields;
     }
 
@@ -105,7 +105,10 @@ class Jobs_Search_Service {
     }
 
     public static function proximity_orderby( $orderby ) {
-        return " distance ASC, " . $orderby;
+        if ( empty( $orderby ) ) {
+            return " distance IS NULL, distance ASC";
+        }
+        return " distance IS NULL, distance ASC, " . $orderby;
     }
 
     public static function clear_cache() {
