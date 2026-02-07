@@ -1,0 +1,8 @@
+.job-posting-form .form-group {
+    margin-bottom: 15px;
+}
+.job-posting-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+}

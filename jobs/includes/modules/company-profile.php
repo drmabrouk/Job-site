@@ -56,22 +56,3 @@ $profile_link = jobs_get_profile_link( $current_user_id );
     </form>
     <div id="jobs-company-status" style="margin-top: 10px;"></div>
 </div>
-
-<script>
-jQuery(document).ready(function($) {
-    $('#jobs-company-form').on('submit', function(e) {
-        e.preventDefault();
-        var data = $(this).serialize() + '&action=jobs_save_company_handler';
-
-        $('#jobs-company-status').html('<p>Saving company details...</p>');
-
-        $.post(jobs_vars.ajax_url, data, function(response) {
-            if(response.success) {
-                $('#jobs-company-status').html('<p style="color: green;">' + response.data + '</p>');
-            } else {
-                $('#jobs-company-status').html('<p style="color: red;">' + response.data + '</p>');
-            }
-        });
-    });
-});
-</script>

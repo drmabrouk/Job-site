@@ -1,0 +1,98 @@
+.jobs-auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    min-height: 70vh;
+}
+
+.jobs-auth-card {
+    width: 100%;
+    max-width: 450px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.auth-tabs {
+    display: flex;
+    background: #f8f9fa;
+}
+
+.auth-tab {
+    flex: 1;
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    color: #999;
+    transition: all 0.3s;
+}
+
+.auth-tab.active {
+    background: white;
+    color: var(--jobs-primary-color);
+}
+
+.auth-panel {
+    display: none;
+    padding: 40px;
+}
+
+.auth-panel.active {
+    display: block;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: var(--jobs-primary-color);
+}
+
+.auth-header p {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+}
+
+#jobs-login-form-custom p {
+    margin-bottom: 15px;
+}
+
+#jobs-login-form-custom label {
+    display: block;
+    font-size: 0.9em;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+#jobs-login-form-custom input[type="text"],
+#jobs-login-form-custom input[type="password"],
+.jobs-auth-form input,
+.jobs-auth-form select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+#jobs-login-form-custom input[type="submit"],
+.auth-submit {
+    width: 100%;
+    padding: 15px;
+    background: var(--jobs-primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}

@@ -197,20 +197,3 @@ if ( ! defined( 'ABSPATH' ) ) {
         </div>
     </main>
 </div>
-
-<script>
-document.querySelectorAll('.jobs-admin-tab').forEach(tab => {
-    tab.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = this.getAttribute('data-tab');
-
-        document.querySelectorAll('.jobs-admin-tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-
-        document.querySelectorAll('.jobs-tab-content').forEach(content => {
-            content.style.display = 'none';
-        });
-        document.getElementById('tab-' + target).style.display = 'block';
-    });
-});
-</script>
