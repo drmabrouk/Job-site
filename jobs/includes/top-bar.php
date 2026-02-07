@@ -80,6 +80,7 @@ function jobs_render_modules_menu() {
         'support' => array( 'label' => 'Support', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
         'settings' => array( 'label' => 'Settings', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
         'advanced-settings' => array( 'label' => 'Advanced Settings', 'roles' => array( 'system_admin' ) ),
+        'user-management' => array( 'label' => 'User Management', 'roles' => array( 'system_admin' ) ),
         'terms-conditions' => array( 'label' => 'Terms & Conditions', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
         'articles' => array( 'label' => 'Articles', 'roles' => array( 'job_seeker', 'employer', 'reviewer', 'system_admin' ) ),
     );

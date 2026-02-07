@@ -13,9 +13,10 @@ if ( ! empty( $favorites ) ) {
     // Filter to only existing and published jobs
     $args = array(
         'post_type' => 'job',
-        'post__in'  => $favorites,
+        'post__in'  => array_slice(array_reverse($favorites), 0, 5),
         'post_status' => 'publish',
-        'posts_per_page' => -1,
+        'posts_per_page' => 5,
+        'orderby' => 'post__in'
     );
     $query = new WP_Query( $args );
 

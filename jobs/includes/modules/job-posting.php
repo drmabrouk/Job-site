@@ -48,7 +48,10 @@ if ( ! defined( 'ABSPATH' ) ) {
             </div>
         </div>
 
-        <button type="submit" name="jobs_submit_job" class="jobs-btn">Submit for Review</button>
+        <div class="form-actions" style="display:flex; gap:10px; margin-top:20px;">
+            <button type="submit" name="jobs_submit_job" class="jobs-btn">Submit for Review</button>
+            <button type="button" id="jobs-save-draft-btn" class="jobs-btn" style="background:#666;">Save as Draft</button>
+        </div>
     </form>
     <div id="jobs-post-status"></div>
 </div>
@@ -66,6 +69,21 @@ jQuery(document).ready(function($) {
             if(response.success) {
                 $('#jobs-post-status').html('<p style="color: green;">' + response.data + '</p>');
                 form[0].reset();
+            } else {
+                $('#jobs-post-status').html('<p style="color: red;">' + response.data + '</p>');
+            }
+        });
+    });
+
+    $('#jobs-save-draft-btn').on('click', function() {
+        var form = $('#jobs-post-job-form');
+        var data = form.serialize() + '&action=jobs_post_job_handler&is_draft=1';
+
+        $('#jobs-post-status').html('<p>Saving draft...</p>');
+
+        $.post('<?php echo admin_url('admin-ajax.php'); ?>', data, function(response) {
+            if(response.success) {
+                $('#jobs-post-status').html('<p style="color: blue;">Draft saved successfully.</p>');
             } else {
                 $('#jobs-post-status').html('<p style="color: red;">' + response.data + '</p>');
             }

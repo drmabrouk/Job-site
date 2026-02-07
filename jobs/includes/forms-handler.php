@@ -182,10 +182,13 @@ function jobs_ajax_post_job_handler() {
     $country = sanitize_text_field( $_POST['country'] );
     $city = sanitize_text_field( $_POST['city'] );
 
+    $is_draft = isset( $_POST['is_draft'] ) && $_POST['is_draft'] == '1';
+    $status = $is_draft ? 'draft' : 'pending';
+
     $job_id = wp_insert_post( array(
         'post_title'   => $title,
         'post_content' => $description,
-        'post_status'  => 'pending', // Pending review
+        'post_status'  => $status,
         'post_type'    => 'job',
     ) );
 
@@ -194,12 +197,18 @@ function jobs_ajax_post_job_handler() {
     }
 
     update_post_meta( $job_id, '_company_name', $company );
+    update_post_meta( $job_id, '_location_country', $country );
+    update_post_meta( $job_id, '_location_city', $city );
 
     // Handle taxonomies (simplified, assuming terms exist or creating them)
     if ( $specialization ) wp_set_object_terms( $job_id, $specialization, 'specialization' );
     if ( $category ) wp_set_object_terms( $job_id, $category, 'job_category' );
     if ( $country ) wp_set_object_terms( $job_id, $country, 'country' );
     if ( $city ) wp_set_object_terms( $job_id, $city, 'city' );
+
+    if ( $is_draft ) {
+        wp_send_json_success( 'Draft saved successfully.' );
+    }
 
     // Notify Reviewers/Admins
     $reviewers = get_users( array( 'role__in' => array( 'reviewer', 'system_admin' ) ) );
@@ -303,3 +312,26 @@ function jobs_ajax_save_company_handler() {
     wp_send_json_success( 'Company profile updated successfully.' );
 }
 add_action( 'wp_ajax_jobs_save_company_handler', 'jobs_ajax_save_company_handler' );
+
+// Handle Job Deletion (Move to trash)
+function jobs_ajax_delete_job() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+
+    $job_id = intval( $_POST['job_id'] );
+    if ( ! $job_id ) wp_send_json_error( 'Invalid job ID.' );
+
+    $post = get_post( $job_id );
+    if ( ! $post || $post->post_type !== 'job' ) {
+        wp_send_json_error( 'Job not found.' );
+    }
+
+    // Check permission
+    if ( ! current_user_can( 'administrator' ) && ! current_user_can( 'system_admin' ) && $post->post_author != get_current_user_id() ) {
+        wp_send_json_error( 'Permission denied.' );
+    }
+
+    wp_trash_post( $job_id );
+
+    wp_send_json_success( 'Job deleted successfully.' );
+}
+add_action( 'wp_ajax_jobs_delete_job', 'jobs_ajax_delete_job' );

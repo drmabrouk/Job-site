@@ -14,7 +14,7 @@ jQuery(document).ready(function($) {
     });
 
     // Module link clicks
-    $('.jobs-module-link').on('click', function(e) {
+    $(document).on('click', '.jobs-module-link', function(e) {
         var module = $(this).data('module');
 
         if (module === 'advanced-settings') {
@@ -23,23 +23,30 @@ jQuery(document).ready(function($) {
         }
 
         e.preventDefault();
-        console.log('Loading module: ' + module);
 
-        // Actual implementation: Load module content via AJAX
+        // Close dropdown
+        $('#jobs-dropdown').removeClass('active');
+
+        // Show overlay with fade effect
+        if ($('#jobs-module-overlay').is(':hidden')) {
+            $('#jobs-module-overlay').fadeIn(300);
+        }
+
+        $('#jobs-module-container').css('opacity', '0.5');
+
         var data = {
             action: 'jobs_load_module',
             module: module,
             nonce: jobs_vars.nonce
         };
 
-        $('#jobs-module-overlay').fadeIn();
-        $('#jobs-module-container').html('<p>Loading...</p>');
-
         $.post(jobs_vars.ajax_url, data, function(response) {
+            $('#jobs-module-container').css('opacity', '1');
             if(response.success) {
                 $('#jobs-module-container').html(response.data);
+                // Trigger any re-init if needed
             } else {
-                $('#jobs-module-container').html('<p style="color:red;">Error loading module: ' + response.data + '</p>');
+                $('#jobs-module-container').html('<p style="color:red; padding:20px;">Error loading module: ' + response.data + '</p>');
             }
         });
     });

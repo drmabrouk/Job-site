@@ -1,6 +1,7 @@
 <?php
 /**
- * Module: Job Requests (Review Queue for Reviewers / Application List for Employers)
+ * Module: Job Requests
+ * Handles Job Approvals for Reviewers and Applications Received for Employers.
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -9,101 +10,104 @@ if ( ! defined( 'ABSPATH' ) ) {
 $current_user = wp_get_current_user();
 $is_reviewer = in_array( 'reviewer', $current_user->roles ) || in_array( 'system_admin', $current_user->roles );
 $is_employer = in_array( 'employer', $current_user->roles );
-
 ?>
 <div class="jobs-module-content" id="jobs-requests-module">
     <?php if ( $is_reviewer ) : ?>
-        <h3>Pending Job Approvals</h3>
-        <?php
-        $pending_jobs = new WP_Query( array(
-            'post_type'   => 'job',
-            'post_status' => 'pending',
-            'posts_per_page' => -1,
-        ) );
-
-        if ( $pending_jobs->have_posts() ) : ?>
-            <table class="jobs-table" style="width:100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="border-bottom: 1px solid rgba(29, 52, 105, 0.1);">
-                        <th style="text-align:left; padding: 10px;">Job Title</th>
-                        <th style="text-align:left; padding: 10px;">Employer</th>
-                        <th style="text-align:right; padding: 10px;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ( $pending_jobs->have_posts() ) : $pending_jobs->the_post(); ?>
-                        <tr style="border-bottom: 1px solid rgba(29, 52, 105, 0.05);">
-                            <td style="padding: 10px;"><?php the_title(); ?></td>
-                            <td style="padding: 10px;"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></td>
-                            <td style="padding: 10px; text-align:right;">
-                                <button class="jobs-btn approve-job-btn" data-job-id="<?php the_ID(); ?>">Approve</button>
-                            </td>
-                        </tr>
-                    <?php endwhile; wp_reset_postdata(); ?>
-                </tbody>
-            </table>
-        <?php else : ?>
-            <p>No jobs pending review.</p>
-        <?php endif; ?>
-    <?php endif; ?>
-
-    <?php if ( $is_employer ) : ?>
-        <hr style="margin: 30px 0; border: 0; border-top: 1px solid rgba(29, 52, 105, 0.1);">
-        <h3>Applications Received</h3>
-        <?php
-        $applications = new WP_Query( array(
-            'post_type'   => 'application',
-            'posts_per_page' => -1,
-            'author'      => $current_user->ID, // Wait, applications are created by job seekers.
-            // I should filter by jobs owned by this employer.
-        ) );
-        // Actually, let's query applications where 'job_id' meta matches employer's jobs.
-        // Simplified: query all applications and filter in loop or use meta_query if job_id is stored.
-
-        $employer_jobs = get_posts( array(
-            'post_type' => 'job',
-            'author' => $current_user->ID,
-            'fields' => 'ids',
-            'post_status' => array('publish', 'pending', 'private')
-        ) );
-
-        if ( ! empty( $employer_jobs ) ) {
-            $apps = new WP_Query( array(
-                'post_type' => 'application',
-                'meta_query' => array(
-                    array(
-                        'key' => '_job_id',
-                        'value' => $employer_jobs,
-                        'compare' => 'IN'
-                    )
-                )
+        <section class="reviewer-section">
+            <h3>Job Approval Queue</h3>
+            <p>Review and approve new job listings before they go live.</p>
+            <?php
+            $pending_jobs = new WP_Query( array(
+                'post_type'   => 'job',
+                'post_status' => 'pending',
+                'posts_per_page' => -1,
             ) );
 
-            if ( $apps->have_posts() ) : ?>
-                <div class="applications-list">
-                    <?php while ( $apps->have_posts() ) : $apps->the_post();
-                        $job_id = get_post_meta( get_the_ID(), '_job_id', true );
-                        $applicant_id = get_the_author_meta('ID');
-                        $cv_data = get_user_meta( $applicant_id, 'jobs_cv_data', true );
-                    ?>
-                        <div class="app-item" style="border: 1px solid rgba(29, 52, 105, 0.1); padding: 15px; margin-bottom: 10px; border-radius: 8px;">
-                            <strong><?php echo get_the_author(); ?></strong> applied for <em><?php echo get_the_title($job_id); ?></em>
-                            <div class="app-details" style="margin-top: 10px; font-size: 0.9em;">
-                                <p><strong>Cover Letter:</strong> <?php the_content(); ?></p>
-                                <?php if ($cv_data) : ?>
-                                    <p><strong>Education:</strong> <?php echo esc_html($cv_data['education'] ?? 'N/A'); ?></p>
-                                <?php endif; ?>
+            if ( $pending_jobs->have_posts() ) : ?>
+                <div class="jobs-grid">
+                    <?php while ( $pending_jobs->have_posts() ) : $pending_jobs->the_post(); ?>
+                        <div class="job-review-card" style="border: 1px solid rgba(29, 52, 105, 0.1); padding: 20px; margin-bottom: 15px; border-radius: 12px;">
+                            <h4><?php the_title(); ?></h4>
+                            <p><strong>Employer:</strong> <?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></p>
+                            <div class="job-details-preview" style="font-size: 0.9em; color: #666; margin: 10px 0;">
+                                <?php the_excerpt(); ?>
+                            </div>
+                            <div style="display:flex; gap: 10px;">
+                                <button class="jobs-btn approve-job-btn" data-job-id="<?php the_ID(); ?>">Approve & Publish</button>
+                                <button class="jobs-btn btn-danger reject-job-btn" data-job-id="<?php the_ID(); ?>" style="background: #d67a74;">Reject</button>
                             </div>
                         </div>
                     <?php endwhile; wp_reset_postdata(); ?>
                 </div>
             <?php else : ?>
-                <p>No applications received yet.</p>
-            <?php endif;
-        } else {
-            echo '<p>You haven\'t posted any jobs yet.</p>';
-        }
-        ?>
+                <p>Queue is empty. No jobs pending review.</p>
+            <?php endif; ?>
+        </section>
+    <?php endif; ?>
+
+    <?php if ( $is_employer ) : ?>
+        <?php if ( $is_reviewer ) echo '<hr style="margin: 40px 0;">'; ?>
+
+        <section class="employer-section">
+            <h3>Applications Received</h3>
+            <p>Review candidates who have applied to your job listings.</p>
+            <?php
+            $employer_jobs = get_posts( array(
+                'post_type' => 'job',
+                'author' => $current_user->ID,
+                'fields' => 'ids',
+                'post_status' => array('publish', 'pending', 'private')
+            ) );
+
+            if ( ! empty( $employer_jobs ) ) {
+                $apps = new WP_Query( array(
+                    'post_type' => 'application',
+                    'meta_query' => array(
+                        array(
+                            'key' => '_job_id',
+                            'value' => $employer_jobs,
+                            'compare' => 'IN'
+                        )
+                    ),
+                    'posts_per_page' => -1
+                ) );
+
+                if ( $apps->have_posts() ) : ?>
+                    <div class="applications-grid">
+                        <?php while ( $apps->have_posts() ) : $apps->the_post();
+                            $job_id = get_post_meta( get_the_ID(), '_job_id', true );
+                            $applicant_id = get_the_author_meta('ID');
+                            $cv_data = get_user_meta( $applicant_id, 'jobs_cv_data', true );
+                        ?>
+                            <div class="app-card" style="border: 1px solid rgba(29, 52, 105, 0.1); padding: 20px; margin-bottom: 15px; border-radius: 12px; background: rgba(29, 52, 105, 0.02);">
+                                <div style="display:flex; justify-content: space-between; align-items: flex-start;">
+                                    <div>
+                                        <strong><?php echo get_the_author(); ?></strong>
+                                        <div style="font-size: 0.85em; color: #666;">Applied for: <?php echo get_the_title($job_id); ?></div>
+                                    </div>
+                                    <span style="font-size: 0.8em; opacity: 0.6;"><?php echo get_the_date(); ?></span>
+                                </div>
+                                <div class="app-content" style="margin-top: 15px; font-size: 0.95em;">
+                                    <p><strong>Cover Letter:</strong><br><?php the_content(); ?></p>
+                                    <?php if ($cv_data) : ?>
+                                        <div class="cv-preview-box" style="background: white; padding: 10px; border-radius: 6px; margin-top: 10px; border: 1px solid rgba(0,0,0,0.05);">
+                                            <strong>Candidate Highlights:</strong>
+                                            <p style="margin: 5px 0;">Skills: <?php echo esc_html($cv_data['skills'] ?? 'N/A'); ?></p>
+                                            <a href="<?php echo jobs_get_profile_link($applicant_id); ?>" target="_blank" style="font-size: 0.9em; color: var(--jobs-primary-color);">View Full Profile</a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endwhile; wp_reset_postdata(); ?>
+                    </div>
+                <?php else : ?>
+                    <p>No applications received yet.</p>
+                <?php endif;
+            } else {
+                echo '<p>You haven\'t posted any jobs yet. Start by posting a job to receive applications.</p>';
+            }
+            ?>
+        </section>
     <?php endif; ?>
 </div>
 
@@ -113,15 +117,31 @@ jQuery(document).ready(function($) {
         var btn = $(this);
         var jobId = btn.data('job-id');
 
-        if(!confirm('Approve this job?')) return;
-
-        $.post('<?php echo admin_url('admin-ajax.php'); ?>', {
+        $.post(jobs_vars.ajax_url, {
             action: 'jobs_approve_job',
             job_id: jobId,
             nonce: '<?php echo wp_create_nonce("jobs_approve_nonce"); ?>'
         }, function(response) {
             if(response.success) {
-                btn.closest('tr').fadeOut();
+                btn.closest('.job-review-card').fadeOut();
+            } else {
+                alert('Error: ' + response.data);
+            }
+        });
+    });
+
+    $('.reject-job-btn').on('click', function() {
+        var btn = $(this);
+        var id = btn.data('job-id');
+        if(!confirm('Reject and delete this job listing?')) return;
+
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_delete_job',
+            job_id: id,
+            nonce: jobs_vars.nonce
+        }, function(response) {
+            if(response.success) {
+                btn.closest('.job-review-card').fadeOut();
             } else {
                 alert('Error: ' + response.data);
             }
