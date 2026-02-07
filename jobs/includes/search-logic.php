@@ -31,12 +31,8 @@ function jobs_ajax_filter_results() {
 
             if ( ! isset($_GET['load_more']) ) {
                 echo '</div>';
-
-                if ( $query->max_num_pages > 1 ) {
-                    echo '<div class="jobs-load-more-wrapper" style="text-align:center; margin-top:30px;">';
-                    echo '<button id="jobs-load-more-btn" class="jobs-btn" data-page="2" data-max="' . $query->max_num_pages . '">Load More</button>';
-                    echo '</div>';
-                }
+                // Hidden flag for infinite scroll
+                echo '<div id="jobs-has-more" data-next-page="2" data-max-pages="' . $query->max_num_pages . '" style="display:none;"></div>';
             }
             wp_reset_postdata();
         } else {

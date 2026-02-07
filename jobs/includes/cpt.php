@@ -84,6 +84,30 @@ function jobs_register_cpt() {
 }
 add_action( 'init', 'jobs_register_cpt' );
 
+/**
+ * Insert 50 default specializations
+ */
+function jobs_insert_default_specializations() {
+    $specializations = array(
+        'Software Development', 'Data Science', 'Artificial Intelligence', 'Cyber Security', 'Cloud Computing',
+        'DevOps Engineering', 'Mobile App Development', 'Web Design', 'UI/UX Design', 'Graphic Design',
+        'Digital Marketing', 'Social Media Management', 'Content Writing', 'Search Engine Optimization', 'Project Management',
+        'Product Management', 'Business Analysis', 'Financial Accounting', 'Investment Banking', 'Human Resources',
+        'Recruitment', 'Sales & Business Development', 'Customer Support', 'Data Entry', 'Quality Assurance',
+        'Network Administration', 'Database Management', 'IT Support', 'Game Development', 'Embedded Systems',
+        'Mechanical Engineering', 'Electrical Engineering', 'Civil Engineering', 'Architecture', 'Interior Design',
+        'Legal Services', 'Healthcare & Medicine', 'Nursing', 'Pharmacy', 'Education & Teaching',
+        'Logistics & Supply Chain', 'Manufacturing', 'Real Estate', 'Hospitality & Tourism', 'Media & Journalism',
+        'Public Relations', 'Event Planning', 'Photography & Videography', 'Translation & Interpretation', 'Veterinary Science'
+    );
+
+    foreach ( $specializations as $spec ) {
+        if ( ! term_exists( $spec, 'specialization' ) ) {
+            wp_insert_term( $spec, 'specialization' );
+        }
+    }
+}
+
 // Database setup for internal messaging and notifications
 function jobs_database_setup() {
     global $wpdb;

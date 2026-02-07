@@ -7,77 +7,79 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="jobs-module-content" id="jobs-posting-module">
-    <h3>Post a New Job</h3>
-    <form id="jobs-post-job-form" method="POST">
+    <div style="margin-bottom: 25px;">
+        <h3 style="margin: 0;">Create Opportunity</h3>
+        <p style="font-size: 0.9em; color: #64748b;">Post a new listing and find the best talent.</p>
+    </div>
+
+    <form id="jobs-post-job-form" method="POST" style="background: #f8fafc; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0;">
         <?php wp_nonce_field( 'jobs_post_job', 'jobs_post_nonce' ); ?>
 
-        <div class="form-group">
-            <label>Job Title</label>
-            <input type="text" name="job_title" required placeholder="e.g. Senior Software Engineer">
-        </div>
-
-        <div class="form-group">
-            <label>Company Name</label>
-            <input type="text" name="company_name" required placeholder="Your Company">
-        </div>
-
-        <div class="form-group">
-            <label>Company Logo URL</label>
-            <input type="text" name="company_logo" placeholder="https://example.com/logo.png">
-        </div>
-
-        <div class="form-row" style="display:flex; gap:10px;">
-            <div class="form-group" style="flex:2;">
-                <label>Salary Amount</label>
-                <input type="number" name="job_salary" placeholder="e.g. 5000">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="form-group" style="grid-column: span 2;">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Job Title</label>
+                <input type="text" name="job_title" required placeholder="e.g. Senior Software Engineer" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
             </div>
-            <div class="form-group" style="flex:1;">
-                <label>Currency</label>
-                <input type="text" name="job_currency" placeholder="e.g. USD or $">
-            </div>
-        </div>
 
-        <div class="form-row" style="display:flex; gap:10px;">
-            <div class="form-group" style="flex:1;">
-                <label>Latitude</label>
-                <input type="text" name="job_lat" placeholder="e.g. 25.2048">
+            <div class="form-group">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Company Name</label>
+                <input type="text" name="company_name" required placeholder="Your Company" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
             </div>
-            <div class="form-group" style="flex:1;">
-                <label>Longitude</label>
-                <input type="text" name="job_lng" placeholder="e.g. 55.2708">
+
+            <div class="form-group">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Logo URL</label>
+                <input type="text" name="company_logo" placeholder="https://example.com/logo.png" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Salary Range</label>
+                <input type="text" name="job_salary" placeholder="e.g. 5000 - 7000" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Currency</label>
+                <input type="text" name="job_currency" placeholder="e.g. USD" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Description</label>
-            <textarea name="job_description" required style="width:100%; height: 150px;"></textarea>
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Detailed Description</label>
+            <textarea name="job_description" required style="width:100%; height: 180px; border-radius: 12px; border: 1px solid #cbd5e1; padding: 15px;"></textarea>
         </div>
 
-        <div class="form-row" style="display:flex; gap: 10px;">
-            <div class="form-group" style="flex:1;">
-                <label>Specialization</label>
-                <input type="text" name="specialization" placeholder="e.g. IT, Finance">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Specialization</label>
+                <select name="specialization" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
+                    <option value="">Select Specialization</option>
+                    <?php
+                    $specs = get_terms( array( 'taxonomy' => 'specialization', 'hide_empty' => false ) );
+                    foreach ($specs as $spec) {
+                        echo '<option value="'.esc_attr($spec->slug).'">'.esc_html($spec->name).'</option>';
+                    }
+                    ?>
+                </select>
             </div>
-            <div class="form-group" style="flex:1;">
-                <label>Category</label>
-                <input type="text" name="category" placeholder="e.g. Remote, Full-time">
-            </div>
-        </div>
-
-        <div class="form-row" style="display:flex; gap: 10px;">
-            <div class="form-group" style="flex:1;">
-                <label>Country</label>
-                <input type="text" name="country" placeholder="e.g. USA">
-            </div>
-            <div class="form-group" style="flex:1;">
-                <label>City / State</label>
-                <input type="text" name="city" placeholder="e.g. New York">
+            <div class="form-group">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Job Type / Category</label>
+                <input type="text" name="category" placeholder="e.g. Full-time, Remote" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
             </div>
         </div>
 
-        <div class="form-actions" style="display:flex; gap:10px; margin-top:20px;">
-            <button type="submit" name="jobs_submit_job" class="jobs-btn">Submit for Review</button>
-            <button type="button" id="jobs-save-draft-btn" class="jobs-btn" style="background:#666;">Save as Draft</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+            <div class="form-group">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Country</label>
+                <input type="text" name="country" placeholder="e.g. USA" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
+            </div>
+            <div class="form-group">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">City</label>
+                <input type="text" name="city" placeholder="e.g. San Francisco" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
+            </div>
+        </div>
+
+        <div class="form-actions" style="display:flex; gap:15px; margin-top:30px;">
+            <button type="submit" name="jobs_submit_job" class="jobs-btn" style="flex: 2; padding: 15px;">Publish Job Listing</button>
+            <button type="button" id="jobs-save-draft-btn" class="jobs-btn" style="flex: 1; background:#64748b; padding: 15px;">Save Draft</button>
         </div>
     </form>
     <div id="jobs-post-status"></div>

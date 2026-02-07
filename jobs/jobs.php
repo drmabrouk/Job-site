@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Jobs
  * Description: A modern, powerful, and clean job management system.
- * Version: 1.0.0
- * Author: Jules
+ * Version: 2.0.0
+ * Author: Jobedia
  * Text Domain: jobs
  * Domain Path: /languages
  */
@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define constants
+define( 'JOBS_VERSION', '2.0.0' );
 define( 'JOBS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'JOBS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -48,6 +49,11 @@ register_deactivation_hook( __FILE__, 'jobs_plugin_deactivate' );
 function jobs_plugin_activate() {
     jobs_create_roles();
     jobs_create_pages();
+
+    // Default Taxonomies
+    require_once JOBS_PLUGIN_DIR . 'includes/cpt.php';
+    jobs_register_cpt(); // Ensure taxonomy is registered before inserting terms
+    jobs_insert_default_specializations();
 
     // Ensure services are loaded
     require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-db-service.php';

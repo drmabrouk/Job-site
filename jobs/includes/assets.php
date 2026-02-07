@@ -9,16 +9,16 @@ function jobs_enqueue_assets() {
     wp_enqueue_style( 'google-fonts-rubik', 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap', array(), null );
 
     // Enqueue Base
-    wp_enqueue_style( 'jobs-base-style', JOBS_PLUGIN_URL . 'assets/css/base.css', array(), '1.0.0' );
-    wp_enqueue_script( 'jobs-base-script', JOBS_PLUGIN_URL . 'assets/js/base.js', array(), '1.0.0', true );
+    wp_enqueue_style( 'jobs-base-style', JOBS_PLUGIN_URL . 'assets/css/base.css', array(), JOBS_VERSION );
+    wp_enqueue_script( 'jobs-base-script', JOBS_PLUGIN_URL . 'assets/js/base.js', array(), JOBS_VERSION, true );
 
     // Common Front-end Components
     if ( ! is_admin() ) {
-        wp_enqueue_style( 'jobs-top-bar', JOBS_PLUGIN_URL . 'assets/css/top-bar.css', array(), '1.0.0' );
-        wp_enqueue_script( 'jobs-top-bar', JOBS_PLUGIN_URL . 'assets/js/top-bar.js', array('jquery'), '1.0.0', true );
+        wp_enqueue_style( 'jobs-top-bar', JOBS_PLUGIN_URL . 'assets/css/top-bar.css', array(), JOBS_VERSION );
+        wp_enqueue_script( 'jobs-top-bar', JOBS_PLUGIN_URL . 'assets/js/top-bar.js', array('jquery'), JOBS_VERSION, true );
 
-        wp_enqueue_style( 'jobs-modules-overlay', JOBS_PLUGIN_URL . 'assets/css/modules-overlay.css', array(), '1.0.0' );
-        wp_enqueue_script( 'jobs-module-loader', JOBS_PLUGIN_URL . 'assets/js/module-loader.js', array('jquery', 'jobs-base-script'), '1.0.0', true );
+        wp_enqueue_style( 'jobs-modules-overlay', JOBS_PLUGIN_URL . 'assets/css/modules-overlay.css', array(), JOBS_VERSION );
+        wp_enqueue_script( 'jobs-module-loader', JOBS_PLUGIN_URL . 'assets/js/module-loader.js', array('jquery', 'jobs-base-script'), JOBS_VERSION, true );
 
         // Pass global variables and module assets map
         wp_localize_script( 'jobs-module-loader', 'jobs_vars', array(
@@ -50,16 +50,16 @@ function jobs_enqueue_assets() {
 
     // Search Page specific
     if ( is_page('job-search') || is_front_page() ) {
-        wp_enqueue_style( 'jobs-search-page', JOBS_PLUGIN_URL . 'assets/css/search-page.css', array(), '1.0.0' );
-        wp_enqueue_style( 'jobs-job-card', JOBS_PLUGIN_URL . 'assets/css/job-card.css', array(), '1.0.0' );
-        wp_enqueue_script( 'jobs-search-engine', JOBS_PLUGIN_URL . 'assets/js/search.js', array('jquery', 'jobs-base-script'), '1.0.0', true );
+        wp_enqueue_style( 'jobs-search-page', JOBS_PLUGIN_URL . 'assets/css/search-page.css', array(), JOBS_VERSION );
+        wp_enqueue_style( 'jobs-job-card', JOBS_PLUGIN_URL . 'assets/css/job-card.css', array(), JOBS_VERSION );
+        wp_enqueue_script( 'jobs-search-engine', JOBS_PLUGIN_URL . 'assets/js/search.js', array('jquery', 'jobs-base-script'), JOBS_VERSION, true );
     }
 
 
     // Auth specific
     if ( is_page('login-registration') ) {
-        wp_enqueue_style( 'jobs-auth', JOBS_PLUGIN_URL . 'assets/css/auth.css', array(), '1.0.0' );
-        wp_enqueue_script( 'jobs-auth-system', JOBS_PLUGIN_URL . 'assets/js/auth.js', array('jquery'), '1.0.0', true );
+        wp_enqueue_style( 'jobs-auth', JOBS_PLUGIN_URL . 'assets/css/auth.css', array(), JOBS_VERSION );
+        wp_enqueue_script( 'jobs-auth-system', JOBS_PLUGIN_URL . 'assets/js/auth.js', array('jquery'), JOBS_VERSION, true );
 
         // Add body class for the login page
         add_filter( 'body_class', function( $classes ) {
@@ -70,13 +70,13 @@ function jobs_enqueue_assets() {
 
     // Profile specific
     if ( is_page('profile') || get_query_var('profile_user') ) {
-        wp_enqueue_style( 'jobs-public-profile', JOBS_PLUGIN_URL . 'assets/css/public-profile.css', array(), '1.0.0' );
+        wp_enqueue_style( 'jobs-public-profile', JOBS_PLUGIN_URL . 'assets/css/public-profile.css', array(), JOBS_VERSION );
     }
 
     // Job Seekers page specific
     if ( is_page('job-seekers') ) {
-        wp_enqueue_style( 'jobs-seekers-style', JOBS_PLUGIN_URL . 'assets/css/job-seekers.css', array(), '1.0.0' );
-        wp_enqueue_script( 'jobs-seekers-script', JOBS_PLUGIN_URL . 'assets/js/job-seekers.js', array('jquery', 'jobs-base-script'), '1.0.0', true );
+        wp_enqueue_style( 'jobs-seekers-style', JOBS_PLUGIN_URL . 'assets/css/job-seekers.css', array(), JOBS_VERSION );
+        wp_enqueue_script( 'jobs-seekers-script', JOBS_PLUGIN_URL . 'assets/js/job-seekers.js', array('jquery', 'jobs-base-script'), JOBS_VERSION, true );
     }
 }
 add_action( 'wp_enqueue_scripts', 'jobs_enqueue_assets' );

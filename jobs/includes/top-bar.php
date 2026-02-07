@@ -34,6 +34,10 @@ function jobs_render_top_bar() {
                         <span class="dashicons dashicons-grid-view"></span>
                     </div>
 
+                    <div class="top-bar-icon-item jobs-module-link" data-module="favorites" data-type="modal" title="Saved Jobs">
+                        <span class="dashicons dashicons-heart"></span>
+                    </div>
+
                     <?php
                     global $wpdb;
                     $table_notifications = Jobs_DB_Service::get_table( 'notifications' );
