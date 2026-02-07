@@ -1,24 +1,42 @@
 .jobs-search-page {
     background-color: transparent !important;
-    padding-top: 100px; /* Perfectly centered on homepage */
+    padding-top: 60px;
     min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.jobs-search-engine-horizontal {
-    max-width: 1200px;
-    margin: 0 auto 50px auto;
+.jobs-search-engine-centered {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto 60px auto;
 }
 
-.jobs-search-engine-horizontal form {
+.jobs-search-engine-centered form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.search-row {
     display: flex;
     gap: 15px;
-    align-items: center;
     width: 100%;
+}
+
+.search-row-main {
+    justify-content: center;
+}
+
+.search-row-filters {
+    justify-content: center;
 }
 
 .search-main-field {
     position: relative;
-    flex: 3; /* Keyword spans 3 other fields combined */
+    width: 100%;
 }
 
 .search-main-field input {
@@ -51,6 +69,7 @@
 
 .search-field-item {
     flex: 1;
+    min-width: 150px;
 }
 
 .search-field-item select {
@@ -75,14 +94,30 @@
     border-color: rgba(29, 52, 105, 0.2);
 }
 
-@media (max-width: 991px) {
-    .jobs-search-engine-horizontal form {
+@media (max-width: 767px) {
+    .search-row {
         flex-direction: column;
     }
-    .search-main-field, .search-field-item {
+    .search-field-item {
         width: 100%;
-        flex: none;
     }
+}
+
+#jobs-search-results-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#jobs-results-container {
+    width: 100%;
+}
+
+.jobs-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px;
 }
 
 .jobs-status-indicator {
@@ -156,6 +191,7 @@
 }
 
 .jobs-main-logo {
-    max-height: 120px;
+    max-height: 180px; /* Larger logo for Google-like homepage */
+    width: auto !important;
     margin-bottom: 20px;
 }

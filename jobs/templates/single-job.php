@@ -39,6 +39,11 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
         <?php the_content(); ?>
     </div>
 
+    <?php
+    require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-ads-service.php';
+    Jobs_Ads_Service::display_ad( 'job_details' );
+    ?>
+
     <div class="job-single-actions">
         <button class="jobs-btn quick-apply-toggle" data-job-id="<?php the_ID(); ?>">Apply for this Job</button>
     </div>

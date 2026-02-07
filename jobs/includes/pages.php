@@ -42,6 +42,10 @@ function jobs_create_pages() {
             'title'   => 'Analytics & Insights',
             'content' => '[jobs_module module="analytics-insights"]',
         ),
+        'job-seekers' => array(
+            'title'   => 'Job Seekers',
+            'content' => '[jobs_job_seekers_page]',
+        ),
     );
 
     foreach ( $pages as $slug => $page ) {
@@ -67,7 +71,8 @@ function jobs_remove_pages() {
         'company-profile',
         'advanced-settings',
         'terms-conditions',
-        'analytics-insights'
+        'analytics-insights',
+        'job-seekers'
     );
     foreach ( $pages as $slug ) {
         $page = get_page_by_path( $slug );

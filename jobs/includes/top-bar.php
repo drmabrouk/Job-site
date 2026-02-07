@@ -107,6 +107,15 @@ function jobs_render_modules_grid() {
             'check' => 'can_post_job',
             'type' => 'modal'
         ),
+        'job-seekers' => array(
+            'label' => 'Job Seekers',
+            'icon' => 'groups',
+            'bg' => '#f1f8e9',
+            'color' => '#33691e',
+            'check' => 'is_user_logged_in',
+            'type' => 'page',
+            'url' => home_url('/job-seekers/')
+        ),
         'job-requests' => array(
             'label' => 'Job Requests',
             'icon' => 'portfolio',

@@ -96,3 +96,16 @@
     cursor: pointer;
     margin-top: 10px;
 }
+
+/* Hide header on login page */
+.jobs-auth-page .site-header,
+.jobs-auth-page .jobs-header-system,
+.jobs-auth-page #masthead {
+    display: none !important;
+}
+
+.social-icon:hover {
+    background-color: #f0f4f8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}

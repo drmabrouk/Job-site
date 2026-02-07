@@ -22,6 +22,74 @@ $profile_link = jobs_get_profile_link( $current_user_id );
         <?php wp_nonce_field( 'jobs_save_cv', 'jobs_cv_nonce' ); ?>
 
         <div class="cv-steps-container">
+            <!-- Step 0: Professional Profile -->
+            <div class="cv-step-item">
+                <div class="cv-step-header" onclick="toggleCvStep(0)">
+                    <span class="step-num">0</span>
+                    <h4>Professional Profile</h4>
+                    <span class="step-toggle-icon">▼</span>
+                </div>
+                <div class="cv-step-content" id="cv-step-0">
+                    <div class="form-row" style="display:flex; gap:10px; margin-bottom: 15px;">
+                        <div class="form-group" style="flex:1;">
+                            <label>Nationality</label>
+                            <input type="text" name="cv_nationality" value="<?php echo esc_attr(get_user_meta($current_user_id, '_nationality', true)); ?>" placeholder="e.g. American">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Gender</label>
+                            <select name="cv_gender">
+                                <option value="">Select Gender</option>
+                                <option value="male" <?php selected(get_user_meta($current_user_id, '_gender', true), 'male'); ?>>Male</option>
+                                <option value="female" <?php selected(get_user_meta($current_user_id, '_gender', true), 'female'); ?>>Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display:flex; gap:10px; margin-bottom: 15px;">
+                        <div class="form-group" style="flex:1;">
+                            <label>Qualification</label>
+                            <select name="cv_qualification">
+                                <option value="">Select Qualification</option>
+                                <option value="high-school" <?php selected(get_user_meta($current_user_id, '_qualification', true), 'high-school'); ?>>High School</option>
+                                <option value="bachelor" <?php selected(get_user_meta($current_user_id, '_qualification', true), 'bachelor'); ?>>Bachelor's Degree</option>
+                                <option value="master" <?php selected(get_user_meta($current_user_id, '_qualification', true), 'master'); ?>>Master's Degree</option>
+                                <option value="phd" <?php selected(get_user_meta($current_user_id, '_qualification', true), 'phd'); ?>>PhD</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>English Level</label>
+                            <select name="cv_english_level">
+                                <option value="">Select English Level</option>
+                                <option value="basic" <?php selected(get_user_meta($current_user_id, '_english_level', true), 'basic'); ?>>Basic</option>
+                                <option value="intermediate" <?php selected(get_user_meta($current_user_id, '_english_level', true), 'intermediate'); ?>>Intermediate</option>
+                                <option value="fluent" <?php selected(get_user_meta($current_user_id, '_english_level', true), 'fluent'); ?>>Fluent</option>
+                                <option value="native" <?php selected(get_user_meta($current_user_id, '_english_level', true), 'native'); ?>>Native</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;">
+                            <label>Total Experience (Years)</label>
+                            <input type="number" name="cv_experience_years" value="<?php echo esc_attr(get_user_meta($current_user_id, '_experience', true)); ?>" placeholder="e.g. 5">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Specialization</label>
+                            <select name="cv_specialization">
+                                <option value="">Select Specialization</option>
+                                <?php
+                                $specs = get_terms( array( 'taxonomy' => 'specialization', 'hide_empty' => false ) );
+                                $current_spec = get_user_meta($current_user_id, '_specialization', true);
+                                foreach ($specs as $spec) {
+                                    echo '<option value="'.esc_attr($spec->slug).'" '.selected($current_spec, $spec->slug, false).'>'.esc_html($spec->name).'</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Step 1: Education -->
             <div class="cv-step-item">
                 <div class="cv-step-header" onclick="toggleCvStep(1)">
