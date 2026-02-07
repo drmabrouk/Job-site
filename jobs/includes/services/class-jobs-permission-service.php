@@ -23,6 +23,11 @@ class Jobs_Permission_Service {
         return user_can( $user_id, 'manage_options' ) || user_can( $user_id, 'manage_jobs_users' );
     }
 
+    public static function is_system_admin( $user_id = 0 ) {
+        if ( ! $user_id ) $user_id = get_current_user_id();
+        return user_can( $user_id, 'manage_jobs_users' );
+    }
+
     public static function can_review_jobs( $user_id = 0 ) {
         if ( ! $user_id ) $user_id = get_current_user_id();
         return user_can( $user_id, 'review_jobs' ) || user_can( $user_id, 'manage_options' );

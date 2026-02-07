@@ -28,6 +28,22 @@
     padding: 0 30px;
 }
 
+@media (max-width: 768px) {
+    .top-bar-content {
+        padding: 0 15px;
+    }
+    .site-name {
+        display: none;
+    }
+    .top-bar-right {
+        gap: 10px;
+    }
+    .jobs-notif-dropdown {
+        width: 280px;
+        right: -50px;
+    }
+}
+
 .floating-right {
     position: fixed;
     top: 20px;
@@ -127,14 +143,22 @@
     position: absolute;
     top: 100%;
     right: 0;
-    width: 300px;
+    width: 340px;
     background: white;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    border-radius: 12px;
-    margin-top: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    border-radius: 16px;
+    margin-top: 18px;
     z-index: 1000;
-    max-height: 400px;
+    max-height: 450px;
     overflow-y: auto;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+@media (max-width: 768px) {
+    .jobs-notif-dropdown {
+        width: 300px;
+        right: -60px;
+    }
 }
 
 .notif-list {
@@ -142,11 +166,13 @@
 }
 
 .notif-item {
-    padding: 12px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 0.85em;
-    color: #444;
-    transition: background 0.2s;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.88em;
+    color: #334155;
+    transition: all 0.2s ease;
+    display: block;
+    text-decoration: none;
 }
 
 .notif-item:hover {

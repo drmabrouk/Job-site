@@ -62,6 +62,10 @@ $format_pdf = isset( $_GET['format'] ) && $_GET['format'] === 'pdf';
             <?php if ( $role === 'employer' ) : ?>
                 <p class="company-tagline"><?php echo esc_html( $company_data['name'] ?? '' ); ?></p>
             <?php endif; ?>
+
+            <?php if ( $user->description ) : ?>
+                <p class="profile-bio" style="margin-top: 15px; color: #64748b; font-size: 0.95em; line-height: 1.6; max-width: 600px;"><?php echo nl2br(esc_html($user->description)); ?></p>
+            <?php endif; ?>
         </div>
     </header>
 

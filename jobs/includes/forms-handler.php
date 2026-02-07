@@ -17,7 +17,14 @@ function jobs_handle_forms() {
         $username = sanitize_user( $_POST['user_login'] );
         $email    = sanitize_email( $_POST['user_email'] );
         $password = $_POST['user_pass'];
+        $password_confirm = $_POST['user_pass_confirm'];
         $role     = sanitize_text_field( $_POST['user_role'] );
+
+        // Validate password match
+        if ( $password !== $password_confirm ) {
+            $jobs_registration_error = 'Passwords do not match.';
+            return;
+        }
 
         // Validate role
         $allowed_roles = array( 'job_seeker', 'employer' );
@@ -60,36 +67,55 @@ function jobs_handle_forms() {
         }
     }
 
-    // Handle Admin Settings
-    if ( isset( $_POST['save_jobs_settings'] ) ) {
+    // Handle Site Settings (Advanced Control)
+    if ( isset( $_POST['save_site_settings'] ) ) {
         if ( ! Jobs_Permission_Service::verify_nonce( 'jobs_admin_settings_nonce', 'jobs_save_settings' ) ) {
             return;
         }
 
-        if ( Jobs_Permission_Service::is_admin() ) {
-            if ( isset( $_POST['jobs_site_logo'] ) ) {
-                update_option( 'jobs_site_logo', esc_url_raw( $_POST['jobs_site_logo'] ) );
-            }
-            if ( isset( $_POST['jobs_logo_width'] ) ) {
-                update_option( 'jobs_logo_width', sanitize_text_field( $_POST['jobs_logo_width'] ) );
-            }
-            if ( isset( $_POST['jobs_logo_height'] ) ) {
-                update_option( 'jobs_logo_height', sanitize_text_field( $_POST['jobs_logo_height'] ) );
-            }
-            if ( isset( $_POST['jobs_search_placeholder'] ) ) {
-                update_option( 'jobs_search_placeholder', sanitize_text_field( $_POST['jobs_search_placeholder'] ) );
-            }
-            if ( isset( $_POST['jobs_archive_days'] ) ) {
-                update_option( 'jobs_archive_days', intval( $_POST['jobs_archive_days'] ) );
-            }
+        if ( Jobs_Permission_Service::is_system_admin() ) {
+            // Branding
+            if ( isset( $_POST['blogname'] ) ) update_option( 'blogname', sanitize_text_field( $_POST['blogname'] ) );
+            if ( isset( $_POST['blogdescription'] ) ) update_option( 'blogdescription', sanitize_text_field( $_POST['blogdescription'] ) );
+            if ( isset( $_POST['jobs_site_logo'] ) ) update_option( 'jobs_site_logo', esc_url_raw( $_POST['jobs_site_logo'] ) );
+
+            // Appearance
+            if ( isset( $_POST['jobs_primary_color'] ) ) update_option( 'jobs_primary_color', sanitize_hex_color( $_POST['jobs_primary_color'] ) );
+            if ( isset( $_POST['jobs_secondary_color'] ) ) update_option( 'jobs_secondary_color', sanitize_hex_color( $_POST['jobs_secondary_color'] ) );
+            if ( isset( $_POST['jobs_font_family'] ) ) update_option( 'jobs_font_family', sanitize_text_field( $_POST['jobs_font_family'] ) );
+
+            // System
+            if ( isset( $_POST['admin_email'] ) ) update_option( 'admin_email', sanitize_email( $_POST['admin_email'] ) );
+            update_option( 'jobs_enable_notifs', isset( $_POST['jobs_enable_notifs'] ) ? 1 : 0 );
+
+            // Permissions
             if ( isset( $_POST['jobs_visible_modules'] ) ) {
                 update_option( 'jobs_visible_modules', array_map( 'sanitize_text_field', $_POST['jobs_visible_modules'] ) );
             } else {
                 update_option( 'jobs_visible_modules', array() );
             }
-            if ( isset( $_POST['jobs_adsense_code'] ) ) {
-                update_option( 'jobs_adsense_code', wp_kses_post( $_POST['jobs_adsense_code'] ) );
+
+            // Security
+            if ( ! empty( $_POST['new_admin_pass'] ) ) {
+                wp_set_password( $_POST['new_admin_pass'], get_current_user_id() );
             }
+            update_option( 'jobs_maintenance_mode', isset( $_POST['jobs_maintenance_mode'] ) ? 1 : 0 );
+
+            Jobs_Activity_Service::log( get_current_user_id(), 'system_update', 'Updated site settings' );
+        }
+    }
+
+    // Legacy Support for simple settings (if any still use it)
+    if ( isset( $_POST['save_jobs_settings'] ) ) {
+        if ( ! Jobs_Permission_Service::verify_nonce( 'jobs_admin_settings_nonce', 'jobs_save_settings' ) ) return;
+        if ( Jobs_Permission_Service::is_admin() ) {
+            if ( isset( $_POST['jobs_site_logo'] ) ) update_option( 'jobs_site_logo', esc_url_raw( $_POST['jobs_site_logo'] ) );
+            if ( isset( $_POST['jobs_logo_width'] ) ) update_option( 'jobs_logo_width', sanitize_text_field( $_POST['jobs_logo_width'] ) );
+            if ( isset( $_POST['jobs_logo_height'] ) ) update_option( 'jobs_logo_height', sanitize_text_field( $_POST['jobs_logo_height'] ) );
+            if ( isset( $_POST['jobs_search_placeholder'] ) ) update_option( 'jobs_search_placeholder', sanitize_text_field( $_POST['jobs_search_placeholder'] ) );
+            if ( isset( $_POST['jobs_archive_days'] ) ) update_option( 'jobs_archive_days', intval( $_POST['jobs_archive_days'] ) );
+            if ( isset( $_POST['jobs_visible_modules'] ) ) update_option( 'jobs_visible_modules', array_map( 'sanitize_text_field', $_POST['jobs_visible_modules'] ) );
+            if ( isset( $_POST['jobs_adsense_code'] ) ) update_option( 'jobs_adsense_code', wp_kses_post( $_POST['jobs_adsense_code'] ) );
         }
     }
 
@@ -379,6 +405,14 @@ function jobs_ajax_save_cv_handler() {
     );
 
     update_user_meta( $user_id, 'jobs_cv_data', $cv_data );
+
+    // Update User Description (Bio)
+    if ( isset( $_POST['cv_bio'] ) ) {
+        wp_update_user( array(
+            'ID'          => $user_id,
+            'description' => sanitize_textarea_field( $_POST['cv_bio'] )
+        ) );
+    }
 
     // Also update individual meta for filtering
     update_user_meta( $user_id, '_nationality', sanitize_text_field( $_POST['cv_nationality'] ) );

@@ -78,11 +78,13 @@ if ( is_user_logged_in() ) {
                             <input type="text" name="last_name" placeholder="Last Name" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <input type="text" name="user_login" placeholder="Username" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" name="user_email" placeholder="Email Address" required>
+                    <div class="form-row" style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;">
+                            <input type="text" name="user_login" placeholder="Username" required>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <input type="email" name="user_email" placeholder="Email Address" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <select name="user_role">
@@ -91,8 +93,13 @@ if ( is_user_logged_in() ) {
                             <option value="employer">Employer (Hiring staff)</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <input type="password" name="user_pass" placeholder="Password" required>
+                    <div class="form-row" style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;">
+                            <input type="password" name="user_pass" placeholder="Password" required>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <input type="password" name="user_pass_confirm" placeholder="Confirm Password" required>
+                        </div>
                     </div>
                     <button type="submit" name="jobs_register" class="jobs-btn auth-submit">Register Now</button>
                 </form>

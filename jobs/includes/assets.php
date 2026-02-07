@@ -8,6 +8,9 @@ function jobs_enqueue_assets() {
     // Rubik font
     wp_enqueue_style( 'google-fonts-rubik', 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap', array(), null );
 
+    // Dashicons for all browsers/devices
+    wp_enqueue_style( 'dashicons' );
+
     // Enqueue Base
     wp_enqueue_style( 'jobs-base-style', JOBS_PLUGIN_URL . 'assets/css/base.css', array(), JOBS_VERSION );
     wp_enqueue_script( 'jobs-base-script', JOBS_PLUGIN_URL . 'assets/js/base.js', array(), JOBS_VERSION, true );

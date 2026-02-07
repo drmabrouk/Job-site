@@ -131,8 +131,7 @@ function jobs_render_modules_grid() {
             'bg' => '#fff3e0',
             'color' => '#f57c00',
             'check' => 'is_user_logged_in',
-            'type' => 'page',
-            'url' => home_url('/job-requests/')
+            'type' => 'modal'
         ),
         'public-profile' => array(
             'label' => 'Public Profile',
@@ -140,8 +139,8 @@ function jobs_render_modules_grid() {
             'bg' => '#e0f2f1',
             'color' => '#00796b',
             'check' => 'is_user_logged_in',
-            'type' => 'page',
-            'url' => home_url('/profile/')
+            'type' => 'direct',
+            'url' => jobs_get_profile_link( get_current_user_id() )
         ),
         'applications-submitted' => array(
             'label' => 'Submitted',
@@ -194,22 +193,13 @@ function jobs_render_modules_grid() {
             'type' => 'direct',
             'url' => home_url('/support')
         ),
-        'settings' => array(
-            'label' => 'Settings',
-            'icon' => 'admin-generic',
-            'bg' => '#f3e5f5',
-            'color' => '#7b1fa2',
-            'check' => 'is_user_logged_in',
-            'type' => 'modal'
-        ),
         'advanced-settings' => array(
-            'label' => 'Advanced',
-            'icon' => 'shield',
+            'label' => 'Site Settings',
+            'icon' => 'admin-tools',
             'bg' => '#e8eaf6',
             'color' => '#303f9f',
-            'check' => 'is_admin',
-            'type' => 'page',
-            'url' => home_url('/advanced-settings/')
+            'check' => 'is_system_admin',
+            'type' => 'modal'
         ),
         'terms-conditions' => array(
             'label' => 'Terms',
@@ -227,7 +217,7 @@ function jobs_render_modules_grid() {
             'color' => '#9e9e9e',
             'check' => 'is_user_logged_in',
             'type' => 'direct',
-            'url' => get_post_type_archive_link('post') ?: home_url('/blog')
+            'url' => home_url('/Articles')
         ),
         'notifications' => array(
             'label' => 'Alerts',
