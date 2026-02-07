@@ -37,21 +37,24 @@ $currency        = get_post_meta( get_the_ID(), '_job_currency', true ) ?: '$';
     </div>
 
     <div class="job-meta">
-        <?php if ( $salary ) : ?>
-            <span class="capsule capsule-salary"><?php echo esc_html( $currency . ' ' . $salary ); ?></span>
-        <?php endif; ?>
+        <?php if ( $categories ) : foreach ( $categories as $term ) : ?>
+            <span class="capsule capsule-category"><?php echo esc_html( $term->name ); ?></span>
+        <?php endforeach; endif; ?>
 
         <?php if ( $specializations ) : foreach ( $specializations as $term ) : ?>
             <span class="capsule capsule-specialization"><?php echo esc_html( $term->name ); ?></span>
         <?php endforeach; endif; ?>
 
         <?php if ( $countries ) : foreach ( $countries as $term ) : ?>
-            <span class="capsule capsule-country"><?php echo esc_html( $term->name ); ?></span>
-        <?php endforeach; endif; ?>
+            <span class="capsule capsule-location">
+                <span class="dashicons dashicons-location"></span>
+                <?php echo esc_html( $term->name ); ?><?php echo $cities ? ', ' . esc_html($cities[0]->name) : ''; ?>
+            </span>
+        <?php break; endforeach; endif; ?>
 
-        <?php if ( $cities ) : foreach ( $cities as $term ) : ?>
-            <span class="capsule capsule-city"><?php echo esc_html( $term->name ); ?></span>
-        <?php endforeach; endif; ?>
+        <?php if ( $salary ) : ?>
+            <span class="capsule capsule-salary"><?php echo esc_html( $currency . ' ' . $salary ); ?></span>
+        <?php endif; ?>
     </div>
 
     <div class="job-excerpt">
