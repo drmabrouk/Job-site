@@ -8,6 +8,8 @@ $cities          = get_the_terms( get_the_ID(), 'city' );
 $states          = get_the_terms( get_the_ID(), 'state' );
 $categories      = get_the_terms( get_the_ID(), 'job_category' );
 $company_logo    = get_post_meta( get_the_ID(), '_company_logo', true );
+$salary          = get_post_meta( get_the_ID(), '_job_salary', true );
+$currency        = get_post_meta( get_the_ID(), '_job_currency', true ) ?: '$';
 ?>
 <div class="job-card">
     <div class="job-card-header">
@@ -25,9 +27,9 @@ $company_logo    = get_post_meta( get_the_ID(), '_company_logo', true );
     </div>
 
     <div class="job-meta">
-        <?php if ( $categories ) : foreach ( $categories as $term ) : ?>
-            <span class="capsule capsule-category"><?php echo esc_html( $term->name ); ?></span>
-        <?php endforeach; endif; ?>
+        <?php if ( $salary ) : ?>
+            <span class="capsule capsule-salary"><?php echo esc_html( $currency . ' ' . $salary ); ?></span>
+        <?php endif; ?>
 
         <?php if ( $specializations ) : foreach ( $specializations as $term ) : ?>
             <span class="capsule capsule-specialization"><?php echo esc_html( $term->name ); ?></span>

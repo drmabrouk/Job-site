@@ -44,22 +44,63 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <div id="tab-activity-log" class="jobs-tab-content" style="display:none;">
             <h2>Activity Logs</h2>
-            <div class="log-section">
-                <h3>General Activity</h3>
-                <div class="log-table">No recent general activity recorded.</div>
-            </div>
-            <div class="log-section">
-                <h3>Admin Activity</h3>
-                <div class="log-table">No recent admin activity recorded.</div>
-            </div>
+            <table class="jobs-admin-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    global $wpdb;
+                    $table = $wpdb->prefix . 'jobs_activity_log';
+                    $logs = $wpdb->get_results( "SELECT * FROM $table ORDER BY time DESC LIMIT 20" );
+                    if ( $logs ) : foreach ( $logs as $log ) : ?>
+                    <tr>
+                        <td><?php echo $log->time; ?></td>
+                        <td><?php echo get_userdata($log->user_id)->display_name ?? 'System'; ?></td>
+                        <td><span class="status-badge" style="background:#f0f0f0;"><?php echo esc_html($log->type); ?></span></td>
+                        <td><?php echo esc_html($log->message); ?></td>
+                    </tr>
+                    <?php endforeach; else : ?>
+                    <tr><td colspan="4">No logs found.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
 
         <div id="tab-user-management" class="jobs-tab-content" style="display:none;">
             <h2>User Management</h2>
-            <p>Direct management of Job Seekers, Employers, and Reviewers.</p>
-            <div class="user-list-placeholder">
-                <!-- User management UI -->
-            </div>
+            <table class="jobs-admin-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $users = get_users( array( 'role__in' => array( 'job_seeker', 'employer', 'reviewer' ) ) );
+                    foreach ( $users as $u ) : ?>
+                    <tr>
+                        <td><?php echo $u->display_name; ?></td>
+                        <td><?php echo ucfirst( str_replace('_', ' ', $u->roles[0]) ); ?></td>
+                        <td><?php echo $u->user_email; ?></td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td>
+                            <button class="jobs-btn-small" style="background:#555;">Edit</button>
+                            <button class="jobs-btn-small" style="background:#d32f2f;">Suspend</button>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
 
         <div id="tab-verification" class="jobs-tab-content" style="display:none;">

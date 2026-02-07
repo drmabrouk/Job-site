@@ -228,6 +228,10 @@ function jobs_ajax_post_job_handler() {
     $category = sanitize_text_field( $_POST['category'] );
     $country = sanitize_text_field( $_POST['country'] );
     $city = sanitize_text_field( $_POST['city'] );
+    $salary = sanitize_text_field( $_POST['job_salary'] );
+    $currency = sanitize_text_field( $_POST['job_currency'] );
+    $lat = sanitize_text_field( $_POST['job_lat'] );
+    $lng = sanitize_text_field( $_POST['job_lng'] );
 
     $is_draft = isset( $_POST['is_draft'] ) && $_POST['is_draft'] == '1';
     $status = $is_draft ? 'draft' : 'pending';
@@ -261,6 +265,12 @@ function jobs_ajax_post_job_handler() {
     update_post_meta( $job_id, '_company_logo', $logo );
     update_post_meta( $job_id, '_location_country', $country );
     update_post_meta( $job_id, '_location_city', $city );
+    update_post_meta( $job_id, '_job_salary', $salary );
+    update_post_meta( $job_id, '_job_currency', $currency );
+    update_post_meta( $job_id, '_job_lat', $lat );
+    update_post_meta( $job_id, '_job_lng', $lng );
+
+    jobs_log_activity( get_current_user_id(), 'job_post', 'Posted job: ' . $title );
 
     // Handle taxonomies (simplified, assuming terms exist or creating them)
     if ( $specialization ) wp_set_object_terms( $job_id, $specialization, 'specialization' );

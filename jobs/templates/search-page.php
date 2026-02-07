@@ -16,112 +16,108 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
     <?php endif; ?>
 
-    <div class="jobs-search-engine">
+    <div class="jobs-search-engine-centered">
         <form id="jobs-search-form" action="" method="GET">
-            <div class="search-row-top">
-                <input type="text" name="job_search" id="jobs-input-search" placeholder="<?php echo esc_attr( get_option( 'jobs_search_placeholder', 'Job title, keywords, or company' ) ); ?>" class="full-width">
+            <div class="search-main-field">
+                <input type="text" name="job_search" id="jobs-input-search" placeholder="<?php echo esc_attr( get_option( 'jobs_search_placeholder', 'What job are you looking for?' ) ); ?>" autocomplete="off">
+                <div class="search-icon-inside">🔍</div>
             </div>
-            <div class="search-row-bottom">
-                <input type="text" name="specialization" id="jobs-input-specialization" placeholder="Specialization">
-
-                <select name="country" id="jobs-input-country">
-                    <option value="">Select Country</option>
-                    <option value="uae">United Arab Emirates</option>
-                    <option value="saudi-arabia">Saudi Arabia</option>
-                    <option value="qatar">Qatar</option>
-                    <option value="kuwait">Kuwait</option>
-                    <option value="egypt">Egypt</option>
-                    <option value="jordan">Jordan</option>
-                    <option value="lebanon">Lebanon</option>
-                    <option value="oman">Oman</option>
-                    <option value="bahrain">Bahrain</option>
+            <div class="search-secondary-field">
+                <select name="specialization" id="jobs-input-specialization">
+                    <option value="">All Specializations</option>
+                    <?php
+                    $specializations = get_terms( array( 'taxonomy' => 'specialization', 'hide_empty' => false ) );
+                    foreach ( $specializations as $term ) {
+                        echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                    }
+                    ?>
                 </select>
-
-                <select name="city" id="jobs-input-city">
-                    <option value="">Select City</option>
-                </select>
-
-                <button type="submit">Search</button>
             </div>
         </form>
     </div>
 
+    <div id="jobs-status-indicator" class="jobs-status-indicator" style="display:none;">
+        <div class="indicator-spinner"></div>
+        <p id="indicator-message">Finding the best jobs near you...</p>
+    </div>
+
     <div id="jobs-search-results-wrapper">
         <div id="jobs-results-container">
-            <p class="jobs-loader" style="display:none;">Searching jobs...</p>
+            <!-- Results will appear here -->
         </div>
     </div>
+
+    <?php
+    $adsense_code = get_option( 'jobs_adsense_code' );
+    if ( $adsense_code ) : ?>
+    <div class="jobs-adsense-container" style="margin-top: 50px; text-align: center;">
+        <?php echo $adsense_code; ?>
+    </div>
+    <?php endif; ?>
 </div>
 
 <script>
 jQuery(document).ready(function($) {
-    var userLocation = { country: '', city: '' };
+    var userCoords = { lat: 0, lng: 0 };
+    var searchTimeout;
 
-    // Attempt to get user location via free API
-    $.getJSON('https://ipapi.co/json/', function(data) {
-        userLocation.country = data.country_name;
-        userLocation.city = data.city;
-        console.log('User location detected:', userLocation);
-        if (!$('#jobs-input-country').val()) {
-            // Optionally pre-set or just use for prioritization in backend
-        }
-    });
-
-    var locationData = {
-        "uae": ["Dubai", "Abu Dhabi", "Sharjah"],
-        "saudi-arabia": ["Riyadh", "Jeddah", "Dammam"],
-        "qatar": ["Doha"],
-        "kuwait": ["Kuwait City"],
-        "egypt": ["Cairo", "Alexandria"],
-        "jordan": ["Amman"],
-        "lebanon": ["Beirut"],
-        "oman": ["Muscat"],
-        "bahrain": ["Manama"]
-    };
-
-    $('#jobs-input-country').on('change', function() {
-        var country = $(this).val();
-        var citySelect = $('#jobs-input-city');
-        citySelect.empty().append('<option value="">Select City</option>');
-
-        if (country && locationData[country]) {
-            locationData[country].forEach(function(city) {
-                citySelect.append('<option value="' + city.toLowerCase().replace(' ', '-') + '">' + city + '</option>');
-            });
-        }
+    // Browser Geolocation
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            userCoords.lat = position.coords.latitude;
+            userCoords.lng = position.coords.longitude;
+            console.log('User coords:', userCoords);
+            filterJobs(1);
+        }, function(error) {
+            console.warn('Geolocation error:', error.message);
+            filterJobs(1);
+        });
+    } else {
         filterJobs(1);
-    });
+    }
 
     function filterJobs(page = 1) {
+        var query = $('#jobs-input-search').val();
+        var spec = $('#jobs-input-specialization').val();
+
+        // Only search if 3+ chars (or if specialization changed)
+        if (query.length > 0 && query.length < 3) {
+            return;
+        }
+
         var data = {
             action: 'jobs_filter',
-            job_search: $('#jobs-input-search').val(),
-            specialization: $('#jobs-input-specialization').val(),
-            country: $('#jobs-input-country').val(),
-            city: $('#jobs-input-city').val(),
-            user_country: userLocation.country,
-            user_city: userLocation.city,
+            job_search: query,
+            specialization: spec,
+            lat: userCoords.lat,
+            lng: userCoords.lng,
             paged: page
         };
 
-        $('.jobs-loader').show();
+        // Show professional loader
+        $('#jobs-status-indicator').fadeIn();
+        var messages = [
+            "Finding the best jobs near you...",
+            "Generating matching opportunities...",
+            "Analyzing local job market...",
+            "Matching your profile with nearby employers..."
+        ];
+        $('#indicator-message').text(messages[Math.floor(Math.random() * messages.length)]);
 
-        $.get('<?php echo admin_url('admin-ajax.php'); ?>', data, function(response) {
+        $.get(jobs_vars.ajax_url, data, function(response) {
             $('#jobs-results-container').html(response);
-            $('.jobs-loader').hide();
+            $('#jobs-status-indicator').fadeOut();
         });
     }
 
-    $('#jobs-input-search, #jobs-input-specialization').on('keyup change', function() {
-        filterJobs(1);
+    $('#jobs-input-search').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            filterJobs(1);
+        }, 500);
     });
 
-    $('#jobs-input-city').on('change', function() {
-        filterJobs(1);
-    });
-
-    $('#jobs-search-form').on('submit', function(e) {
-        e.preventDefault();
+    $('#jobs-input-specialization').on('change', function() {
         filterJobs(1);
     });
 
@@ -129,9 +125,14 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         var page = $(this).data('page');
         filterJobs(page);
-        $('html, body').animate({ scrollTop: $('#jobs-search-form').offset().top }, 500);
+        $('html, body').animate({ scrollTop: $('#jobs-search-form').offset().top - 100 }, 500);
     });
 
-    filterJobs();
+    // Initial load if coords take too long or already have default
+    setTimeout(function() {
+        if ($('#jobs-results-container').is(':empty')) {
+            filterJobs(1);
+        }
+    }, 2000);
 });
 </script>

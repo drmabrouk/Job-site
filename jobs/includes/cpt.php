@@ -110,9 +110,20 @@ function jobs_database_setup() {
         PRIMARY KEY  (id)
     ) $charset_collate;";
 
+    $table_activity = $wpdb->prefix . 'jobs_activity_log';
+    $sql_activity = "CREATE TABLE $table_activity (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        user_id bigint(20) NOT NULL,
+        type varchar(50) NOT NULL,
+        message text NOT NULL,
+        time datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql_messages );
     dbDelta( $sql_notifications );
+    dbDelta( $sql_activity );
 }
 
 // Automated Job Archiving

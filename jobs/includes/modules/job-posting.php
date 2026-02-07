@@ -26,6 +26,28 @@ if ( ! defined( 'ABSPATH' ) ) {
             <input type="text" name="company_logo" placeholder="https://example.com/logo.png">
         </div>
 
+        <div class="form-row" style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:2;">
+                <label>Salary Amount</label>
+                <input type="number" name="job_salary" placeholder="e.g. 5000">
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Currency</label>
+                <input type="text" name="job_currency" placeholder="e.g. USD or $">
+            </div>
+        </div>
+
+        <div class="form-row" style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;">
+                <label>Latitude</label>
+                <input type="text" name="job_lat" placeholder="e.g. 25.2048">
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Longitude</label>
+                <input type="text" name="job_lng" placeholder="e.g. 55.2708">
+            </div>
+        </div>
+
         <div class="form-group">
             <label>Description</label>
             <textarea name="job_description" required style="width:100%; height: 150px;"></textarea>

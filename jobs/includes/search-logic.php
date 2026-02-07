@@ -6,40 +6,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function jobs_ajax_filter_results() {
     $search         = isset( $_GET['job_search'] ) ? sanitize_text_field( $_GET['job_search'] ) : '';
-    $category       = isset( $_GET['category'] ) ? sanitize_text_field( $_GET['category'] ) : '';
     $specialization = isset( $_GET['specialization'] ) ? sanitize_text_field( $_GET['specialization'] ) : '';
-    $country        = isset( $_GET['country'] ) ? sanitize_text_field( $_GET['country'] ) : '';
-    $city           = isset( $_GET['city'] ) ? sanitize_text_field( $_GET['city'] ) : '';
     $paged          = isset( $_GET['paged'] ) ? intval( $_GET['paged'] ) : 1;
 
-    $user_country   = isset( $_GET['user_country'] ) ? sanitize_text_field( $_GET['user_country'] ) : '';
-    $user_city      = isset( $_GET['user_city'] ) ? sanitize_text_field( $_GET['user_city'] ) : '';
+    $user_lat       = isset( $_GET['lat'] ) ? floatval( $_GET['lat'] ) : 0;
+    $user_lng       = isset( $_GET['lng'] ) ? floatval( $_GET['lng'] ) : 0;
 
     $args = array(
         'post_type'      => 'job',
         'posts_per_page' => 12,
         'paged'          => $paged,
         's'              => $search,
+        'post_status'    => 'publish',
         'tax_query'      => array( 'relation' => 'AND' ),
-        'orderby'        => 'date',
-        'order'          => 'DESC'
     );
 
-    // Prioritization logic:
-    if ( $user_country || $user_city ) {
-        add_filter( 'posts_join', 'jobs_search_location_join' );
-        add_filter( 'posts_orderby', 'jobs_search_location_orderby' );
-        set_query_var( 'jobs_user_country', $user_country );
-        set_query_var( 'jobs_user_city', $user_city );
+    // Haversine sorting if lat/lng available
+    if ( $user_lat && $user_lng ) {
+        add_filter( 'posts_fields', 'jobs_search_proximity_fields' );
+        add_filter( 'posts_join', 'jobs_search_proximity_join' );
+        add_filter( 'posts_orderby', 'jobs_search_proximity_orderby' );
+        set_query_var( 'jobs_user_lat', $user_lat );
+        set_query_var( 'jobs_user_lng', $user_lng );
+    } else {
+        $args['orderby'] = 'date';
+        $args['order']   = 'DESC';
     }
 
-    if ( $category ) {
-        $args['tax_query'][] = array(
-            'taxonomy' => 'job_category',
-            'field'    => 'slug',
-            'terms'    => $category,
-        );
-    }
     if ( $specialization ) {
         $args['tax_query'][] = array(
             'taxonomy' => 'specialization',
@@ -47,34 +40,13 @@ function jobs_ajax_filter_results() {
             'terms'    => $specialization,
         );
     }
-    if ( $country ) {
-        $args['tax_query'][] = array(
-            'taxonomy' => 'country',
-            'field'    => 'slug',
-            'terms'    => $country,
-        );
-    }
-    if ( $city ) {
-        $args['tax_query'][] = array(
-            'relation' => 'OR',
-            array(
-                'taxonomy' => 'city',
-                'field'    => 'slug',
-                'terms'    => $city,
-            ),
-            array(
-                'taxonomy' => 'state',
-                'field'    => 'slug',
-                'terms'    => $city,
-            )
-        );
-    }
 
     $query = new WP_Query( $args );
 
-    if ( $user_country || $user_city ) {
-        remove_filter( 'posts_join', 'jobs_search_location_join' );
-        remove_filter( 'posts_orderby', 'jobs_search_location_orderby' );
+    if ( $user_lat && $user_lng ) {
+        remove_filter( 'posts_fields', 'jobs_search_proximity_fields' );
+        remove_filter( 'posts_join', 'jobs_search_proximity_join' );
+        remove_filter( 'posts_orderby', 'jobs_search_proximity_orderby' );
     }
 
     if ( $query->have_posts() ) {
@@ -108,7 +80,18 @@ function jobs_ajax_filter_results() {
         }
         wp_reset_postdata();
     } else {
-        echo '<p>No jobs found.</p>';
+        echo '<div class="jobs-no-results">';
+        echo '<h3>No matching jobs found</h3>';
+        echo '<p>We couldn\'t find any jobs matching your criteria right now. Try adjusting your search term or exploring a different specialization.</p>';
+        echo '<div class="search-suggestions">';
+        echo '<strong>Suggestions:</strong>';
+        echo '<ul>';
+        echo '<li>Check for typos in the job title.</li>';
+        echo '<li>Try using more general keywords.</li>';
+        echo '<li>Switch to "All Specializations" to see more local opportunities.</li>';
+        echo '</ul>';
+        echo '</div>';
+        echo '</div>';
     }
 
     wp_die();
@@ -116,22 +99,22 @@ function jobs_ajax_filter_results() {
 add_action( 'wp_ajax_jobs_filter', 'jobs_ajax_filter_results' );
 add_action( 'wp_ajax_nopriv_jobs_filter', 'jobs_ajax_filter_results' );
 
-function jobs_search_location_join( $join ) {
+function jobs_search_proximity_fields( $fields ) {
     global $wpdb;
-    $join .= " LEFT JOIN {$wpdb->postmeta} AS mt1 ON ({$wpdb->posts}.ID = mt1.post_id AND mt1.meta_key = '_location_country') ";
-    $join .= " LEFT JOIN {$wpdb->postmeta} AS mt2 ON ({$wpdb->posts}.ID = mt2.post_id AND mt2.meta_key = '_location_city') ";
+    $lat = get_query_var( 'jobs_user_lat' );
+    $lng = get_query_var( 'jobs_user_lng' );
+
+    $fields .= ", ( 6371 * acos( cos( radians($lat) ) * cos( radians( mt_lat.meta_value ) ) * cos( radians( mt_lng.meta_value ) - radians($lng) ) + sin( radians($lat) ) * sin( radians( mt_lat.meta_value ) ) ) ) AS distance";
+    return $fields;
+}
+
+function jobs_search_proximity_join( $join ) {
+    global $wpdb;
+    $join .= " LEFT JOIN {$wpdb->postmeta} AS mt_lat ON ({$wpdb->posts}.ID = mt_lat.post_id AND mt_lat.meta_key = '_job_lat') ";
+    $join .= " LEFT JOIN {$wpdb->postmeta} AS mt_lng ON ({$wpdb->posts}.ID = mt_lng.post_id AND mt_lng.meta_key = '_job_lng') ";
     return $join;
 }
 
-function jobs_search_location_orderby( $orderby ) {
-    $user_country = esc_sql( get_query_var( 'jobs_user_country' ) );
-    $user_city = esc_sql( get_query_var( 'jobs_user_city' ) );
-
-    $priority = "CASE
-        WHEN mt2.meta_value LIKE '%$user_city%' THEN 1
-        WHEN mt1.meta_value LIKE '%$user_country%' THEN 2
-        ELSE 3
-    END ASC, ";
-
-    return $priority . $orderby;
+function jobs_search_proximity_orderby( $orderby ) {
+    return " distance ASC, " . $orderby;
 }

@@ -33,3 +33,29 @@ add_filter( 'show_admin_bar', function($show) {
     }
     return $show;
 });
+
+/**
+ * Activity Logger
+ */
+function jobs_log_activity( $user_id, $type, $message ) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'jobs_activity_log';
+
+    // Check if table exists
+    if ( $wpdb->get_var( "SHOW TABLES LIKE '$table'" ) ) {
+        $wpdb->insert( $table, array(
+            'user_id' => $user_id,
+            'type'    => $type,
+            'message' => $message,
+            'time'    => current_time( 'mysql' )
+        ) );
+    }
+}
+
+/**
+ * Log Login
+ */
+add_action( 'wp_login', 'jobs_log_login', 10, 2 );
+function jobs_log_login( $user_login, $user ) {
+    jobs_log_activity( $user->ID, 'login', 'User logged in: ' . $user_login );
+}

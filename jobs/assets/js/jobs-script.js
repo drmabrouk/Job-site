@@ -4,6 +4,12 @@ jQuery(document).ready(function($) {
         e.stopPropagation();
         $('#jobs-apps-menu').toggleClass('active');
         $('#jobs-profile-menu').removeClass('active');
+        $('body').css('overflow', $('#jobs-apps-menu').hasClass('active') ? 'hidden' : '');
+    });
+
+    $(document).on('click', '#jobs-apps-close', function() {
+        $('#jobs-apps-menu').removeClass('active');
+        $('body').css('overflow', '');
     });
 
     $('#jobs-profile-toggle').on('click', function(e) {
