@@ -38,10 +38,25 @@
 }
 
 .profile-content h2 {
-    font-size: 1.5em;
+    font-size: 1.3em;
     border-left: 4px solid var(--jobs-primary-color);
     padding-left: 15px;
-    margin: 30px 0 20px;
+    margin: 40px 0 20px;
+    font-weight: 700;
+}
+
+.cv-section {
+    margin-bottom: 30px;
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    border: 1px solid #f1f5f9;
+}
+
+.cv-item {
+    line-height: 1.7;
+    color: #475569;
+    font-size: 1.05em;
 }
 
 .company-info-grid {

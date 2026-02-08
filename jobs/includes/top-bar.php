@@ -186,7 +186,7 @@ function jobs_render_modules_grid() {
         ),
         'support' => array(
             'label' => 'Support',
-            'icon' => 'headset',
+            'icon' => 'editor-help',
             'bg' => '#e1f5fe',
             'color' => '#0288d1',
             'check' => 'is_user_logged_in',
