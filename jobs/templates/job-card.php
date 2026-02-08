@@ -16,26 +16,31 @@ $is_active       = get_post_status() === 'publish';
 ?>
 <div class="job-card" id="job-card-<?php the_ID(); ?>">
     <div class="job-card-top-row">
-        <span class="job-post-date"><?php echo $post_date; ?></span>
-        <div class="job-status-indicator <?php echo $is_active ? 'status-active' : 'status-archived'; ?>">
-            <?php echo $is_active ? 'Active' : 'Archived'; ?>
-        </div>
         <?php if ( is_user_logged_in() ) :
             $user_id = get_current_user_id();
             $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
-            $is_fav = in_array( get_the_ID(), $favorites );
+            $fav_ids = is_numeric(array_keys($favorites)[0] ?? 0) ? $favorites : array_keys($favorites);
+            $is_fav = in_array( get_the_ID(), $fav_ids );
         ?>
-            <span class="jobs-favorite-toggle dashicons dashicons-heart <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>"></span>
+            <span class="jobs-favorite-toggle dashicons dashicons-archive <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Save/Archive"></span>
         <?php endif; ?>
     </div>
 
     <div class="job-card-header">
-        <div class="job-company-logo">
-            <img src="<?php echo esc_url( $company_logo ); ?>" alt="Logo">
+        <div class="job-company-logo-frame">
+            <?php if ( $company_logo ) : ?>
+                <img src="<?php echo esc_url( $company_logo ); ?>" alt="Logo">
+            <?php else : ?>
+                <div class="logo-placeholder"><span class="dashicons dashicons-building"></span></div>
+            <?php endif; ?>
         </div>
         <div class="job-title-area">
             <h3 class="job-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-            <p class="company-name"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></p>
+            <p class="company-info-line">
+                <span class="c-name"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></span>
+                <span class="v-bar">|</span>
+                <span class="p-date"><?php echo get_the_date('M d, Y'); ?></span>
+            </p>
         </div>
     </div>
 
@@ -66,7 +71,7 @@ $is_active       = get_post_status() === 'publish';
     </div>
 
     <div class="job-card-actions">
-        <button class="jobs-btn-minimal card-quick-apply-btn" data-id="<?php the_ID(); ?>">Apply Directly</button>
+        <button class="jobs-btn-minimal card-quick-apply-btn" data-id="<?php the_ID(); ?>">Apply</button>
         <a href="<?php the_permalink(); ?>" class="jobs-btn-minimal">Details</a>
     </div>
 

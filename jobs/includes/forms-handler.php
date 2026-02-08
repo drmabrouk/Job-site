@@ -428,41 +428,101 @@ function jobs_ajax_approve_job() {
 }
 add_action( 'wp_ajax_jobs_approve_job', 'jobs_ajax_approve_job' );
 
-// Handle CV Save
-function jobs_ajax_save_cv_handler() {
+/**
+ * Handle CV/Resume Saving (V2 - Professional Overhaul)
+ */
+function jobs_ajax_save_cv_handler_v2() {
     check_ajax_referer( 'jobs_save_cv', 'jobs_cv_nonce' );
 
-    $user_id = get_current_user_id();
-    if ( ! $user_id ) wp_send_json_error( 'Not logged in.' );
-
-    $cv_data = array(
-        'education'      => sanitize_textarea_field( $_POST['cv_education'] ),
-        'experience'     => sanitize_textarea_field( $_POST['cv_experience'] ),
-        'skills'         => sanitize_text_field( $_POST['cv_skills'] ),
-        'certifications' => sanitize_textarea_field( $_POST['cv_certifications'] ),
-    );
-
-    update_user_meta( $user_id, 'jobs_cv_data', $cv_data );
-
-    // Update User Description (Bio)
-    if ( isset( $_POST['cv_bio'] ) ) {
-        wp_update_user( array(
-            'ID'          => $user_id,
-            'description' => sanitize_textarea_field( $_POST['cv_bio'] )
-        ) );
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Please log in to save your CV.' );
     }
 
-    // Also update individual meta for filtering
-    update_user_meta( $user_id, '_nationality', sanitize_text_field( $_POST['cv_nationality'] ) );
-    update_user_meta( $user_id, '_gender', sanitize_text_field( $_POST['cv_gender'] ) );
-    update_user_meta( $user_id, '_qualification', sanitize_text_field( $_POST['cv_qualification'] ) );
-    update_user_meta( $user_id, '_english_level', sanitize_text_field( $_POST['cv_english_level'] ) );
-    update_user_meta( $user_id, '_experience', intval( $_POST['cv_experience_years'] ) );
-    update_user_meta( $user_id, '_specialization', sanitize_text_field( $_POST['cv_specialization'] ) );
+    $user_id = get_current_user_id();
+
+    // Sanitize nested array structure
+    $cv_data = array();
+
+    // Personal
+    if(isset($_POST['personal'])) {
+        foreach($_POST['personal'] as $k => $v) {
+            $cv_data['personal'][$k] = sanitize_text_field($v);
+        }
+    }
+
+    // Academic
+    if(isset($_POST['academic'])) {
+        foreach($_POST['academic'] as $k => $v) {
+            $cv_data['academic'][$k] = sanitize_text_field($v);
+        }
+        if(isset($_POST['academic']['achievements'])) {
+            $cv_data['academic']['achievements'] = sanitize_textarea_field($_POST['academic']['achievements']);
+        }
+    }
+
+    // Experience
+    if(isset($_POST['experience'])) {
+        foreach($_POST['experience'] as $k => $v) {
+            $cv_data['experience'][$k] = sanitize_text_field($v);
+        }
+        if(isset($_POST['experience']['tasks'])) {
+            $cv_data['experience']['tasks'] = sanitize_textarea_field($_POST['experience']['tasks']);
+        }
+        if(isset($_POST['experience']['achievements'])) {
+            $cv_data['experience']['achievements'] = sanitize_textarea_field($_POST['experience']['achievements']);
+        }
+    }
+
+    // Skills
+    if(isset($_POST['skills'])) {
+        foreach($_POST['skills'] as $k => $v) {
+            $cv_data['skills'][$k] = sanitize_text_field($v);
+        }
+        if(isset($_POST['skills']['courses'])) {
+            $cv_data['skills']['courses'] = sanitize_textarea_field($_POST['skills']['courses']);
+        }
+    }
+
+    // Languages
+    if(isset($_POST['languages'])) {
+        foreach($_POST['languages'] as $k => $v) {
+            $cv_data['languages'][$k] = sanitize_text_field($v);
+        }
+    }
+
+    // Preferences
+    if(isset($_POST['preferences'])) {
+        foreach($_POST['preferences'] as $k => $v) {
+            $cv_data['preferences'][$k] = sanitize_text_field($v);
+        }
+    }
+
+    $cv_data['last_update'] = current_time( 'mysql' );
+
+    update_user_meta( $user_id, 'jobs_cv_data_v2', $cv_data );
+
+    // Sync to individual meta for seeker filtering/directory
+    update_user_meta( $user_id, '_specialization', $cv_data['academic']['spec_main'] ?? '' );
+    update_user_meta( $user_id, '_experience', (int)($cv_data['experience']['duration'] ?? 0) );
+    update_user_meta( $user_id, '_nationality', $cv_data['personal']['country'] ?? '' );
+    update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] ?? '' );
+    update_user_meta( $user_id, '_qualification', $cv_data['academic']['degree_1'] ?? '' );
+    update_user_meta( $user_id, '_english_level', $cv_data['languages']['score'] ?? '' );
+
+    // Also update legacy format for basic compatibility where needed
+    $legacy_cv = array(
+        'title'       => $cv_data['experience']['title'] ?? '',
+        'summary'     => $cv_data['experience']['tasks'] ?? '',
+        'experience'  => $cv_data['experience']['company'] ?? '',
+        'education'   => $cv_data['academic']['uni_1'] ?? '',
+        'skills'      => $cv_data['skills']['core'] ?? '',
+        'last_update' => $cv_data['last_update']
+    );
+    update_user_meta( $user_id, 'jobs_cv_data', $legacy_cv );
 
     wp_send_json_success( 'CV updated successfully.' );
 }
-add_action( 'wp_ajax_jobs_save_cv_handler', 'jobs_ajax_save_cv_handler' );
+add_action( 'wp_ajax_jobs_save_cv_handler_v2', 'jobs_ajax_save_cv_handler_v2' );
 
 // AJAX module loader
 function jobs_ajax_load_module() {

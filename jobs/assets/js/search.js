@@ -47,7 +47,8 @@ jQuery(document).ready(function($) {
         };
         if (append) data.load_more = 1;
 
-        const delay = append ? 3000 : 0; // 3-second delay for professional feel on scroll
+        // Mandate 1-4 second delay for "professional status indicator" effect
+        const delay = append ? 3000 : 1500;
 
         setTimeout(function() {
             $.get(jobs_vars.ajax_url, data, function(response) {
