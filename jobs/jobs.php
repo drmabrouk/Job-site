@@ -86,14 +86,36 @@ function jobs_plugin_deactivate() {
     flush_rewrite_rules();
 }
 
-// Template Loader for Single Job
+// Template Loader for Jobs and Profiles
 function jobs_template_loader( $template ) {
+    // Single Job
     if ( is_singular( 'job' ) ) {
         $plugin_template = JOBS_PLUGIN_DIR . 'templates/single-job.php';
         if ( file_exists( $plugin_template ) ) {
             return $plugin_template;
         }
     }
+
+    // Public Profile
+    $profile_user = get_query_var( 'profile_user' );
+
+    // Fallback: Check URL path if query var is empty (helps if rewrites aren't flushed)
+    if ( ! $profile_user ) {
+        $path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
+        $path_parts = explode( '/', $path );
+        if ( count( $path_parts ) >= 2 && $path_parts[0] === 'profile' ) {
+            $profile_user = $path_parts[1];
+            set_query_var( 'profile_user', $profile_user );
+        }
+    }
+
+    if ( $profile_user ) {
+        $plugin_template = JOBS_PLUGIN_DIR . 'templates/public-profile.php';
+        if ( file_exists( $plugin_template ) ) {
+            return $plugin_template;
+        }
+    }
+
     return $template;
 }
 add_filter( 'template_include', 'jobs_template_loader' );

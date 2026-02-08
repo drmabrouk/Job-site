@@ -29,5 +29,6 @@ function jobs_get_profile_link( $user_id ) {
     $user = get_userdata( $user_id );
     if ( ! $user ) return '';
 
-    return home_url( '/profile/' . $user->user_login );
+    // Use user_nicename for URL compatibility
+    return home_url( '/profile/' . $user->user_nicename );
 }
