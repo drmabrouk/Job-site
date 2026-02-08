@@ -604,12 +604,25 @@ function jobs_ajax_toggle_favorite() {
 
     $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
 
-    if ( ( $key = array_search( $job_id, $favorites ) ) !== false ) {
-        unset( $favorites[$key] );
+    // Check if it's stored in the new associative format or old flat array
+    $is_associative = (bool)count(array_filter(array_keys($favorites), 'is_string')) || (empty($favorites) === false && is_numeric(array_keys($favorites)[0]) === false);
+
+    // Normalize to associative for internal processing if it was flat
+    if (!empty($favorites) && !$is_associative) {
+        $temp = array();
+        foreach ($favorites as $id) { $temp[$id] = time(); }
+        $favorites = $temp;
+    }
+
+    if ( isset( $favorites[$job_id] ) ) {
+        unset( $favorites[$job_id] );
         $status = 'removed';
     } else {
-        array_unshift( $favorites, $job_id );
-        $favorites = array_slice( $favorites, 0, 50 ); // Keep up to 50
+        $favorites[$job_id] = time();
+        if (count($favorites) > 50) {
+            asort($favorites); // Sort by time
+            array_shift($favorites); // Remove oldest
+        }
         $status = 'added';
     }
 

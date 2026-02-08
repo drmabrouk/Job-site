@@ -57,7 +57,11 @@ if ( is_user_logged_in() ) {
             </div>
 
             <div id="auth-register" class="auth-panel <?php echo $show_register ? 'active' : ''; ?>">
-                <div class="auth-header">
+                <div class="auth-header" style="text-align: center;">
+                    <?php
+                    if ( $logo_url ) : ?>
+                        <img src="<?php echo esc_url( $logo_url ); ?>" alt="Site Logo" style="max-width: 150px; margin-bottom: 20px;">
+                    <?php endif; ?>
                     <h3>Create Account</h3>
                     <p>Join our community of professionals and employers</p>
                 </div>

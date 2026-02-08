@@ -66,6 +66,15 @@ $format_pdf = isset( $_GET['format'] ) && $_GET['format'] === 'pdf';
             <?php if ( $user->description ) : ?>
                 <p class="profile-bio" style="margin-top: 15px; color: #64748b; font-size: 0.95em; line-height: 1.6; max-width: 600px;"><?php echo nl2br(esc_html($user->description)); ?></p>
             <?php endif; ?>
+
+            <?php if ( get_current_user_id() && get_current_user_id() !== $user_id ) : ?>
+                <div style="margin-top: 20px;">
+                    <button class="jobs-btn-small contact-user-btn" data-user-id="<?php echo $user_id; ?>" data-name="<?php echo esc_attr($user->display_name); ?>">
+                        <span class="dashicons dashicons-email" style="font-size:16px; width:16px; height:16px; vertical-align:middle; margin-right:5px;"></span>
+                        Send Message
+                    </button>
+                </div>
+            <?php endif; ?>
         </div>
     </header>
 
@@ -76,22 +85,34 @@ $format_pdf = isset( $_GET['format'] ) && $_GET['format'] === 'pdf';
         ?>
 
         <?php if ( $role === 'job_seeker' ) : ?>
-            <section class="personal-highlights" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 40px; background: #f8fafc; padding: 25px; border-radius: 16px;">
-                <div class="highlight-item">
-                    <small style="display:block; color: #64748b; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7em; font-weight: 700;">Nationality</small>
-                    <strong style="color: #1e293b;"><?php echo esc_html(get_user_meta($user_id, '_nationality', true) ?: 'N/A'); ?></strong>
+            <section class="personal-highlights" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 40px; background: #f8fafc; padding: 30px; border-radius: 20px; border: 1px solid #e2e8f0;">
+                <div class="highlight-item" style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #e0f2f1; color: #00796b; display: flex; align-items: center; justify-content: center;"><span class="dashicons dashicons-admin-site"></span></div>
+                    <div>
+                        <small style="display:block; color: #64748b; text-transform: uppercase; font-size: 0.65em; font-weight: 700; letter-spacing: 0.05em;">Nationality</small>
+                        <strong style="color: #1e293b; font-size: 0.95em;"><?php echo esc_html(get_user_meta($user_id, '_nationality', true) ?: 'N/A'); ?></strong>
+                    </div>
                 </div>
-                <div class="highlight-item">
-                    <small style="display:block; color: #64748b; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7em; font-weight: 700;">Experience</small>
-                    <strong style="color: #1e293b;"><?php echo esc_html(get_user_meta($user_id, '_experience', true) ?: '0'); ?> Years</strong>
+                <div class="highlight-item" style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #fff3e0; color: #f57c00; display: flex; align-items: center; justify-content: center;"><span class="dashicons dashicons-portfolio"></span></div>
+                    <div>
+                        <small style="display:block; color: #64748b; text-transform: uppercase; font-size: 0.65em; font-weight: 700; letter-spacing: 0.05em;">Experience</small>
+                        <strong style="color: #1e293b; font-size: 0.95em;"><?php echo esc_html(get_user_meta($user_id, '_experience', true) ?: '0'); ?> Years</strong>
+                    </div>
                 </div>
-                <div class="highlight-item">
-                    <small style="display:block; color: #64748b; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7em; font-weight: 700;">English Level</small>
-                    <strong style="color: #1e293b;"><?php echo ucfirst(esc_html(get_user_meta($user_id, '_english_level', true) ?: 'N/A')); ?></strong>
+                <div class="highlight-item" style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #e3f2fd; color: #1976d2; display: flex; align-items: center; justify-content: center;"><span class="dashicons dashicons-translation"></span></div>
+                    <div>
+                        <small style="display:block; color: #64748b; text-transform: uppercase; font-size: 0.65em; font-weight: 700; letter-spacing: 0.05em;">English</small>
+                        <strong style="color: #1e293b; font-size: 0.95em;"><?php echo ucfirst(esc_html(get_user_meta($user_id, '_english_level', true) ?: 'N/A')); ?></strong>
+                    </div>
                 </div>
-                <div class="highlight-item">
-                    <small style="display:block; color: #64748b; margin-bottom: 5px; text-transform: uppercase; font-size: 0.7em; font-weight: 700;">Qualification</small>
-                    <strong style="color: #1e293b;"><?php echo ucfirst(esc_html(get_user_meta($user_id, '_qualification', true) ?: 'N/A')); ?></strong>
+                <div class="highlight-item" style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: #f3e5f5; color: #7b1fa2; display: flex; align-items: center; justify-content: center;"><span class="dashicons dashicons-welcome-learn-more"></span></div>
+                    <div>
+                        <small style="display:block; color: #64748b; text-transform: uppercase; font-size: 0.65em; font-weight: 700; letter-spacing: 0.05em;">Education</small>
+                        <strong style="color: #1e293b; font-size: 0.95em;"><?php echo ucfirst(esc_html(get_user_meta($user_id, '_qualification', true) ?: 'N/A')); ?></strong>
+                    </div>
                 </div>
             </section>
 
