@@ -99,7 +99,7 @@ jQuery(document).ready(function($) {
             if (response.success) {
                 $status.html('<p style="color: green;">' + response.data + '</p>');
                 setTimeout(function() {
-                    window.location.href = jobs_vars.home_url + '/login-registration/';
+                    window.location.href = jobs_vars.home_url + '/login/';
                 }, 2000);
             } else {
                 $status.html('<p style="color: red;">' + response.data + '</p>');

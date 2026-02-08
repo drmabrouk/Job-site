@@ -69,7 +69,7 @@ function jobs_enqueue_assets() {
 
 
     // Auth specific
-    if ( is_page('login-registration') ) {
+    if ( is_page('login') ) {
         wp_enqueue_style( 'jobs-auth', JOBS_PLUGIN_URL . 'assets/css/auth.css', array(), JOBS_VERSION );
         wp_enqueue_script( 'jobs-auth-system', JOBS_PLUGIN_URL . 'assets/js/auth.js', array('jquery'), JOBS_VERSION, true );
 

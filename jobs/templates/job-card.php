@@ -15,17 +15,6 @@ $post_date       = get_the_date('M d');
 $is_active       = get_post_status() === 'publish';
 ?>
 <div class="job-card" id="job-card-<?php the_ID(); ?>">
-    <div class="job-card-top-row">
-        <?php if ( is_user_logged_in() ) :
-            $user_id = get_current_user_id();
-            $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
-            $fav_ids = is_numeric(array_keys($favorites)[0] ?? 0) ? $favorites : array_keys($favorites);
-            $is_fav = in_array( get_the_ID(), $fav_ids );
-        ?>
-            <span class="jobs-favorite-toggle dashicons dashicons-heart <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Favorite"></span>
-        <?php endif; ?>
-    </div>
-
     <div class="job-card-header">
         <div class="job-company-logo-frame">
             <?php if ( $company_logo ) : ?>
@@ -35,11 +24,19 @@ $is_active       = get_post_status() === 'publish';
             <?php endif; ?>
         </div>
         <div class="job-title-area">
-            <h3 class="job-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+            <div class="job-title-flex">
+                <h3 class="job-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                <?php if ( is_user_logged_in() ) :
+                    $user_id = get_current_user_id();
+                    $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
+                    $fav_ids = is_numeric(array_keys($favorites)[0] ?? 0) ? $favorites : array_keys($favorites);
+                    $is_fav = in_array( get_the_ID(), $fav_ids );
+                ?>
+                    <span class="jobs-favorite-toggle dashicons dashicons-heart <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Favorite"></span>
+                <?php endif; ?>
+            </div>
             <p class="company-info-line">
                 <span class="c-name"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></span>
-                <span class="v-bar">|</span>
-                <span class="p-date"><?php echo get_the_date('M d, Y'); ?></span>
             </p>
         </div>
     </div>
@@ -67,7 +64,7 @@ $is_active       = get_post_status() === 'publish';
 
     <div class="job-card-footer">
         <div class="job-pub-date">
-            Published: <?php echo get_the_date('M d, Y'); ?>
+            <span class="dashicons dashicons-clock"></span> <?php echo get_the_date('M d, Y'); ?>
         </div>
         <div class="job-card-actions">
             <button class="jobs-btn-minimal card-quick-apply-btn" data-id="<?php the_ID(); ?>">Apply</button>
@@ -85,7 +82,7 @@ $is_active       = get_post_status() === 'publish';
             <?php if ( is_user_logged_in() ) : ?>
                 <button class="jobs-btn-small quick-apply-toggle" data-job-id="<?php the_ID(); ?>" style="width: 100%; padding: 12px; border-radius: 10px; background: #1d3469; font-weight: 600;">Confirm and Send Application</button>
             <?php else : ?>
-                <a href="<?php echo home_url('/login-registration/'); ?>" class="jobs-btn-small" style="display: block; width: 100%; text-align: center; padding: 12px; border-radius: 10px; background: #1d3469; text-decoration: none; color: white; font-weight: 600;">Login to Apply</a>
+                <a href="<?php echo home_url('/login/'); ?>" class="jobs-btn-small" style="display: block; width: 100%; text-align: center; padding: 12px; border-radius: 10px; background: #1d3469; text-decoration: none; color: white; font-weight: 600;">Login to Apply</a>
             <?php endif; ?>
         </div>
     </div>

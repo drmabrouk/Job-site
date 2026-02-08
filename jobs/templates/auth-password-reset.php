@@ -25,7 +25,7 @@ $action = isset( $_GET['action'] ) ? $_GET['action'] : 'lostpassword';
                 </div>
                 <button type="submit" class="jobs-btn auth-submit">Send Reset Link</button>
                 <div style="text-align: center; margin-top: 20px;">
-                    <a href="<?php echo home_url('/login-registration/'); ?>" style="color: #666; font-size: 0.9em;">Back to Login</a>
+                    <a href="<?php echo home_url('/login/'); ?>" style="color: #666; font-size: 0.9em;">Back to Login</a>
                 </div>
             </form>
         <?php else :

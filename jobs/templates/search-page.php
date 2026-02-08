@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         $logo_width = get_option( 'jobs_logo_width', '180' );
         $logo_height = get_option( 'jobs_logo_height', 'auto' );
         ?>
-        <img src="<?php echo esc_url( $logo_url ); ?>" alt="Site Logo" class="jobs-main-logo" style="width:<?php echo esc_attr($logo_width); ?>px; height:<?php echo esc_attr($logo_height); ?>;">
+        <img src="<?php echo esc_url( $logo_url ); ?>" alt="Site Logo" class="jobs-main-logo" style="--logo-custom-width:<?php echo esc_attr($logo_width); ?>px; height:<?php echo esc_attr($logo_height); ?>;">
     </div>
     <?php endif; ?>
 

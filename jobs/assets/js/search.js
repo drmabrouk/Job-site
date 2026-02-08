@@ -79,7 +79,14 @@ jQuery(document).ready(function($) {
 
                     if ($('.job-card').length >= 12) {
                         if (!$('#jobs-limit-notif').length) {
-                            $('.jobs-results-grid').after('<div id="jobs-limit-notif" style="text-align:center; padding: 60px 20px; color:#1d3469; font-weight:600; background: #f0f4f8; border-radius: 32px; margin: 40px 0; border: 1px solid rgba(29, 52, 105, 0.05); animation: fadeIn 0.8s ease;">Showing the most relevant opportunities matching your search.</div>');
+                            var limitMsg = '<div id="jobs-limit-notif" style="text-align:center; padding: 50px 30px; background: #fff; border-radius: 32px; margin: 50px 0; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px rgba(0,0,0,0.02); animation: fadeIn 0.8s ease;">';
+                            limitMsg += '<h4 style="color:#1d3469; margin-bottom:15px; font-size:1.2em;">Showing the most relevant opportunities matching your search.</h4>';
+                            limitMsg += '<div style="max-width:500px; margin:0 auto; text-align:left; background:#f8fafc; padding:25px; border-radius:20px; font-size:0.9em; color:#64748b;">';
+                            limitMsg += '<strong>💡 Pro Tips for better results:</strong><ul style="margin-top:10px; padding-left:20px;">';
+                            limitMsg += '<li style="margin-bottom:8px;">Try using more general keywords.</li>';
+                            limitMsg += '<li style="margin-bottom:8px;">Filter by your specific city or specialization.</li>';
+                            limitMsg += '<li>Check back tomorrow for fresh listings!</li></ul></div></div>';
+                            $('.jobs-results-grid').after(limitMsg);
                         }
                         $('#jobs-has-more').remove();
                     }
@@ -90,7 +97,14 @@ jQuery(document).ready(function($) {
                     if ($('.job-card').length >= 12) {
                         $('#jobs-has-more').remove();
                         if (!$('#jobs-limit-notif').length) {
-                            $('.jobs-results-grid').after('<div id="jobs-limit-notif" style="text-align:center; padding: 60px 20px; color:#1d3469; font-weight:600; background: #f0f4f8; border-radius: 32px; margin: 40px 0; border: 1px solid rgba(29, 52, 105, 0.05); animation: fadeIn 0.8s ease;">Showing the most relevant opportunities matching your search.</div>');
+                            var limitMsg = '<div id="jobs-limit-notif" style="text-align:center; padding: 50px 30px; background: #fff; border-radius: 32px; margin: 50px 0; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px rgba(0,0,0,0.02); animation: fadeIn 0.8s ease;">';
+                            limitMsg += '<h4 style="color:#1d3469; margin-bottom:15px; font-size:1.2em;">Showing the most relevant opportunities matching your search.</h4>';
+                            limitMsg += '<div style="max-width:500px; margin:0 auto; text-align:left; background:#f8fafc; padding:25px; border-radius:20px; font-size:0.9em; color:#64748b;">';
+                            limitMsg += '<strong>💡 Pro Tips for better results:</strong><ul style="margin-top:10px; padding-left:20px;">';
+                            limitMsg += '<li style="margin-bottom:8px;">Try using more general keywords.</li>';
+                            limitMsg += '<li style="margin-bottom:8px;">Filter by your specific city or specialization.</li>';
+                            limitMsg += '<li>Check back tomorrow for fresh listings!</li></ul></div></div>';
+                            $('.jobs-results-grid').after(limitMsg);
                         }
                     }
                 }
