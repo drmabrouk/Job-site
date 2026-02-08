@@ -1,76 +1,11 @@
-.jobs-header-system {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    z-index: 9999;
-    transition: all 0.3s ease;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
+/**
+ * Refactored Top Bar Styles for Shortcode-based Standalone components.
+ */
 
-.jobs-header-transparent {
-    background: transparent !important;
-    border: none !important;
-}
-
-.jobs-header-minimal {
-    background: transparent !important;
-}
-
-.top-bar-content {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
+/* Standalone Icon Wrappers */
+.jobs-standalone-icon-wrap {
+    display: inline-flex;
     align-items: center;
-    padding: 0 30px;
-}
-
-@media (max-width: 768px) {
-    .top-bar-content {
-        padding: 0 15px;
-    }
-    .site-name {
-        display: none;
-    }
-    .top-bar-right {
-        gap: 10px;
-    }
-    .jobs-notif-dropdown {
-        width: 280px;
-        right: -50px;
-    }
-}
-
-.floating-right {
-    position: fixed;
-    top: 20px;
-    right: 30px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 10px 20px;
-    border-radius: 40px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    backdrop-filter: blur(10px);
-}
-
-.top-bar-home {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: var(--jobs-primary-color);
-    font-weight: 700;
-}
-
-.top-bar-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
 }
 
 .top-bar-icon-item {
@@ -120,8 +55,11 @@
 
 .top-bar-user-item {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
+/* Dropdowns positioning relative to standalone items */
 .jobs-profile-dropdown {
     display: none;
     position: absolute;
@@ -133,12 +71,7 @@
     border-radius: 12px;
     margin-top: 15px;
     padding: 10px 0;
-    z-index: 1000;
-}
-
-.jobs-profile-dropdown.active,
-.jobs-notif-dropdown.active {
-    display: block;
+    z-index: 10000; /* Increased to stay above external headers */
 }
 
 .jobs-notif-dropdown {
@@ -151,11 +84,16 @@
     box-shadow: 0 20px 50px rgba(0,0,0,0.15);
     border-radius: 24px;
     margin-top: 20px;
-    z-index: 1000;
+    z-index: 10000;
     max-height: 500px;
     overflow: hidden;
     border: 1px solid rgba(29, 52, 105, 0.08);
     animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.jobs-profile-dropdown.active,
+.jobs-notif-dropdown.active {
+    display: block;
 }
 
 @keyframes slideUpFade {
@@ -251,4 +189,12 @@
     height: 1px;
     background: #f0f0f0;
     margin: 5px 0;
+}
+
+/* Remove old global header classes as they are no longer used by the plugin */
+.jobs-header-system,
+.jobs-header-transparent,
+.jobs-header-minimal,
+.top-bar-content {
+    display: none !important;
 }
