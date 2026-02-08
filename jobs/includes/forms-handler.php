@@ -101,6 +101,11 @@ function jobs_handle_forms() {
             }
             update_option( 'jobs_maintenance_mode', isset( $_POST['jobs_maintenance_mode'] ) ? 1 : 0 );
 
+            if ( isset( $_POST['jobs_adsense_code'] ) ) {
+                $adsense_code = current_user_can('unfiltered_html') ? $_POST['jobs_adsense_code'] : wp_kses_post( $_POST['jobs_adsense_code'] );
+                update_option( 'jobs_adsense_code', wp_unslash( $adsense_code ) );
+            }
+
             Jobs_Activity_Service::log( get_current_user_id(), 'system_update', 'Updated site settings' );
         }
     }

@@ -8,6 +8,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $user_id = get_current_user_id();
 $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
+
+// Normalize to associative [id => timestamp]
+if (!empty($favorites)) {
+    $first_key = array_keys($favorites)[0];
+    if (is_numeric($first_key) && $favorites[$first_key] == $first_key) {
+        // Old flat format [id, id]
+        $temp = array();
+        foreach ($favorites as $id) { $temp[$id] = time(); }
+        $favorites = $temp;
+    }
+}
 ?>
 <div class="jobs-module-content">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -26,7 +37,7 @@ $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
             if ( $query->have_posts() ) : while ( $query->have_posts() ) : $query->the_post();
                 $job_id = get_the_ID();
                 $logo = get_post_meta($job_id, '_company_logo', true);
-                $saved_date = isset($favorites[$job_id]) && !is_numeric($job_id) ? date('M d, Y', $favorites[$job_id]) : 'Recently';
+                $saved_date = isset($favorites[$job_id]) ? date('M d, Y', $favorites[$job_id]) : 'Recently';
 
                 $deadline = get_post_meta($job_id, '_job_deadline', true);
                 $expiry_text = 'No deadline';

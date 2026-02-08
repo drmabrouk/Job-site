@@ -69,13 +69,15 @@ function jobs_plugin_activate() {
     flush_rewrite_rules();
 }
 
-// Temporary hook to run sample data loading once in development/sandbox
+// Manual or activation hook for sample data loading
 function jobs_maybe_load_samples() {
-    if ( get_option( 'jobs_samples_loaded_v2' ) ) return;
-
-    if ( class_exists( 'Jobs_Sample_Data_Service' ) ) {
-        Jobs_Sample_Data_Service::reset_and_load_samples();
-        update_option( 'jobs_samples_loaded_v2', 1 );
+    // Only load if explicitly requested via URL parameter for setup/demo purposes
+    if ( isset($_GET['jobs_load_samples']) && current_user_can('manage_options') ) {
+        if ( class_exists( 'Jobs_Sample_Data_Service' ) ) {
+            Jobs_Sample_Data_Service::reset_and_load_samples();
+            update_option( 'jobs_samples_loaded_v2', 1 );
+            wp_die('Sample data loaded successfully. <a href="'.admin_url().'">Return to Dashboard</a>');
+        }
     }
 }
 add_action( 'init', 'jobs_maybe_load_samples' );

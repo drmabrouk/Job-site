@@ -26,4 +26,10 @@ function jobs_create_roles() {
         'review_jobs' => true,
         'manage_jobs_users' => true
     ) );
+
+    // Also give it to full administrators
+    $admin = get_role( 'administrator' );
+    if ( $admin ) {
+        $admin->add_cap( 'manage_jobs_users' );
+    }
 }
