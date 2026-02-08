@@ -22,27 +22,11 @@
 
 .job-card-top-row {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     font-size: 0.75em;
 }
-
-.job-post-date {
-    color: #94a3b8;
-    font-weight: 500;
-}
-
-.job-status-indicator {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.8em;
-}
-
-.status-active { color: #16a34a; background: #dcfce7; }
-.status-archived { color: #94a3b8; background: #f1f5f9; }
 
 .jobs-favorite-toggle {
     color: #cbd5e0;
@@ -76,25 +60,25 @@
     align-items: center;
 }
 
-.job-company-logo {
-    width: 60px; /* Increased from 48px */
-    height: 60px;
-    border-radius: 12px;
+.job-company-logo-frame {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
     overflow: hidden;
     flex-shrink: 0;
-    border: 1.5px solid rgba(29, 52, 105, 0.08);
+    border: 1px solid #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
 }
 
-.job-company-logo img {
+.job-company-logo-frame img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 2px;
+    padding: 4px;
 }
 
 .logo-placeholder {
@@ -114,15 +98,19 @@
     text-decoration: none;
 }
 
-.company-name {
-    color: #888;
+.company-info-line {
+    color: #64748b;
     margin: 0;
-    font-size: 0.75em; /* Smaller font */
+    font-size: 0.8em;
     font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.v-bar {
+    color: #cbd5e1;
+    font-weight: 300;
 }
 
 .job-meta {
@@ -213,7 +201,17 @@
     display: flex;
     gap: 10px;
     margin-top: auto;
-    justify-content: space-between;
+    justify-content: flex-end;
+}
+
+.job-card-actions .jobs-btn-minimal:first-child {
+    background: #1d3469;
+    color: #fff;
+}
+
+.job-card-actions .jobs-btn-minimal:last-child {
+    background: #f1f5f9;
+    color: #475569;
 }
 
 .card-apply-dropdown {
