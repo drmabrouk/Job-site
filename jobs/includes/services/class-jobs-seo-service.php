@@ -13,17 +13,20 @@ class Jobs_SEO_Service {
         add_action( 'wp_head', array( __CLASS__, 'inject_json_ld' ) );
         add_action( 'init', array( __CLASS__, 'register_sitemap' ) );
         add_action( 'template_redirect', array( __CLASS__, 'handle_sitemap_request' ) );
+
+        // Use filters for the title to prevent duplication and respect theme support
+        add_filter( 'pre_get_document_title', array( __CLASS__, 'get_seo_title' ), 15 );
+        add_filter( 'wp_title', array( __CLASS__, 'get_seo_title' ), 15 );
     }
 
     public static function inject_meta_tags() {
         if ( is_admin() ) return;
 
-        $title = self::get_seo_title();
         $description = self::get_seo_description();
         $canonical = self::get_canonical_url();
+        $title = self::get_seo_title();
 
         echo "\n<!-- Jobs Plugin SEO -->\n";
-        echo '<title>' . esc_html( $title ) . '</title>' . "\n";
         echo '<meta name="description" content="' . esc_attr( $description ) . '">' . "\n";
         echo '<link rel="canonical" href="' . esc_url( $canonical ) . '">' . "\n";
 
@@ -99,14 +102,14 @@ class Jobs_SEO_Service {
         }
     }
 
-    private static function get_seo_title() {
+    public static function get_seo_title($title = '') {
         if ( is_singular('job') ) return get_the_title() . ' | ' . get_bloginfo('name');
         if ( get_query_var('profile_user') ) return get_query_var('profile_user') . ' Profile | ' . get_bloginfo('name');
         if ( is_tax() ) return single_term_title('', false) . ' Jobs | ' . get_bloginfo('name');
         return get_bloginfo('name') . ' - Find Your Next Career';
     }
 
-    private static function get_seo_description() {
+    public static function get_seo_description() {
         if ( is_singular('job') ) return wp_trim_words(get_the_excerpt(), 25);
         return get_bloginfo('description');
     }

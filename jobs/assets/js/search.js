@@ -112,6 +112,7 @@ jQuery(document).ready(function($) {
         }
     });
 
+    // Initial Load
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             window.JobsState.search.lat = position.coords.latitude;

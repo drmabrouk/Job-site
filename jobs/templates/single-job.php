@@ -176,7 +176,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                     <p style="font-weight: 700; color: #1d3469; margin-bottom: 5px;"><?php echo esc_html( $company_name ); ?></p>
                     <p style="font-size: 0.85em; color: #64748b; margin-bottom: 15px;"><?php echo esc_html($contact ?: 'Contact details hidden'); ?></p>
                     <?php
-                    $company_profile_url = home_url('/profile/' . strtolower(str_replace(' ', '-', $company_name)));
+                    $author_id = get_post_field( 'post_author', $post_id );
+                    $company_profile_url = jobs_get_profile_link( $author_id );
                     ?>
                     <a href="<?php echo esc_url($company_profile_url); ?>" class="view-profile-link">Visit Company Page</a>
                 </div>
