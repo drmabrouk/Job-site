@@ -73,9 +73,25 @@ jQuery(document).ready(function($) {
                     const nextPage = page + 1;
                     $('#jobs-has-more').data('next-page', nextPage);
                     $('#jobs-bottom-loader').fadeOut();
+
+                    // Limit notification
+                    if ($('.job-card').length >= 12) {
+                        if (!$('#jobs-limit-notif').length) {
+                            $('.jobs-results-grid').after('<div id="jobs-limit-notif" style="text-align:center; padding: 40px 20px; color:#64748b; font-weight:500; background: #f8fafc; border-radius: 16px; margin: 20px 0; border: 1px solid #e2e8f0;">Showing the top results matching your search criteria.</div>');
+                        }
+                        $('#jobs-has-more').remove();
+                    }
                 } else {
                     $results.html(response);
                     $indicator.fadeOut();
+
+                    // Check if already 12
+                    if ($('.job-card').length >= 12) {
+                        $('#jobs-has-more').remove();
+                        if (!$('#jobs-limit-notif').length) {
+                            $('.jobs-results-grid').after('<div id="jobs-limit-notif" style="text-align:center; padding: 40px 20px; color:#64748b; font-weight:500; background: #f8fafc; border-radius: 16px; margin: 20px 0; border: 1px solid #e2e8f0;">Showing the top results matching your search criteria.</div>');
+                        }
+                    }
                 }
                 window.JobsState.ui.isSearching = false;
             });

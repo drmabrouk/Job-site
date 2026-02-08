@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="jobs-module-content">
-    <h2>Terms & Conditions</h2>
+    <h2>Policies</h2>
     <div class="terms-container" style="background: white; padding: 40px; border-radius: 12px; margin-top: 20px; color: #555; line-height: 1.8;">
         <h3>1. Acceptance of Terms</h3>
         <p>By accessing and using this job portal, you agree to be bound by these terms and conditions. If you do not agree with any part of these terms, you must not use the platform.</p>

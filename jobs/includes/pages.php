@@ -46,6 +46,14 @@ function jobs_create_pages() {
             'title'   => 'Job Seekers',
             'content' => '[jobs_job_seekers_page]',
         ),
+        'site-settings' => array(
+            'title'   => 'Site Settings',
+            'content' => '[jobs_module module="advanced-settings"]',
+        ),
+        'policies' => array(
+            'title'   => 'Policies',
+            'content' => '<!-- Policies Content -->',
+        ),
     );
 
     foreach ( $pages as $slug => $page ) {
@@ -72,7 +80,9 @@ function jobs_remove_pages() {
         'advanced-settings',
         'terms-conditions',
         'analytics-insights',
-        'job-seekers'
+        'job-seekers',
+        'site-settings',
+        'policies'
     );
     foreach ( $pages as $slug ) {
         $page = get_page_by_path( $slug );

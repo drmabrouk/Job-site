@@ -58,6 +58,8 @@ function jobs_ads_placements_callback() {
     $placements = array(
         'search_results' => 'Within Search Results',
         'job_details'    => 'Single Job Page',
+        'between_job_details' => 'Between Job Details Sections',
+        'below_content' => 'Below Main Content',
         'company_profile'=> 'Company Profiles',
         'user_profile'   => 'User Profiles',
         'sidebar'        => 'Sidebar Widgets'
