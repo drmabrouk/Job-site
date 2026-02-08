@@ -24,6 +24,7 @@ require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-activity-service.ph
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-search-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-job-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-seo-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-sample-data-service.php';
 
 // Initialize Services
 Jobs_SEO_Service::init();
@@ -62,8 +63,22 @@ function jobs_plugin_activate() {
     // Ensure rewrite rules are registered before flushing
     Jobs_SEO_Service::register_sitemap();
 
+    // Load Sample Jobs
+    Jobs_Sample_Data_Service::reset_and_load_samples();
+
     flush_rewrite_rules();
 }
+
+// Temporary hook to run sample data loading once in development/sandbox
+function jobs_maybe_load_samples() {
+    if ( get_option( 'jobs_samples_loaded_v2' ) ) return;
+
+    if ( class_exists( 'Jobs_Sample_Data_Service' ) ) {
+        Jobs_Sample_Data_Service::reset_and_load_samples();
+        update_option( 'jobs_samples_loaded_v2', 1 );
+    }
+}
+add_action( 'init', 'jobs_maybe_load_samples' );
 
 function jobs_plugin_deactivate() {
     // Roles and pages are typically not removed on deactivation to avoid data loss.

@@ -20,12 +20,29 @@
     border-color: rgba(29, 52, 105, 0.15);
 }
 
-.job-card-top-actions {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 5;
+.job-card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 0.75em;
 }
+
+.job-post-date {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.job-status-indicator {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8em;
+}
+
+.status-active { color: #16a34a; background: #dcfce7; }
+.status-archived { color: #94a3b8; background: #f1f5f9; }
 
 .jobs-favorite-toggle {
     color: #cbd5e0;
@@ -90,9 +107,11 @@
     font-size: 1.1em;
     font-weight: 700;
     line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+}
+
+.job-title a {
+    color: inherit;
+    text-decoration: none;
 }
 
 .company-name {
@@ -156,6 +175,28 @@
     background: rgba(179, 229, 252, 0.05) !important;
 }
 
+.capsule-setting {
+    border-color: #ffe0b2;
+    color: #f57c00;
+    background: rgba(255, 224, 178, 0.05) !important;
+}
+
+.job-skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.skill-tag {
+    font-size: 0.65em;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
 .job-excerpt {
     color: #64748b;
     font-size: 0.85em;
@@ -172,7 +213,34 @@
     display: flex;
     gap: 10px;
     margin-top: auto;
-    justify-content: flex-end; /* Positioned at bottom-right */
+    justify-content: space-between;
+}
+
+.card-apply-dropdown {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-arrow {
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    width: 12px;
+    height: 12px;
+    background: #f8fafc;
+    border-left: 1px solid #e2e8f0;
+    border-top: 1px solid #e2e8f0;
+    transform: rotate(45deg);
 }
 
 .jobs-btn-minimal {

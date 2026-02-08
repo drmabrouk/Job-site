@@ -87,6 +87,13 @@ jQuery(document).ready(function($) {
 
     $('#jobs-input-specialization, #jobs-input-city').on('change', () => updateSearchResults(1));
 
+    // Toggle card application dropdown
+    $(document).on('click', '.card-quick-apply-btn', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        $('#apply-dropdown-' + id).slideToggle(300);
+    });
+
     // Infinite scroll logic
     $(window).on('scroll', function() {
         if (window.JobsState.ui.isSearching) return;

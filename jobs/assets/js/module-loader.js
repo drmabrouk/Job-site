@@ -109,7 +109,7 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.next-apply-step', function() {
         const nextStep = $(this).data('next');
 
-        if (nextStep == 2) {
+        if (nextStep == 3) {
             const letter = $('#apply-cover-letter-text').val();
             $('#review-letter-content').text(letter);
         }
