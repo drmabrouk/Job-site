@@ -26,6 +26,7 @@ function jobs_enqueue_assets() {
         // Pass global variables and module assets map
         wp_localize_script( 'jobs-module-loader', 'jobs_vars', array(
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
+            'home_url'      => home_url(),
             'nonce'         => wp_create_nonce( 'jobs_main_nonce' ),
             'plugin_url'    => JOBS_PLUGIN_URL,
             'module_assets' => array(
