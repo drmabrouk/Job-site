@@ -48,13 +48,13 @@ jQuery(document).ready(function($) {
         const $results = $('#jobs-results-container');
 
         if (!append) {
-            $indicator.fadeIn();
+            $indicator.css('display', 'flex').hide().fadeIn(400);
         } else {
             // Show bottom loader for append
             if (!$('#jobs-bottom-loader').length) {
-                $('.jobs-results-grid').after('<div id="jobs-bottom-loader" class="jobs-status-indicator"><div class="indicator-spinner"></div><p>Loading more opportunities...</p></div>');
+                $('.jobs-results-grid').after('<div id="jobs-bottom-loader" class="jobs-status-indicator" style="display:flex;"><div class="indicator-spinner"></div><p>Discovering more opportunities...</p></div>');
             }
-            $('#jobs-bottom-loader').fadeIn();
+            $('#jobs-bottom-loader').fadeIn(400);
         }
 
         const data = {
@@ -69,27 +69,28 @@ jQuery(document).ready(function($) {
         setTimeout(function() {
             $.get(jobs_vars.ajax_url, data, function(response) {
                 if (append) {
-                    $('.jobs-results-grid').append(response);
+                    const $newCards = $(response).hide();
+                    $('.jobs-results-grid').append($newCards);
+                    $newCards.fadeIn(600);
+
                     const nextPage = page + 1;
                     $('#jobs-has-more').data('next-page', nextPage);
-                    $('#jobs-bottom-loader').fadeOut();
+                    $('#jobs-bottom-loader').fadeOut(300);
 
-                    // Limit notification
                     if ($('.job-card').length >= 12) {
                         if (!$('#jobs-limit-notif').length) {
-                            $('.jobs-results-grid').after('<div id="jobs-limit-notif" style="text-align:center; padding: 40px 20px; color:#64748b; font-weight:500; background: #f8fafc; border-radius: 16px; margin: 20px 0; border: 1px solid #e2e8f0;">Showing the top results matching your search criteria.</div>');
+                            $('.jobs-results-grid').after('<div id="jobs-limit-notif" style="text-align:center; padding: 60px 20px; color:#1d3469; font-weight:600; background: #f0f4f8; border-radius: 32px; margin: 40px 0; border: 1px solid rgba(29, 52, 105, 0.05); animation: fadeIn 0.8s ease;">Showing the most relevant opportunities matching your search.</div>');
                         }
                         $('#jobs-has-more').remove();
                     }
                 } else {
-                    $results.html(response);
-                    $indicator.fadeOut();
+                    $results.hide().html(response).fadeIn(600);
+                    $indicator.fadeOut(300);
 
-                    // Check if already 12
                     if ($('.job-card').length >= 12) {
                         $('#jobs-has-more').remove();
                         if (!$('#jobs-limit-notif').length) {
-                            $('.jobs-results-grid').after('<div id="jobs-limit-notif" style="text-align:center; padding: 40px 20px; color:#64748b; font-weight:500; background: #f8fafc; border-radius: 16px; margin: 20px 0; border: 1px solid #e2e8f0;">Showing the top results matching your search criteria.</div>');
+                            $('.jobs-results-grid').after('<div id="jobs-limit-notif" style="text-align:center; padding: 60px 20px; color:#1d3469; font-weight:600; background: #f0f4f8; border-radius: 32px; margin: 40px 0; border: 1px solid rgba(29, 52, 105, 0.05); animation: fadeIn 0.8s ease;">Showing the most relevant opportunities matching your search.</div>');
                         }
                     }
                 }
