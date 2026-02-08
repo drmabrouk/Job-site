@@ -22,6 +22,7 @@ $current_user = wp_get_current_user();
     <div class="settings-tabs" style="display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 5px;">
         <button class="jobs-btn-small tab-link active" onclick="openSettingsTab(event, 'branding')">Branding</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'appearance')">Appearance</button>
+        <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'users')">User Management</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'system')">System & Email</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'permissions')">Permissions</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'activity')">Activity Log</button>
@@ -127,6 +128,52 @@ $current_user = wp_get_current_user();
             </div>
         </div>
 
+        <!-- Users Tab -->
+        <div id="users" class="tab-panel" style="display:none;">
+            <div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                    <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left;">User</th>
+                            <th style="padding: 12px; text-align: left;">Role</th>
+                            <th style="padding: 12px; text-align: left;">Last Activity</th>
+                            <th style="padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $users = get_users( array( 'number' => 50, 'orderby' => 'registered', 'order' => 'DESC' ) );
+                        foreach ( $users as $u ) :
+                            $last_active = get_user_meta( $u->ID, '_last_activity', true );
+                            $role = !empty($u->roles) ? $u->roles[0] : 'None';
+                            ?>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 12px;">
+                                    <strong><?php echo esc_html($u->display_name); ?></strong><br>
+                                    <span style="font-size: 0.8em; color: #64748b;"><?php echo esc_html($u->user_email); ?></span>
+                                </td>
+                                <td style="padding: 12px;">
+                                    <select class="user-role-select" data-user-id="<?php echo $u->ID; ?>" style="padding: 5px; border-radius: 5px; border: 1px solid #cbd5e1; font-size: 0.9em;">
+                                        <option value="job_seeker" <?php selected($role, 'job_seeker'); ?>>Job Seeker</option>
+                                        <option value="employer" <?php selected($role, 'employer'); ?>>Employer</option>
+                                        <option value="reviewer" <?php selected($role, 'reviewer'); ?>>Reviewer</option>
+                                        <option value="administrator" <?php selected($role, 'administrator'); ?>>WP Admin</option>
+                                    </select>
+                                </td>
+                                <td style="padding: 12px; color: #64748b;">
+                                    <?php echo $last_active ? date('M j, Y H:i', $last_active) : 'Never'; ?>
+                                </td>
+                                <td style="padding: 12px; text-align: center;">
+                                    <button type="button" class="delete-user-btn" data-user-id="<?php echo $u->ID; ?>" style="background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8em;">Delete</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 0.8em; color: #64748b; margin-top: 10px;">Showing last 50 registered users. Accounts with 10+ days of inactivity are automatically flagged for deletion.</p>
+        </div>
+
         <!-- Security Tab -->
         <div id="security" class="tab-panel" style="display:none;">
             <div class="form-group" style="margin-bottom: 20px;">
@@ -167,9 +214,47 @@ function openSettingsTab(evt, tabName) {
 }
 
 jQuery(document).ready(function($) {
+    // Handle User Role Change
+    $('.user-role-select').on('change', function() {
+        var userId = $(this).data('user-id');
+        var newRole = $(this).val();
+        var $select = $(this);
+
+        $select.css('opacity', '0.5');
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_update_user_role',
+            user_id: userId,
+            role: newRole,
+            nonce: jobs_vars.nonce
+        }, function(res) {
+            $select.css('opacity', '1');
+            if (!res.success) alert(res.data);
+        });
+    });
+
+    // Handle User Deletion
+    $('.delete-user-btn').on('click', function() {
+        if (!confirm('Are you absolutely sure you want to delete this user? This cannot be undone.')) return;
+
+        var userId = $(this).data('user-id');
+        var $row = $(this).closest('tr');
+
+        $(this).prop('disabled', true).text('...');
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_delete_user',
+            user_id: userId,
+            nonce: jobs_vars.nonce
+        }, function(res) {
+            if (res.success) {
+                $row.fadeOut();
+            } else {
+                alert(res.data);
+            }
+        });
+    });
+
     $('#jobs-site-settings-form').on('submit', function(e) {
         // Form submission is handled by forms-handler.php (regular POST)
-        // or we could add AJAX here. Given the requirements, let's ensure forms-handler handles it.
     });
 });
 </script>

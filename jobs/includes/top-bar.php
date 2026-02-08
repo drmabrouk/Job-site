@@ -48,7 +48,7 @@ function jobs_profile_management_shortcode() {
     ?>
     <div class="jobs-standalone-icon-wrap profile-management-trigger">
         <div class="top-bar-icon-item" id="jobs-apps-toggle" title="Applications">
-            <span class="dashicons dashicons-grid-view"></span>
+            <span class="dashicons dashicons-screenoptions"></span>
         </div>
     </div>
     <?php
@@ -59,6 +59,41 @@ function jobs_profile_management_shortcode() {
  * Shortcode: [account_icon]
  * Outputs Login state, avatar, account dropdown, and notifications icon.
  */
+/**
+ * Shortcode: [jobedia_logo]
+ * Outputs the site logo, specifically styled for the top bar.
+ */
+function jobs_logo_shortcode() {
+    $logo_url = get_option( 'jobs_site_logo' );
+    if ( ! $logo_url ) {
+        $custom_logo_id = get_theme_mod( 'custom_logo' );
+        $logo_url = $custom_logo_id ? wp_get_attachment_image_src( $custom_logo_id , 'full' )[0] : '';
+    }
+
+    if ( ! $logo_url ) return '';
+
+    $width = get_option( 'jobs_logo_width', '150' );
+
+    ob_start();
+    ?>
+    <div class="jobedia-top-logo">
+        <a href="<?php echo home_url(); ?>">
+            <img src="<?php echo esc_url( $logo_url ); ?>" alt="Logo" style="max-width: <?php echo esc_attr($width); ?>px; height: auto;">
+        </a>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * Automatically inject logo at top-left on secondary pages if needed.
+ */
+function jobs_inject_secondary_logo() {
+    if ( is_front_page() || is_admin() || is_page('job-search') ) return;
+    echo jobs_logo_shortcode();
+}
+// add_action( 'wp_body_open', 'jobs_inject_secondary_logo' ); // Optional: uncomment if direct injection is preferred
+
 function jobs_account_icon_shortcode() {
     $current_user = wp_get_current_user();
     $is_logged_in = is_user_logged_in();

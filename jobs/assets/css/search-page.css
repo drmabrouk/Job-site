@@ -128,6 +128,10 @@
 
 /* Status Indicator */
 .jobs-status-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     margin-top: 30px;
     animation: fadeIn 0.5s ease;

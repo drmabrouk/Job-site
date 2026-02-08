@@ -10,14 +10,14 @@ $user_id = get_current_user_id();
 $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
 
 // Normalize to associative [id => timestamp]
-if (!empty($favorites)) {
-    $first_key = array_keys($favorites)[0];
-    if (is_numeric($first_key) && $favorites[$first_key] == $first_key) {
-        // Old flat format [id, id]
-        $temp = array();
-        foreach ($favorites as $id) { $temp[$id] = time(); }
-        $favorites = $temp;
+if ( ! empty( $favorites ) && array_values( $favorites ) === $favorites ) {
+    $temp = array();
+    foreach ( $favorites as $fid ) {
+        if ( is_numeric( $fid ) ) {
+            $temp[$fid] = time();
+        }
     }
+    $favorites = $temp;
 }
 ?>
 <div class="jobs-module-content">
@@ -28,7 +28,7 @@ if (!empty($favorites)) {
 
     <div class="favorites-list" style="display: flex; flex-direction: column; gap: 12px;">
         <?php if ( $favorites ) :
-            $job_ids = is_numeric(array_keys($favorites)[0]) ? $favorites : array_keys($favorites);
+            $job_ids = array_keys($favorites);
             $query = new WP_Query( array(
                 'post_type' => 'job',
                 'post__in' => $job_ids,

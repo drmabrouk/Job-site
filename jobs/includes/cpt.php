@@ -182,5 +182,38 @@ function jobs_do_automated_archiving() {
         }
     }
     wp_reset_postdata();
+
+    // Inactive User Cleanup (10 days)
+    $inactive_days = 10;
+    $threshold = time() - ( $inactive_days * DAY_IN_SECONDS );
+    $users = get_users( array(
+        'meta_query' => array(
+            'relation' => 'OR',
+            array(
+                'key'     => '_last_activity',
+                'value'   => $threshold,
+                'compare' => '<'
+            ),
+            array(
+                'key'     => '_last_activity',
+                'compare' => 'NOT EXISTS'
+            )
+        ),
+        'date_query' => array(
+            'before' => $inactive_days . ' days ago',
+        ),
+        'fields' => 'ID'
+    ) );
+
+    if ( ! empty( $users ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/user.php' );
+        foreach ( $users as $user_id ) {
+            $u = get_userdata( $user_id );
+            if ( ! $u ) continue;
+            // Prevent deleting admins
+            if ( in_array( 'administrator', $u->roles ) || in_array( 'system_admin', $u->roles ) ) continue;
+            wp_delete_user( $user_id );
+        }
+    }
 }
 add_action( 'jobs_daily_archiving', 'jobs_do_automated_archiving' );

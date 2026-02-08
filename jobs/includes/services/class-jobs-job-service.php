@@ -52,8 +52,14 @@ class Jobs_Job_Service {
     }
 
     private static function update_job_meta( $job_id, $data ) {
-        update_post_meta( $job_id, '_company_name', sanitize_text_field( $data['company_name'] ) );
-        update_post_meta( $job_id, '_company_logo', esc_url_raw( $data['company_logo'] ) );
+        $author_id = get_post_field( 'post_author', $job_id );
+        $company_data = get_user_meta( $author_id, 'jobs_company_data', true ) ?: array();
+
+        $company_name = !empty($data['company_name']) ? $data['company_name'] : ($company_data['name'] ?? '');
+        $company_logo = !empty($data['company_logo']) ? $data['company_logo'] : ($company_data['logo'] ?? '');
+
+        update_post_meta( $job_id, '_company_name', sanitize_text_field( $company_name ) );
+        update_post_meta( $job_id, '_company_logo', esc_url_raw( $company_logo ) );
         update_post_meta( $job_id, '_job_salary', sanitize_text_field( $data['job_salary'] ) );
         update_post_meta( $job_id, '_job_currency', sanitize_text_field( $data['job_currency'] ) );
         update_post_meta( $job_id, '_job_lat', sanitize_text_field( $data['job_lat'] ) );

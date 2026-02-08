@@ -29,7 +29,8 @@ $is_active       = get_post_status() === 'publish';
                 <?php if ( is_user_logged_in() ) :
                     $user_id = get_current_user_id();
                     $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
-                    $fav_ids = is_numeric(array_keys($favorites)[0] ?? 0) ? $favorites : array_keys($favorites);
+                    // Normalize for check
+                    $fav_ids = ( ! empty( $favorites ) && array_values( $favorites ) === $favorites ) ? $favorites : array_keys( $favorites );
                     $is_fav = in_array( get_the_ID(), $fav_ids );
                 ?>
                     <span class="jobs-favorite-toggle dashicons dashicons-heart <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Favorite"></span>

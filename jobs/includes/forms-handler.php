@@ -431,6 +431,57 @@ function jobs_ajax_approve_job() {
 add_action( 'wp_ajax_jobs_approve_job', 'jobs_ajax_approve_job' );
 
 /**
+ * Update User Role (Admin only)
+ */
+function jobs_ajax_update_user_role() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+    if ( ! Jobs_Permission_Service::is_system_admin() ) wp_send_json_error('Permission denied.');
+
+    $user_id = intval($_POST['user_id']);
+    $role = sanitize_text_field($_POST['role']);
+
+    if ( ! $user_id || ! $role ) wp_send_json_error('Invalid data.');
+
+    $user = new WP_User( $user_id );
+    $user->set_role( $role );
+
+    wp_send_json_success('Role updated.');
+}
+add_action( 'wp_ajax_jobs_update_user_role', 'jobs_ajax_update_user_role' );
+
+/**
+ * Delete User (Admin only)
+ */
+function jobs_ajax_delete_user() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+    if ( ! Jobs_Permission_Service::is_system_admin() ) wp_send_json_error('Permission denied.');
+
+    $user_id = intval($_POST['user_id']);
+    if ( ! $user_id || $user_id == get_current_user_id() ) wp_send_json_error('Cannot delete yourself or invalid ID.');
+
+    require_once( ABSPATH . 'wp-admin/includes/user.php' );
+    wp_delete_user( $user_id );
+
+    wp_send_json_success('User deleted.');
+}
+add_action( 'wp_ajax_jobs_delete_user', 'jobs_ajax_delete_user' );
+
+/**
+ * Track Last Activity
+ */
+function jobs_track_user_activity( $user_login, $user ) {
+    update_user_meta( $user->ID, '_last_activity', time() );
+}
+add_action( 'wp_login', 'jobs_track_user_activity', 10, 2 );
+
+function jobs_track_activity_on_load() {
+    if ( is_user_logged_in() ) {
+        update_user_meta( get_current_user_id(), '_last_activity', time() );
+    }
+}
+add_action( 'template_redirect', 'jobs_track_activity_on_load' );
+
+/**
  * Handle CV/Resume Saving (V3 - Multi-entry Portfolio)
  */
 function jobs_ajax_save_cv_handler_v3() {
@@ -685,13 +736,14 @@ function jobs_ajax_toggle_favorite() {
 
     $favorites = get_user_meta( $user_id, 'jobs_favorites', true ) ?: array();
 
-    // Check if it's stored in the new associative format or old flat array
-    $is_associative = (bool)count(array_filter(array_keys($favorites), 'is_string')) || (empty($favorites) === false && is_numeric(array_keys($favorites)[0]) === false);
-
-    // Normalize to associative for internal processing if it was flat
-    if (!empty($favorites) && !$is_associative) {
+    // Normalize: if it's a flat array of IDs, convert to [id => timestamp]
+    if ( ! empty( $favorites ) && array_values( $favorites ) === $favorites ) {
         $temp = array();
-        foreach ($favorites as $id) { $temp[$id] = time(); }
+        foreach ( $favorites as $fid ) {
+            if ( is_numeric( $fid ) ) {
+                $temp[$fid] = time();
+            }
+        }
         $favorites = $temp;
     }
 
