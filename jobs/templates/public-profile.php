@@ -12,9 +12,14 @@ if ( ! $username ) {
     return;
 }
 
+// Try looking up by slug (user_nicename), then fallback to login
 $user = get_user_by( 'slug', $username );
 if ( ! $user ) {
-    echo '<p>User not found.</p>';
+    $user = get_user_by( 'login', $username );
+}
+
+if ( ! $user ) {
+    echo '<p style="padding: 50px; text-align: center; color: #64748b;">User not found. The profile may have been removed or the link is incorrect.</p>';
     return;
 }
 
