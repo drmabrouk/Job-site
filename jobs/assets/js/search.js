@@ -52,7 +52,7 @@ jQuery(document).ready(function($) {
         } else {
             // Show bottom loader for append
             if (!$('#jobs-bottom-loader').length) {
-                $('.jobs-results-grid').after('<div id="jobs-bottom-loader" class="jobs-status-indicator" style="display:flex;"><div class="indicator-spinner"></div><p>Discovering more opportunities...</p></div>');
+                $('.jobs-results-grid').after('<div id="jobs-bottom-loader" class="jobs-status-indicator" style="display:flex; flex-direction:column; align-items:center; justify-content:center;"><div class="indicator-spinner"></div><p>Discovering more opportunities...</p></div>');
             }
             $('#jobs-bottom-loader').fadeIn(400);
         }
@@ -63,8 +63,8 @@ jQuery(document).ready(function($) {
         };
         if (append) data.load_more = 1;
 
-        // Mandate 2-second delay for smooth rendering and professional effect
-        const delay = 2000;
+        // Mandate 1-second delay for smooth rendering and professional effect
+        const delay = 1000;
 
         setTimeout(function() {
             $.get(jobs_vars.ajax_url, data, function(response) {

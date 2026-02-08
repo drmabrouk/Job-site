@@ -22,23 +22,21 @@ if ( ! defined( 'ABSPATH' ) ) {
             </div>
 
             <div class="form-group">
-                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Company Name</label>
-                <input type="text" name="company_name" required placeholder="Your Company" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
-            </div>
-
-            <div class="form-group">
-                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Logo URL</label>
-                <input type="text" name="company_logo" placeholder="https://example.com/logo.png" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
-            </div>
-
-            <div class="form-group">
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Salary Range</label>
                 <input type="text" name="job_salary" placeholder="e.g. 5000 - 7000" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
             </div>
 
             <div class="form-group">
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Currency</label>
-                <input type="text" name="job_currency" placeholder="e.g. USD" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
+                <select name="job_currency" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
+                    <option value="$">USD ($)</option>
+                    <option value="€">EUR (€)</option>
+                    <option value="£">GBP (£)</option>
+                    <option value="AED">AED</option>
+                    <option value="SAR">SAR</option>
+                    <option value="QAR">QAR</option>
+                    <option value="KWD">KWD</option>
+                </select>
             </div>
         </div>
 
@@ -61,19 +59,56 @@ if ( ! defined( 'ABSPATH' ) ) {
                 </select>
             </div>
             <div class="form-group">
-                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Job Type / Category</label>
-                <input type="text" name="category" placeholder="e.g. Full-time, Remote" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Job Category</label>
+                <select name="category" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
+                    <option value="">Select Category</option>
+                    <?php
+                    $cats = get_terms( array( 'taxonomy' => 'job_category', 'hide_empty' => false ) );
+                    foreach ($cats as $cat) {
+                        echo '<option value="'.esc_attr($cat->slug).'">'.esc_html($cat->name).'</option>';
+                    }
+                    ?>
+                </select>
             </div>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
             <div class="form-group">
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Country</label>
-                <input type="text" name="country" placeholder="e.g. USA" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
+                <select name="country" id="posting-country" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
+                    <option value="">Select Country</option>
+                    <option value="algeria">Algeria</option>
+                    <option value="bahrain">Bahrain</option>
+                    <option value="egypt">Egypt</option>
+                    <option value="iran">Iran</option>
+                    <option value="iraq">Iraq</option>
+                    <option value="jordan">Jordan</option>
+                    <option value="kuwait">Kuwait</option>
+                    <option value="lebanon">Lebanon</option>
+                    <option value="libya">Libya</option>
+                    <option value="morocco">Morocco</option>
+                    <option value="oman">Oman</option>
+                    <option value="palestine">Palestine</option>
+                    <option value="qatar">Qatar</option>
+                    <option value="saudi-arabia">Saudi Arabia</option>
+                    <option value="syria">Syria</option>
+                    <option value="tunisia">Tunisia</option>
+                    <option value="uae">United Arab Emirates</option>
+                    <option value="yemen">Yemen</option>
+                    <option value="usa">USA</option>
+                    <option value="uk">UK</option>
+                    <option value="canada">Canada</option>
+                    <option value="australia">Australia</option>
+                    <option value="new-zealand">New Zealand</option>
+                    <option value="ireland">Ireland</option>
+                    <option value="south-africa">South Africa</option>
+                </select>
             </div>
             <div class="form-group">
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">City</label>
-                <input type="text" name="city" placeholder="e.g. San Francisco" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px;">
+                <select name="city" id="posting-city" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
+                    <option value="">Select City</option>
+                </select>
             </div>
         </div>
 

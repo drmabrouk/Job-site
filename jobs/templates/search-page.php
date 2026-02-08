@@ -88,9 +88,9 @@ if ( ! defined( 'ABSPATH' ) ) {
             </form>
         </div>
 
-        <div id="jobs-status-indicator" class="jobs-status-indicator" style="display:none;">
+        <div id="jobs-status-indicator" class="jobs-status-indicator" style="display:none; flex-direction:column; align-items:center; justify-content:center;">
             <div class="indicator-spinner"></div>
-            <p id="indicator-message">Finding the best matches...</p>
+            <p id="indicator-message">Discovering more opportunities...</p>
         </div>
     </div>
 
