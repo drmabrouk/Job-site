@@ -9,6 +9,8 @@ add_shortcode( 'jobs_login_registration', 'jobs_render_login_registration' );
 add_shortcode( 'jobs_public_profile', 'jobs_render_public_profile' );
 add_shortcode( 'jobs_module', 'jobs_render_module_shortcode' );
 add_shortcode( 'jobs_job_seekers_page', 'jobs_render_job_seekers_page' );
+add_shortcode( 'profile_management', 'jobs_profile_management_shortcode' );
+add_shortcode( 'account_icon', 'jobs_account_icon_shortcode' );
 
 function jobs_render_search_page() {
     ob_start();
