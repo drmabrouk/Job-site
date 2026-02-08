@@ -19,7 +19,21 @@ function jobs_render_search_page() {
 
 function jobs_render_login_registration() {
     ob_start();
-    include JOBS_PLUGIN_DIR . 'templates/login-registration.php';
+    $action = isset( $_GET['action'] ) ? $_GET['action'] : '';
+
+    switch ( $action ) {
+        case 'verify':
+            include JOBS_PLUGIN_DIR . 'templates/auth-verify.php';
+            break;
+        case 'lostpassword':
+        case 'rp':
+            include JOBS_PLUGIN_DIR . 'templates/auth-password-reset.php';
+            break;
+        default:
+            include JOBS_PLUGIN_DIR . 'templates/login-registration.php';
+            break;
+    }
+
     return ob_get_clean();
 }
 

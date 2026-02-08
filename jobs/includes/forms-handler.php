@@ -57,10 +57,12 @@ function jobs_handle_forms() {
                 ) );
             }
 
-            wp_set_auth_cookie( $user_id );
+            // Send Verification Email
+            Jobs_Auth_Service::send_verification_email( $user_id );
 
-            $redirect = ! empty( $_POST['_wp_http_referer'] ) ? esc_url_raw( $_POST['_wp_http_referer'] ) : home_url();
-            wp_safe_redirect( $redirect );
+            // Redirect to verification page
+            $verify_url = add_query_arg( array( 'action' => 'verify', 'user_id' => $user_id ), home_url( '/login/' ) );
+            wp_safe_redirect( $verify_url );
             exit;
         } else {
             $jobs_registration_error = $user_id->get_error_message();
@@ -827,4 +829,131 @@ function jobs_ajax_send_job_offer() {
     Jobs_Job_Service::add_notification( $seeker_id, 'You have received a direct job offer!' );
 
     wp_send_json_success( 'Job offer sent successfully.' );
+}
+
+/**
+ * AJAX Handler: Verify Email Code
+ */
+add_action( 'wp_ajax_jobs_verify_email', 'jobs_ajax_verify_email_handler' );
+add_action( 'wp_ajax_nopriv_jobs_verify_email', 'jobs_ajax_verify_email_handler' );
+function jobs_ajax_verify_email_handler() {
+    $user_id = intval( $_POST['user_id'] );
+    $code = sanitize_text_field( $_POST['code'] );
+
+    $result = Jobs_Auth_Service::verify_code( $user_id, $code );
+
+    if ( is_wp_error( $result ) ) {
+        wp_send_json_error( $result->get_error_message() );
+    }
+
+    // Success - Log them in
+    wp_set_auth_cookie( $user_id );
+
+    // Role-based redirection
+    $user = get_userdata( $user_id );
+    $redirect = home_url();
+    if ( in_array( 'job_seeker', (array) $user->roles ) ) {
+        $redirect = home_url( '/dashboard/#cv-resume' );
+    } elseif ( in_array( 'employer', (array) $user->roles ) ) {
+        $redirect = home_url( '/dashboard/#company-profile' );
+    }
+
+    wp_send_json_success( array( 'redirect' => $redirect ) );
+}
+
+/**
+ * AJAX Handler: Request Password Reset
+ */
+add_action( 'wp_ajax_jobs_request_password_reset', 'jobs_ajax_request_password_reset' );
+add_action( 'wp_ajax_nopriv_jobs_request_password_reset', 'jobs_ajax_request_password_reset' );
+function jobs_ajax_request_password_reset() {
+    $user_login = sanitize_text_field( $_POST['user_login'] );
+    $result = Jobs_Auth_Service::send_password_reset( $user_login );
+
+    if ( is_wp_error( $result ) ) {
+        wp_send_json_error( $result->get_error_message() );
+    }
+
+    wp_send_json_success( 'Password reset link has been sent to your email.' );
+}
+
+/**
+ * AJAX Handler: Reset Password
+ */
+add_action( 'wp_ajax_jobs_reset_password', 'jobs_ajax_reset_password' );
+add_action( 'wp_ajax_nopriv_jobs_reset_password', 'jobs_ajax_reset_password' );
+function jobs_ajax_reset_password() {
+    $rp_key = sanitize_text_field( $_POST['rp_key'] );
+    $rp_login = sanitize_text_field( $_POST['rp_login'] );
+    $pass1 = $_POST['pass1'];
+    $pass2 = $_POST['pass2'];
+
+    if ( $pass1 !== $pass2 ) {
+        wp_send_json_error( 'Passwords do not match.' );
+    }
+
+    $user = check_password_reset_key( $rp_key, $rp_login );
+
+    if ( is_wp_error( $user ) ) {
+        wp_send_json_error( 'Invalid or expired reset link.' );
+    }
+
+    reset_password( $user, $pass1 );
+    wp_send_json_success( 'Password has been reset successfully. You can now login.' );
+}
+
+/**
+ * AJAX Handler: Biometric Login Placeholder
+ */
+add_action( 'wp_ajax_jobs_biometric_login', 'jobs_ajax_biometric_login_handler' );
+add_action( 'wp_ajax_nopriv_jobs_biometric_login', 'jobs_ajax_biometric_login_handler' );
+function jobs_ajax_biometric_login_handler() {
+    // Placeholder for WebAuthn logic
+    wp_send_json_error( 'Biometric login is not yet configured for this device.' );
+}
+
+/**
+ * AJAX Handler: Login
+ */
+add_action( 'wp_ajax_jobs_ajax_login', 'jobs_ajax_login_handler' );
+add_action( 'wp_ajax_nopriv_jobs_ajax_login', 'jobs_ajax_login_handler' );
+function jobs_ajax_login_handler() {
+    check_ajax_referer( 'jobs_main_nonce', 'security' );
+
+    $info = array();
+    $info['user_login'] = sanitize_user( $_POST['log'] );
+    $info['user_password'] = $_POST['pwd'];
+    $info['remember'] = $_POST['rememberme'] === 'forever';
+
+    $user_signon = wp_signon( $info, false );
+
+    if ( is_wp_error( $user_signon ) ) {
+        wp_send_json_error( 'Invalid username or password.' );
+    } else {
+        // Check if verified
+        $is_verified = get_user_meta( $user_signon->ID, '_is_email_verified', true );
+        if ( ! $is_verified ) {
+            // Log out and require verification
+            wp_logout();
+            Jobs_Auth_Service::send_verification_email( $user_signon->ID );
+            $verify_url = add_query_arg( array( 'action' => 'verify', 'user_id' => $user_signon->ID ), home_url( '/login/' ) );
+            wp_send_json_success( array( 'redirect' => $verify_url ) );
+        }
+
+        wp_send_json_success( array( 'redirect' => home_url( '/dashboard/' ) ) );
+    }
+}
+
+/**
+ * AJAX Handler: Resend Verify Code
+ */
+add_action( 'wp_ajax_jobs_resend_verify_code', 'jobs_ajax_resend_verify_code_handler' );
+add_action( 'wp_ajax_nopriv_jobs_resend_verify_code', 'jobs_ajax_resend_verify_code_handler' );
+function jobs_ajax_resend_verify_code_handler() {
+    $user_id = intval( $_POST['user_id'] );
+    if ( Jobs_Auth_Service::send_verification_email( $user_id ) ) {
+        wp_send_json_success( 'A new verification code has been sent.' );
+    } else {
+        wp_send_json_error( 'Failed to send verification code.' );
+    }
 }
