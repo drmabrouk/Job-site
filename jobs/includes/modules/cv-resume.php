@@ -1,6 +1,6 @@
 <?php
 /**
- * Module: CV / Resume (Professional Multi-step Overhaul)
+ * Module: CV / Resume (Professional Multi-entry Overhaul)
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -15,11 +15,15 @@ $degrees = array('High School', "Bachelor's Degree", "Master's Degree", 'PhD', '
 $job_types = array('Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship');
 $proficiency = array('Beginner', 'Intermediate', 'Advanced', 'Native', 'Fluent');
 $work_settings = array('Remote', 'On-site', 'Hybrid');
+
+// Normalize multi-entry fields
+$academic_list = !empty($cv['academic']) && is_array($cv['academic']) && isset($cv['academic'][0]) ? $cv['academic'] : array($cv['academic'] ?? array());
+$experience_list = !empty($cv['experience']) && is_array($cv['experience']) && isset($cv['experience'][0]) ? $cv['experience'] : array($cv['experience'] ?? array());
 ?>
-<div class="jobs-module-content" id="jobs-cv-module-v2">
+<div class="jobs-module-content" id="jobs-cv-module-v3">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
-        <h3 style="margin: 0; font-size: 1.8em; color: var(--jobs-primary-color);">Professional CV Setup</h3>
-        <a href="<?php echo esc_url($profile_link); ?>" target="_blank" class="jobs-btn-small" style="background: #10b981;">View Public Profile</a>
+        <h3 style="margin: 0; font-size: 1.8em; color: var(--jobs-primary-color);">Professional Portfolio Setup</h3>
+        <a href="<?php echo esc_url($profile_link); ?>" target="_blank" class="jobs-btn-small" style="background: #10b981;">View Public Portfolio</a>
     </div>
 
     <div class="cv-progress-bar" style="display: flex; justify-content: space-between; margin-bottom: 40px; position: relative; padding: 0 10px;">
@@ -36,172 +40,150 @@ $work_settings = array('Remote', 'On-site', 'Hybrid');
         <?php endforeach; ?>
     </div>
 
-    <form id="jobs-cv-form-v2" method="POST">
+    <form id="jobs-cv-form-v3" method="POST">
         <?php wp_nonce_field( 'jobs_save_cv', 'jobs_cv_nonce' ); ?>
 
         <!-- Step 0: Personal Information -->
         <div class="cv-step-panel active" id="cv-step-0">
-            <h4 style="margin-bottom:20px; color:#1d3469; border-left: 4px solid #1d3469; padding-left: 10px;">Personal Information</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <h4 class="step-title">Personal Information</h4>
+            <div class="grid-2">
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="personal[full_name]" value="<?php echo esc_attr($cv['personal']['full_name'] ?? ''); ?>" required>
+                    <input type="text" name="personal[full_name]" value="<?php echo esc_attr($cv['personal']['full_name'] ?? ''); ?>" placeholder="Full Name" required>
                 </div>
                 <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="personal[email]" value="<?php echo esc_attr($cv['personal']['email'] ?? ''); ?>" required>
+                    <input type="email" name="personal[email]" value="<?php echo esc_attr($cv['personal']['email'] ?? ''); ?>" placeholder="Email Address" required>
                 </div>
                 <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="text" name="personal[phone]" value="<?php echo esc_attr($cv['personal']['phone'] ?? ''); ?>">
+                    <input type="text" name="personal[phone]" value="<?php echo esc_attr($cv['personal']['phone'] ?? ''); ?>" placeholder="Phone Number">
                 </div>
                 <div class="form-group">
-                    <label>Alternative Phone</label>
-                    <input type="text" name="personal[alt_phone]" value="<?php echo esc_attr($cv['personal']['alt_phone'] ?? ''); ?>">
+                    <input type="text" name="personal[alt_phone]" value="<?php echo esc_attr($cv['personal']['alt_phone'] ?? ''); ?>" placeholder="Alternative Phone">
                 </div>
                 <div class="form-group">
-                    <label>Date of Birth</label>
-                    <input type="date" name="personal[dob]" value="<?php echo esc_attr($cv['personal']['dob'] ?? ''); ?>">
+                    <input type="date" name="personal[dob]" value="<?php echo esc_attr($cv['personal']['dob'] ?? ''); ?>" placeholder="Date of Birth">
                 </div>
                 <div class="form-group">
-                    <label>Gender</label>
                     <select name="personal[gender]">
                         <option value="">Select Gender</option>
                         <option value="Male" <?php selected($cv['personal']['gender'] ?? '', 'Male'); ?>>Male</option>
                         <option value="Female" <?php selected($cv['personal']['gender'] ?? '', 'Female'); ?>>Female</option>
                     </select>
                 </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Residential Address</label>
-                    <input type="text" name="personal[address]" value="<?php echo esc_attr($cv['personal']['address'] ?? ''); ?>">
+                <div class="form-group span-2">
+                    <input type="text" name="personal[address]" value="<?php echo esc_attr($cv['personal']['address'] ?? ''); ?>" placeholder="Residential Address">
                 </div>
                 <div class="form-group">
-                    <label>City</label>
-                    <input type="text" name="personal[city]" value="<?php echo esc_attr($cv['personal']['city'] ?? ''); ?>">
+                    <input type="text" name="personal[city]" value="<?php echo esc_attr($cv['personal']['city'] ?? ''); ?>" placeholder="City">
                 </div>
                 <div class="form-group">
-                    <label>State / Province</label>
-                    <input type="text" name="personal[state]" value="<?php echo esc_attr($cv['personal']['state'] ?? ''); ?>">
+                    <input type="text" name="personal[state]" value="<?php echo esc_attr($cv['personal']['state'] ?? ''); ?>" placeholder="State / Province">
                 </div>
                 <div class="form-group">
-                    <label>Country</label>
-                    <input type="text" name="personal[country]" value="<?php echo esc_attr($cv['personal']['country'] ?? ''); ?>">
+                    <input type="text" name="personal[country]" value="<?php echo esc_attr($cv['personal']['country'] ?? ''); ?>" placeholder="Country">
                 </div>
                 <div class="form-group">
-                    <label>Postal Code</label>
-                    <input type="text" name="personal[postal]" value="<?php echo esc_attr($cv['personal']['postal'] ?? ''); ?>">
+                    <input type="text" name="personal[postal]" value="<?php echo esc_attr($cv['personal']['postal'] ?? ''); ?>" placeholder="Postal Code">
                 </div>
                 <div class="form-group">
-                    <label>Residency Status</label>
                     <select name="personal[residency]">
+                        <option value="" disabled <?php echo empty($cv['personal']['residency']) ? 'selected':''; ?>>Residency Status</option>
                         <option value="Citizen" <?php selected($cv['personal']['residency'] ?? '', 'Citizen'); ?>>Citizen</option>
                         <option value="Resident" <?php selected($cv['personal']['residency'] ?? '', 'Resident'); ?>>Resident</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>LinkedIn Link</label>
-                    <input type="url" name="personal[linkedin]" value="<?php echo esc_attr($cv['personal']['linkedin'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label>Other Portfolio Link</label>
-                    <input type="url" name="personal[portfolio]" value="<?php echo esc_attr($cv['personal']['portfolio'] ?? ''); ?>">
-                </div>
             </div>
-            <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+            <div class="step-nav">
                 <button type="button" class="jobs-btn next-cv-step" data-next="1">Academic Qualifications →</button>
             </div>
         </div>
 
-        <!-- Step 1: Academic Qualifications -->
+        <!-- Step 1: Academic Qualifications (Multi) -->
         <div class="cv-step-panel" id="cv-step-1" style="display:none;">
-            <h4 style="margin-bottom:20px; color:#1d3469; border-left: 4px solid #1d3469; padding-left: 10px;">Academic Qualifications</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                    <label>Highest Degree</label>
-                    <select name="academic[degree_1]">
-                        <option value="">Select Degree</option>
-                        <?php foreach($degrees as $d): ?><option value="<?php echo $d; ?>" <?php selected($cv['academic']['degree_1'] ?? '', $d); ?>><?php echo $d; ?></option><?php endforeach; ?>
-                    </select>
+            <h4 class="step-title">Academic Qualifications</h4>
+            <div id="academic-repeater">
+                <?php foreach($academic_list as $index => $item): ?>
+                <div class="repeater-item academic-item">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <select name="academic[<?php echo $index; ?>][degree]">
+                                <option value="">Select Degree</option>
+                                <?php foreach($degrees as $d): ?><option value="<?php echo $d; ?>" <?php selected($item['degree'] ?? '', $d); ?>><?php echo $d; ?></option><?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="academic[<?php echo $index; ?>][uni]" value="<?php echo esc_attr($item['uni'] ?? ''); ?>" placeholder="University / Institute">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="academic[<?php echo $index; ?>][spec_main]" value="<?php echo esc_attr($item['spec_main'] ?? ''); ?>" placeholder="Main Specialization">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="academic[<?php echo $index; ?>][spec_sub]" value="<?php echo esc_attr($item['spec_sub'] ?? ''); ?>" placeholder="Sub Specialization">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="academic[<?php echo $index; ?>][gpa]" value="<?php echo esc_attr($item['gpa'] ?? ''); ?>" placeholder="GPA / Grade">
+                        </div>
+                        <div class="form-group">
+                            <input type="date" name="academic[<?php echo $index; ?>][grad_date]" value="<?php echo esc_attr($item['grad_date'] ?? ''); ?>" placeholder="Graduation Date">
+                        </div>
+                        <div class="form-group span-2">
+                            <input type="text" name="academic[<?php echo $index; ?>][grad_project]" value="<?php echo esc_attr($item['grad_project'] ?? ''); ?>" placeholder="Graduation Project Title">
+                        </div>
+                        <div class="form-group span-2">
+                            <textarea name="academic[<?php echo $index; ?>][achievements]" placeholder="Academic Achievements & Courses"><?php echo esc_textarea($item['achievements'] ?? ''); ?></textarea>
+                        </div>
+                    </div>
+                    <?php if($index > 0): ?><button type="button" class="remove-repeater">Remove</button><?php endif; ?>
                 </div>
-                <div class="form-group">
-                    <label>University / Institute</label>
-                    <input type="text" name="academic[uni_1]" value="<?php echo esc_attr($cv['academic']['uni_1'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label>Main Specialization</label>
-                    <input type="text" name="academic[spec_main]" value="<?php echo esc_attr($cv['academic']['spec_main'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label>Sub Specialization</label>
-                    <input type="text" name="academic[spec_sub]" value="<?php echo esc_attr($cv['academic']['spec_sub'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label>GPA / Grade</label>
-                    <input type="text" name="academic[gpa]" value="<?php echo esc_attr($cv['academic']['gpa'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label>Graduation Date</label>
-                    <input type="date" name="academic[grad_date]" value="<?php echo esc_attr($cv['academic']['grad_date'] ?? ''); ?>">
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Graduation Project</label>
-                    <input type="text" name="academic[grad_project]" value="<?php echo esc_attr($cv['academic']['grad_project'] ?? ''); ?>">
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Academic Achievements & Courses</label>
-                    <textarea name="academic[achievements]" style="height: 80px;"><?php echo esc_textarea($cv['academic']['achievements'] ?? ''); ?></textarea>
-                </div>
+                <?php endforeach; ?>
             </div>
-            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+            <button type="button" class="jobs-btn-minimal add-repeater" data-type="academic">+ Add Another Qualification</button>
+            <div class="step-nav">
                 <button type="button" class="jobs-btn-minimal prev-cv-step" data-prev="0">← Back</button>
                 <button type="button" class="jobs-btn next-cv-step" data-next="2">Professional Experience →</button>
             </div>
         </div>
 
-        <!-- Step 2: Professional Experience -->
+        <!-- Step 2: Professional Experience (Multi) -->
         <div class="cv-step-panel" id="cv-step-2" style="display:none;">
-            <h4 style="margin-bottom:20px; color:#1d3469; border-left: 4px solid #1d3469; padding-left: 10px;">Professional Experience</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group">
-                    <label>Previous Company</label>
-                    <input type="text" name="experience[company]" value="<?php echo esc_attr($cv['experience']['company'] ?? ''); ?>">
+            <h4 class="step-title">Professional Experience</h4>
+            <div id="experience-repeater">
+                <?php foreach($experience_list as $index => $item): ?>
+                <div class="repeater-item experience-item">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <input type="text" name="experience[<?php echo $index; ?>][company]" value="<?php echo esc_attr($item['company'] ?? ''); ?>" placeholder="Company Name">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="experience[<?php echo $index; ?>][title]" value="<?php echo esc_attr($item['title'] ?? ''); ?>" placeholder="Job Title">
+                        </div>
+                        <div class="form-group">
+                            <input type="date" name="experience[<?php echo $index; ?>][start]" value="<?php echo esc_attr($item['start'] ?? ''); ?>" placeholder="Start Date">
+                        </div>
+                        <div class="form-group">
+                            <input type="date" name="experience[<?php echo $index; ?>][end]" value="<?php echo esc_attr($item['end'] ?? ''); ?>" placeholder="End Date (Blank if Current)">
+                        </div>
+                        <div class="form-group">
+                            <select name="experience[<?php echo $index; ?>][type]">
+                                <option value="">Job Type</option>
+                                <?php foreach($job_types as $t): ?><option value="<?php echo $t; ?>" <?php selected($item['type'] ?? '', $t); ?>><?php echo $t; ?></option><?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="experience[<?php echo $index; ?>][sector]" value="<?php echo esc_attr($item['sector'] ?? ''); ?>" placeholder="Company Sector">
+                        </div>
+                        <div class="form-group span-2">
+                            <textarea name="experience[<?php echo $index; ?>][tasks]" placeholder="Tasks & Responsibilities"><?php echo esc_textarea($item['tasks'] ?? ''); ?></textarea>
+                        </div>
+                        <div class="form-group span-2">
+                            <textarea name="experience[<?php echo $index; ?>][achievements]" placeholder="Key Achievements"><?php echo esc_textarea($item['achievements'] ?? ''); ?></textarea>
+                        </div>
+                    </div>
+                    <?php if($index > 0): ?><button type="button" class="remove-repeater">Remove</button><?php endif; ?>
                 </div>
-                <div class="form-group">
-                    <label>Job Title</label>
-                    <input type="text" name="experience[title]" value="<?php echo esc_attr($cv['experience']['title'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label>Start Date</label>
-                    <input type="date" name="experience[start]" value="<?php echo esc_attr($cv['experience']['start'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label>End Date (Keep empty if current)</label>
-                    <input type="date" name="experience[end]" value="<?php echo esc_attr($cv['experience']['end'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label>Job Type</label>
-                    <select name="experience[type]">
-                        <?php foreach($job_types as $t): ?><option value="<?php echo $t; ?>" <?php selected($cv['experience']['type'] ?? '', $t); ?>><?php echo $t; ?></option><?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Company Sector</label>
-                    <input type="text" name="experience[sector]" value="<?php echo esc_attr($cv['experience']['sector'] ?? ''); ?>">
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Tasks & Responsibilities</label>
-                    <textarea name="experience[tasks]" style="height: 100px;"><?php echo esc_textarea($cv['experience']['tasks'] ?? ''); ?></textarea>
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Key Achievements</label>
-                    <textarea name="experience[achievements]" style="height: 80px;"><?php echo esc_textarea($cv['experience']['achievements'] ?? ''); ?></textarea>
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Reason for Leaving</label>
-                    <input type="text" name="experience[leaving_reason]" value="<?php echo esc_attr($cv['experience']['leaving_reason'] ?? ''); ?>">
-                </div>
+                <?php endforeach; ?>
             </div>
-            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+            <button type="button" class="jobs-btn-minimal add-repeater" data-type="experience">+ Add Another Experience</button>
+            <div class="step-nav">
                 <button type="button" class="jobs-btn-minimal prev-cv-step" data-prev="1">← Back</button>
                 <button type="button" class="jobs-btn next-cv-step" data-next="3">Skills & Certifications →</button>
             </div>
@@ -209,38 +191,31 @@ $work_settings = array('Remote', 'On-site', 'Hybrid');
 
         <!-- Step 3: Skills & Certifications -->
         <div class="cv-step-panel" id="cv-step-3" style="display:none;">
-            <h4 style="margin-bottom:20px; color:#1d3469; border-left: 4px solid #1d3469; padding-left: 10px;">Skills & Certifications</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Core Skills (Comma separated)</label>
-                    <input type="text" name="skills[core]" value="<?php echo esc_attr($cv['skills']['core'] ?? ''); ?>" placeholder="e.g. PHP, Management, React">
+            <h4 class="step-title">Skills & Certifications</h4>
+            <div class="grid-2">
+                <div class="form-group span-2">
+                    <input type="text" name="skills[core]" value="<?php echo esc_attr($cv['skills']['core'] ?? ''); ?>" placeholder="Core Skills (Comma separated, e.g. PHP, Management, React)">
                 </div>
                 <div class="form-group">
-                    <label>Technical Skills</label>
-                    <input type="text" name="skills[technical]" value="<?php echo esc_attr($cv['skills']['technical'] ?? ''); ?>">
+                    <input type="text" name="skills[technical]" value="<?php echo esc_attr($cv['skills']['technical'] ?? ''); ?>" placeholder="Technical Skills">
                 </div>
                 <div class="form-group">
-                    <label>Managerial Skills</label>
-                    <input type="text" name="skills[managerial]" value="<?php echo esc_attr($cv['skills']['managerial'] ?? ''); ?>">
+                    <input type="text" name="skills[managerial]" value="<?php echo esc_attr($cv['skills']['managerial'] ?? ''); ?>" placeholder="Managerial Skills">
                 </div>
-                <div class="form-group" style="grid-column: span 2; border-top: 1px solid #f1f5f9; padding-top: 15px;">
-                    <label>Professional Certification Name</label>
-                    <input type="text" name="skills[cert_name]" value="<?php echo esc_attr($cv['skills']['cert_name'] ?? ''); ?>">
+                <div class="form-group span-2" style="border-top: 1px solid #f1f5f9; padding-top: 15px;">
+                    <input type="text" name="skills[cert_name]" value="<?php echo esc_attr($cv['skills']['cert_name'] ?? ''); ?>" placeholder="Professional Certification Name">
                 </div>
                 <div class="form-group">
-                    <label>Issuing Authority</label>
-                    <input type="text" name="skills[cert_auth]" value="<?php echo esc_attr($cv['skills']['cert_auth'] ?? ''); ?>">
+                    <input type="text" name="skills[cert_auth]" value="<?php echo esc_attr($cv['skills']['cert_auth'] ?? ''); ?>" placeholder="Issuing Authority">
                 </div>
                 <div class="form-group">
-                    <label>Certification Date</label>
-                    <input type="date" name="skills[cert_date]" value="<?php echo esc_attr($cv['skills']['cert_date'] ?? ''); ?>">
+                    <input type="date" name="skills[cert_date]" value="<?php echo esc_attr($cv['skills']['cert_date'] ?? ''); ?>" placeholder="Certification Date">
                 </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Training Courses</label>
-                    <textarea name="skills[courses]" style="height: 60px;"><?php echo esc_textarea($cv['skills']['courses'] ?? ''); ?></textarea>
+                <div class="form-group span-2">
+                    <textarea name="skills[courses]" placeholder="Training Courses"><?php echo esc_textarea($cv['skills']['courses'] ?? ''); ?></textarea>
                 </div>
             </div>
-            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+            <div class="step-nav">
                 <button type="button" class="jobs-btn-minimal prev-cv-step" data-prev="2">← Back</button>
                 <button type="button" class="jobs-btn next-cv-step" data-next="4">Languages →</button>
             </div>
@@ -248,40 +223,37 @@ $work_settings = array('Remote', 'On-site', 'Hybrid');
 
         <!-- Step 4: Languages -->
         <div class="cv-step-panel" id="cv-step-4" style="display:none;">
-            <h4 style="margin-bottom:20px; color:#1d3469; border-left: 4px solid #1d3469; padding-left: 10px;">Languages</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <h4 class="step-title">Languages</h4>
+            <div class="grid-2">
                 <div class="form-group">
-                    <label>Native Language</label>
-                    <input type="text" name="languages[native]" value="<?php echo esc_attr($cv['languages']['native'] ?? ''); ?>">
+                    <input type="text" name="languages[native]" value="<?php echo esc_attr($cv['languages']['native'] ?? ''); ?>" placeholder="Native Language">
                 </div>
                 <div class="form-group">
-                    <label>Other Language</label>
-                    <input type="text" name="languages[other]" value="<?php echo esc_attr($cv['languages']['other'] ?? ''); ?>">
+                    <input type="text" name="languages[other]" value="<?php echo esc_attr($cv['languages']['other'] ?? ''); ?>" placeholder="Other Language">
                 </div>
                 <div class="form-group">
-                    <label>Speaking Proficiency</label>
                     <select name="languages[speak]">
+                        <option value="">Speaking Proficiency</option>
                         <?php foreach($proficiency as $p): ?><option value="<?php echo $p; ?>" <?php selected($cv['languages']['speak'] ?? '', $p); ?>><?php echo $p; ?></option><?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Writing Proficiency</label>
                     <select name="languages[write]">
+                        <option value="">Writing Proficiency</option>
                         <?php foreach($proficiency as $p): ?><option value="<?php echo $p; ?>" <?php selected($cv['languages']['write'] ?? '', $p); ?>><?php echo $p; ?></option><?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Reading Proficiency</label>
                     <select name="languages[read]">
+                        <option value="">Reading Proficiency</option>
                         <?php foreach($proficiency as $p): ?><option value="<?php echo $p; ?>" <?php selected($cv['languages']['read'] ?? '', $p); ?>><?php echo $p; ?></option><?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Language Certificate / Score</label>
-                    <input type="text" name="languages[score]" value="<?php echo esc_attr($cv['languages']['score'] ?? ''); ?>" placeholder="e.g. IELTS 7.5">
+                    <input type="text" name="languages[score]" value="<?php echo esc_attr($cv['languages']['score'] ?? ''); ?>" placeholder="Language Certificate / Score (e.g. IELTS 7.5)">
                 </div>
             </div>
-            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+            <div class="step-nav">
                 <button type="button" class="jobs-btn-minimal prev-cv-step" data-prev="3">← Back</button>
                 <button type="button" class="jobs-btn next-cv-step" data-next="5">Preferences →</button>
             </div>
@@ -289,57 +261,55 @@ $work_settings = array('Remote', 'On-site', 'Hybrid');
 
         <!-- Step 5: Additional Job Preferences -->
         <div class="cv-step-panel" id="cv-step-5" style="display:none;">
-            <h4 style="margin-bottom:20px; color:#1d3469; border-left: 4px solid #1d3469; padding-left: 10px;">Additional Job Preferences</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <h4 class="step-title">Additional Job Preferences</h4>
+            <div class="grid-2">
                 <div class="form-group">
-                    <label>Preferred Contract Type</label>
                     <select name="preferences[contract]">
+                        <option value="">Preferred Contract Type</option>
                         <?php foreach($job_types as $t): ?><option value="<?php echo $t; ?>" <?php selected($cv['preferences']['contract'] ?? '', $t); ?>><?php echo $t; ?></option><?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Expected Monthly Salary</label>
-                    <input type="text" name="preferences[salary]" value="<?php echo esc_attr($cv['preferences']['salary'] ?? ''); ?>">
+                    <input type="text" name="preferences[salary]" value="<?php echo esc_attr($cv['preferences']['salary'] ?? ''); ?>" placeholder="Expected Monthly Salary">
                 </div>
                 <div class="form-group">
-                    <label>Availability Date</label>
-                    <input type="date" name="preferences[availability]" value="<?php echo esc_attr($cv['preferences']['availability'] ?? ''); ?>">
+                    <input type="date" name="preferences[availability]" value="<?php echo esc_attr($cv['preferences']['availability'] ?? ''); ?>" placeholder="Availability Date">
                 </div>
                 <div class="form-group">
-                    <label>Work Location Flexibility</label>
                     <select name="preferences[flexibility]">
+                        <option value="">Work Location Flexibility</option>
                         <?php foreach($work_settings as $s): ?><option value="<?php echo $s; ?>" <?php selected($cv['preferences']['flexibility'] ?? '', $s); ?>><?php echo $s; ?></option><?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Willing to Relocate?</label>
                     <select name="preferences[relocate]">
+                        <option value="">Willing to Relocate?</option>
                         <option value="Yes" <?php selected($cv['preferences']['relocate'] ?? '', 'Yes'); ?>>Yes</option>
                         <option value="No" <?php selected($cv['preferences']['relocate'] ?? '', 'No'); ?>>No</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Willing to Travel?</label>
                     <select name="preferences[travel]">
+                        <option value="">Willing to Travel?</option>
                         <option value="Yes" <?php selected($cv['preferences']['travel'] ?? '', 'Yes'); ?>>Yes</option>
                         <option value="No" <?php selected($cv['preferences']['travel'] ?? '', 'No'); ?>>No</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Willing to Work Overtime?</label>
                     <select name="preferences[overtime]">
+                        <option value="">Willing to Work Overtime?</option>
                         <option value="Yes" <?php selected($cv['preferences']['overtime'] ?? '', 'Yes'); ?>>Yes</option>
                         <option value="No" <?php selected($cv['preferences']['overtime'] ?? '', 'No'); ?>>No</option>
                     </select>
                 </div>
             </div>
-            <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="step-nav">
                 <button type="button" class="jobs-btn-minimal prev-cv-step" data-prev="4">← Back</button>
-                <button type="submit" class="jobs-btn" style="padding: 15px 40px;">Complete Profile Setup</button>
+                <button type="submit" class="jobs-btn" style="padding: 15px 40px;">Publish My Portfolio</button>
             </div>
         </div>
     </form>
-    <div id="jobs-cv-status-v2" style="margin-top: 20px; text-align: center;"></div>
+    <div id="jobs-cv-status-v3" style="margin-top: 20px; text-align: center;"></div>
 </div>
 
 <script>
@@ -381,18 +351,44 @@ jQuery(document).ready(function($) {
         updateProgress(prev);
     });
 
-    $('#jobs-cv-form-v2').on('submit', function(e) {
+    // Repeater Logic
+    $('.add-repeater').on('click', function() {
+        var type = $(this).data('type');
+        var $container = $('#' + type + '-repeater');
+        var index = $container.find('.repeater-item').length;
+        var $clone = $container.find('.repeater-item').first().clone();
+
+        // Clear inputs and update names
+        $clone.find('input, select, textarea').each(function() {
+            var name = $(this).attr('name');
+            var newName = name.replace(/\[\d+\]/, '[' + index + ']');
+            $(this).attr('name', newName).val('');
+        });
+
+        // Add remove button if not present
+        if($clone.find('.remove-repeater').length === 0) {
+            $clone.append('<button type="button" class="remove-repeater">Remove</button>');
+        }
+
+        $clone.hide().appendTo($container).fadeIn();
+    });
+
+    $(document).on('click', '.remove-repeater', function() {
+        $(this).closest('.repeater-item').fadeOut(function() { $(this).remove(); });
+    });
+
+    $('#jobs-cv-form-v3').on('submit', function(e) {
         e.preventDefault();
-        var data = $(this).serialize() + '&action=jobs_save_cv_handler_v2';
-        var $status = $('#jobs-cv-status-v2');
-        $status.html('<p style="color:#666;">Saving your professional profile...</p>');
+        var data = $(this).serialize() + '&action=jobs_save_cv_handler_v3';
+        var $status = $('#jobs-cv-status-v3');
+        $status.html('<p style="color:#666; font-weight:600;">Saving your professional portfolio and updating your profile...</p>');
 
         $.post(jobs_vars.ajax_url, data, function(response) {
             if(response.success) {
-                $status.html('<p style="color:#16a34a; font-weight:600;">✓ Profile updated successfully! Redirecting to your public view...</p>');
-                setTimeout(function() { window.location.href = "<?php echo $profile_link; ?>"; }, 2000);
+                $status.html('<div style="background:#dcfce7; color:#166534; padding:20px; border-radius:12px; font-weight:600;">✓ Portfolio published successfully! Your public profile has been updated instantly. Redirecting...</div>');
+                setTimeout(function() { window.location.href = "<?php echo $profile_link; ?>"; }, 2500);
             } else {
-                $status.html('<p style="color:#ef4444;">Error: ' + response.data + '</p>');
+                $status.html('<p style="color:#ef4444; font-weight:600;">Error: ' + response.data + '</p>');
             }
         });
     });
@@ -400,25 +396,52 @@ jQuery(document).ready(function($) {
 </script>
 
 <style>
-.cv-step-panel label {
-    display: block;
-    font-weight: 600;
-    font-size: 0.85em;
-    color: #475569;
-    margin-bottom: 8px;
+.cv-step-panel .step-title {
+    margin-bottom: 25px;
+    color: #1d3469;
+    border-left: 4px solid #1d3469;
+    padding-left: 15px;
+    font-size: 1.3em;
 }
-.cv-step-panel input, .cv-step-panel select, .cv-step-panel textarea {
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.span-2 { grid-column: span 2; }
+.form-group input, .form-group select, .form-group textarea {
     width: 100%;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 14px 18px;
+    border-radius: 12px;
     border: 1px solid #cbd5e1;
     background: #fff;
     font-family: inherit;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
+    font-size: 0.95em;
 }
-.cv-step-panel input:focus, .cv-step-panel select:focus, .cv-step-panel textarea:focus {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     border-color: var(--jobs-primary-color);
+    box-shadow: 0 0 0 3px rgba(29, 52, 105, 0.1);
     outline: none;
 }
-.cv-step-panel textarea { resize: vertical; }
+.form-group textarea { resize: vertical; min-height: 80px; }
+.repeater-item {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    border: 1px solid #e2e8f0;
+    position: relative;
+}
+.remove-repeater {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.75em;
+    font-weight: 600;
+    cursor: pointer;
+}
+.step-nav { margin-top: 35px; display: flex; justify-content: space-between; align-items: center; }
+.add-repeater { margin-bottom: 30px; font-weight: 600; color: var(--jobs-primary-color); }
 </style>
