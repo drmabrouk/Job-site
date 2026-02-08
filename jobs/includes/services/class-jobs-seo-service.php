@@ -53,16 +53,21 @@ class Jobs_SEO_Service {
                 "hiringOrganization" => array(
                     "@type" => "Organization",
                     "name" => get_post_meta($job_id, '_company_name', true),
-                    "logo" => get_post_meta($job_id, '_company_logo', true)
+                    "logo" => get_post_meta($job_id, '_company_logo', true),
+                    "sameAs" => jobs_get_profile_link(get_post_field('post_author', $job_id))
                 ),
                 "jobLocation" => array(
                     "@type" => "Place",
                     "address" => array(
                         "@type" => "PostalAddress",
                         "addressLocality" => wp_get_post_terms($job_id, 'city', array('fields'=>'names'))[0] ?? '',
+                        "addressRegion" => wp_get_post_terms($job_id, 'state', array('fields'=>'names'))[0] ?? '',
                         "addressCountry" => wp_get_post_terms($job_id, 'country', array('fields'=>'names'))[0] ?? ''
                     )
                 ),
+                "employmentType" => get_post_meta($job_id, '_job_employment_type', true),
+                "experienceRequirements" => get_post_meta($job_id, '_job_experience_level', true),
+                "occupationalCategory" => wp_get_post_terms($job_id, 'job_category', array('fields'=>'names'))[0] ?? '',
                 "baseSalary" => array(
                     "@type" => "MonetaryAmount",
                     "currency" => get_post_meta($job_id, '_job_currency', true) ?: 'USD',

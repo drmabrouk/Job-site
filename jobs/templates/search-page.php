@@ -42,15 +42,35 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <div class="search-field-item">
                     <select name="country" id="jobs-input-country">
                         <option value="">Country</option>
-                        <option value="uae">United Arab Emirates</option>
-                        <option value="saudi-arabia">Saudi Arabia</option>
-                        <option value="qatar">Qatar</option>
-                        <option value="kuwait">Kuwait</option>
-                        <option value="egypt">Egypt</option>
-                        <option value="jordan">Jordan</option>
-                        <option value="lebanon">Lebanon</option>
-                        <option value="oman">Oman</option>
-                        <option value="bahrain">Bahrain</option>
+                        <optgroup label="Middle East">
+                            <option value="algeria">Algeria</option>
+                            <option value="bahrain">Bahrain</option>
+                            <option value="egypt">Egypt</option>
+                            <option value="iran">Iran</option>
+                            <option value="iraq">Iraq</option>
+                            <option value="jordan">Jordan</option>
+                            <option value="kuwait">Kuwait</option>
+                            <option value="lebanon">Lebanon</option>
+                            <option value="libya">Libya</option>
+                            <option value="morocco">Morocco</option>
+                            <option value="oman">Oman</option>
+                            <option value="palestine">Palestine</option>
+                            <option value="qatar">Qatar</option>
+                            <option value="saudi-arabia">Saudi Arabia</option>
+                            <option value="syria">Syria</option>
+                            <option value="tunisia">Tunisia</option>
+                            <option value="uae">United Arab Emirates</option>
+                            <option value="yemen">Yemen</option>
+                        </optgroup>
+                        <optgroup label="English Official">
+                            <option value="usa">USA</option>
+                            <option value="uk">UK</option>
+                            <option value="canada">Canada</option>
+                            <option value="australia">Australia</option>
+                            <option value="new-zealand">New Zealand</option>
+                            <option value="ireland">Ireland</option>
+                            <option value="south-africa">South Africa</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="search-field-item">

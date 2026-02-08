@@ -25,6 +25,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
     $emp_type = get_post_meta($post_id, '_job_employment_type', true);
     $skills = get_post_meta($post_id, '_job_skills', true);
     $is_active = get_post_status() === 'publish';
+    $author_id = get_post_field( 'post_author', $post_id );
+    $company_profile_url = jobs_get_profile_link( $author_id );
 
     $share_url = urlencode(get_permalink());
     $share_title = urlencode(get_the_title());
@@ -44,17 +46,20 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                     </div>
                     <div class="job-title-area">
                         <h1><?php the_title(); ?></h1>
-                        <p class="company-subname"><?php echo esc_html( $company_name ); ?></p>
+                        <p class="company-subname"><a href="<?php echo esc_url($company_profile_url); ?>"><?php echo esc_html( $company_name ); ?></a></p>
 
                         <div class="job-meta-pills">
-                            <?php if ( $work_setting ) : ?>
-                                <span class="meta-pill pill-setting"><span class="dashicons dashicons-admin-home"></span> <?php echo $work_setting; ?></span>
-                            <?php endif; ?>
                             <?php if ( $countries ) : ?>
                                 <span class="meta-pill pill-loc"><span class="dashicons dashicons-location"></span> <?php echo $countries[0]->name; ?></span>
                             <?php endif; ?>
                             <?php if ($salary) : ?>
                                 <span class="meta-pill pill-salary"><?php echo $currency; ?> <?php echo $salary; ?></span>
+                            <?php endif; ?>
+                            <?php if ( $emp_type ) : ?>
+                                <span class="meta-pill pill-type"><span class="dashicons dashicons-clock"></span> <?php echo $emp_type; ?></span>
+                            <?php endif; ?>
+                            <?php if ( $specializations ) : ?>
+                                <span class="meta-pill pill-spec"><span class="dashicons dashicons-category"></span> <?php echo $specializations[0]->name; ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -68,6 +73,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                         <?php the_content(); ?>
                     </div>
                 </div>
+
+                <?php Jobs_Ads_Service::display_ad( 'between_job_details' ); ?>
 
                 <?php if ($responsibilities) : ?>
                 <div class="content-section">
@@ -102,6 +109,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                     </div>
                 </div>
                 <?php endif; ?>
+
+                <?php Jobs_Ads_Service::display_ad( 'below_content' ); ?>
             </div>
 
             <div class="job-share-section" style="margin-top: 30px; background: white; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0;">
@@ -124,17 +133,19 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                 <div class="apply-action-card">
                     <h4>Ready to Apply?</h4>
                     <p>Submit your professional profile for review by the hiring team.</p>
-                    <button class="jobs-btn quick-apply-toggle" data-job-id="<?php echo $post_id; ?>">Apply for this Position</button>
+                    <div class="sidebar-action-buttons">
+                        <button class="jobs-btn quick-apply-toggle" data-job-id="<?php echo $post_id; ?>">Apply Now</button>
 
-                    <?php if ( is_user_logged_in() ) :
-                        $favorites = get_user_meta( get_current_user_id(), 'jobs_favorites', true ) ?: array();
-                        $is_fav = in_array( $post_id, $favorites );
-                    ?>
-                        <button class="jobs-favorite-toggle-btn <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php echo $post_id; ?>">
-                            <span class="dashicons dashicons-heart"></span>
-                            <?php echo $is_fav ? 'Saved to Favorites' : 'Save for Later'; ?>
-                        </button>
-                    <?php endif; ?>
+                        <?php if ( is_user_logged_in() ) :
+                            $favorites = get_user_meta( get_current_user_id(), 'jobs_favorites', true ) ?: array();
+                            $fav_ids = is_numeric(array_keys($favorites)[0] ?? 0) ? $favorites : array_keys($favorites);
+                            $is_fav = in_array( $post_id, $fav_ids );
+                        ?>
+                            <button class="jobs-favorite-toggle-btn <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php echo $post_id; ?>" title="<?php echo $is_fav ? 'Remove from favorites' : 'Save opportunity'; ?>">
+                                <span class="dashicons dashicons-heart"></span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <div class="job-info-sidebar-card">
@@ -170,6 +181,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                         </div>
                     </div>
                 </div>
+
+                <?php Jobs_Ads_Service::display_ad( 'sidebar' ); ?>
 
                 <div class="company-quick-card">
                     <h5 class="sidebar-info-title">Hiring Organization</h5>
