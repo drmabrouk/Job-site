@@ -57,17 +57,27 @@
 
 .job-title-area h1 {
     margin: 0;
-    font-size: 2.4em;
+    font-size: 2em; /* Reduced from 2.4em */
     color: #1d3469;
     line-height: 1.2;
     font-weight: 700;
 }
 
 .company-subname {
-    margin: 10px 0 20px 0;
-    font-size: 1.2em;
+    margin: 8px 0 18px 0;
+    font-size: 1.1em; /* Reduced from 1.2em */
     color: #64748b;
     font-weight: 500;
+}
+
+.company-subname a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.company-subname a:hover {
+    color: var(--jobs-primary-color);
+    text-decoration: underline;
 }
 
 .job-meta-pills {
@@ -77,16 +87,17 @@
 }
 
 .meta-pill {
-    padding: 8px 18px;
+    padding: 6px 14px; /* Reduced from 8px 18px */
     border-radius: 30px;
-    font-size: 0.85em;
+    font-size: 0.75em; /* Reduced from 0.85em */
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.pill-spec { background: #eef2ff; color: #4f46e5; }
+.pill-type { background: #f3e5f5; color: #7b1fa2; }
+.pill-spec { background: #fff9c4; color: #fbc02d; }
 .pill-loc { background: #f0fdf4; color: #16a34a; }
 .pill-salary { background: #fff7ed; color: #ea580c; }
 .pill-setting { background: #fffbeb; color: #d97706; }
@@ -155,7 +166,7 @@
 }
 
 .section-title {
-    font-size: 1.4em;
+    font-size: 1.25em; /* Reduced from 1.4em */
     color: #1e293b;
     margin-bottom: 20px;
     padding-bottom: 15px;
@@ -163,9 +174,9 @@
 }
 
 .entry-content {
-    line-height: 1.8;
+    line-height: 1.7;
     color: #475569;
-    font-size: 1.1em;
+    font-size: 1em; /* Reduced from 1.1em */
 }
 
 .entry-content p {
@@ -201,10 +212,18 @@
     margin-bottom: 25px;
 }
 
+.sidebar-action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.sidebar-action-buttons .jobs-btn {
+    flex: 1;
+}
+
 .jobs-favorite-toggle-btn {
-    width: 100%;
-    margin-top: 12px;
-    padding: 14px;
+    width: 50px;
+    height: 50px;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     background: #f8fafc;
@@ -214,7 +233,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     transition: all 0.2s;
 }
 

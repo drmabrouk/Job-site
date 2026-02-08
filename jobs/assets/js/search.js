@@ -8,7 +8,23 @@ jQuery(document).ready(function($) {
         "jordan": ["Amman", "Zarqa", "Irbid", "Aqaba"],
         "lebanon": ["Beirut", "Tripoli", "Sidon", "Tyre"],
         "oman": ["Muscat", "Salalah", "Sohar", "Nizwa"],
-        "bahrain": ["Manama", "Riffa", "Muharraq", "Hamad Town"]
+        "bahrain": ["Manama", "Riffa", "Muharraq", "Hamad Town"],
+        "algeria": ["Algiers", "Oran", "Constantine"],
+        "iran": ["Tehran", "Mashhad", "Isfahan"],
+        "iraq": ["Baghdad", "Basra", "Erbil"],
+        "libya": ["Tripoli", "Benghazi"],
+        "morocco": ["Casablanca", "Rabat", "Marrakesh"],
+        "palestine": ["Gaza City", "Ramallah", "Hebron"],
+        "syria": ["Damascus", "Aleppo"],
+        "tunisia": ["Tunis", "Sfax"],
+        "yemen": ["Sanaa", "Aden"],
+        "usa": ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"],
+        "uk": ["London", "Birmingham", "Manchester", "Glasgow"],
+        "canada": ["Toronto", "Montreal", "Vancouver"],
+        "australia": ["Sydney", "Melbourne", "Brisbane"],
+        "new-zealand": ["Auckland", "Wellington"],
+        "ireland": ["Dublin", "Cork"],
+        "south-africa": ["Johannesburg", "Cape Town", "Durban"]
     };
 
     function updateSearchResults(page = 1, append = false) {
@@ -47,8 +63,8 @@ jQuery(document).ready(function($) {
         };
         if (append) data.load_more = 1;
 
-        // Mandate 1-4 second delay for "professional status indicator" effect
-        const delay = append ? 3000 : 1500;
+        // Mandate 2-second delay for smooth rendering and professional effect
+        const delay = 2000;
 
         setTimeout(function() {
             $.get(jobs_vars.ajax_url, data, function(response) {

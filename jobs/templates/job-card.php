@@ -22,7 +22,7 @@ $is_active       = get_post_status() === 'publish';
             $fav_ids = is_numeric(array_keys($favorites)[0] ?? 0) ? $favorites : array_keys($favorites);
             $is_fav = in_array( get_the_ID(), $fav_ids );
         ?>
-            <span class="jobs-favorite-toggle dashicons dashicons-archive <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Save/Archive"></span>
+            <span class="jobs-favorite-toggle dashicons dashicons-heart <?php echo $is_fav ? 'active' : ''; ?>" data-job-id="<?php the_ID(); ?>" title="Favorite"></span>
         <?php endif; ?>
     </div>
 
@@ -45,34 +45,34 @@ $is_active       = get_post_status() === 'publish';
     </div>
 
     <div class="job-meta">
-        <?php if ( $work_setting ) : ?>
-            <span class="capsule capsule-setting"><?php echo esc_html( $work_setting ); ?></span>
+        <?php if ( $countries ) : ?>
+            <span class="capsule capsule-location"><?php echo esc_html( $countries[0]->name ); ?></span>
         <?php endif; ?>
         <?php if ( $salary ) : ?>
             <span class="capsule capsule-salary"><?php echo esc_html( $currency . ' ' . $salary ); ?></span>
         <?php endif; ?>
-        <?php if ( $countries ) : ?>
-            <span class="capsule capsule-location"><?php echo esc_html( $countries[0]->name ); ?></span>
+        <?php
+        $emp_type = get_post_meta(get_the_ID(), '_job_employment_type', true);
+        if ( $emp_type ) : ?>
+            <span class="capsule capsule-type"><?php echo esc_html( $emp_type ); ?></span>
+        <?php endif; ?>
+        <?php if ( $specializations ) : ?>
+            <span class="capsule capsule-specialization"><?php echo esc_html( $specializations[0]->name ); ?></span>
         <?php endif; ?>
     </div>
-
-    <?php if ( $skills ) : ?>
-        <div class="job-skills-tags">
-            <?php
-            $skills_array = explode(',', $skills);
-            foreach ( array_slice($skills_array, 0, 3) as $skill ) : ?>
-                <span class="skill-tag"><?php echo esc_html( trim($skill) ); ?></span>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
 
     <div class="job-excerpt">
         <?php echo wp_trim_words( get_the_excerpt(), 15 ); ?>
     </div>
 
-    <div class="job-card-actions">
-        <button class="jobs-btn-minimal card-quick-apply-btn" data-id="<?php the_ID(); ?>">Apply</button>
-        <a href="<?php the_permalink(); ?>" class="jobs-btn-minimal">Details</a>
+    <div class="job-card-footer">
+        <div class="job-pub-date">
+            Published: <?php echo get_the_date('M d, Y'); ?>
+        </div>
+        <div class="job-card-actions">
+            <button class="jobs-btn-minimal card-quick-apply-btn" data-id="<?php the_ID(); ?>">Apply</button>
+            <a href="<?php the_permalink(); ?>" class="jobs-btn-minimal">Details</a>
+        </div>
     </div>
 
     <!-- Hidden Dropdown Apply Form -->
