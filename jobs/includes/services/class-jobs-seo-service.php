@@ -109,7 +109,14 @@ class Jobs_SEO_Service {
 
     public static function get_seo_title($title = '') {
         if ( is_singular('job') ) return get_the_title() . ' | ' . get_bloginfo('name');
-        if ( get_query_var('profile_user') ) return get_query_var('profile_user') . ' Profile | ' . get_bloginfo('name');
+
+        $profile_slug = get_query_var('profile_user');
+        if ( $profile_slug ) {
+            $user = get_user_by('slug', $profile_slug);
+            $name = $user ? $user->display_name : ucwords(str_replace('-', ' ', $profile_slug));
+            return $name . ' Professional Profile | ' . get_bloginfo('name');
+        }
+
         if ( is_tax() ) return single_term_title('', false) . ' Jobs | ' . get_bloginfo('name');
         return get_bloginfo('name') . ' - Find Your Next Career';
     }
