@@ -11,6 +11,7 @@ if ( is_user_logged_in() ) {
     ?>
     <div class="jobs-auth-container">
         <div class="jobs-auth-card">
+            <div id="auth-status-message"></div>
             <?php
             global $jobs_registration_error;
             $show_register = ! empty( $jobs_registration_error );
@@ -68,6 +69,15 @@ if ( is_user_logged_in() ) {
 
                 <form id="jobs-register-form" action="" method="POST" class="jobs-auth-form">
                     <?php wp_nonce_field( 'jobs_register_user', 'jobs_registration_nonce' ); ?>
+
+                    <div class="form-group">
+                        <div class="account-type-toggle" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <button type="button" class="account-type-btn active" data-role="job_seeker" style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600;">Job Seeker</button>
+                            <button type="button" class="account-type-btn" data-role="employer" style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600;">Employer</button>
+                        </div>
+                        <input type="hidden" name="user_role" id="selected-user-role" value="job_seeker">
+                    </div>
+
                     <div class="form-row" style="display:flex; gap:10px;">
                         <div class="form-group" style="flex:1;">
                             <input type="text" name="first_name" placeholder="First Name" required>
@@ -84,18 +94,19 @@ if ( is_user_logged_in() ) {
                             <input type="email" name="user_email" placeholder="Email Address" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="account-type-toggle" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                            <button type="button" class="account-type-btn active" data-role="job_seeker" style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600;">Job Seeker</button>
-                            <button type="button" class="account-type-btn" data-role="employer" style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-weight: 600;">Employer</button>
-                        </div>
-                        <input type="hidden" name="user_role" id="selected-user-role" value="job_seeker">
-                    </div>
 
                     <!-- Conditional Fields for Job Seeker -->
                     <div id="job-seeker-fields" class="conditional-fields">
                         <div class="form-group">
-                            <input type="text" name="seeker_title" placeholder="Professional Title (e.g. Senior Developer)">
+                            <select name="seeker_specialization" class="jobs-select-field">
+                                <option value="" disabled selected>Select Your Specialization</option>
+                                <?php
+                                $specializations = get_terms( array( 'taxonomy' => 'specialization', 'hide_empty' => false ) );
+                                foreach ( $specializations as $term ) {
+                                    echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
+                                }
+                                ?>
+                            </select>
                         </div>
                     </div>
 
@@ -121,6 +132,5 @@ if ( is_user_logged_in() ) {
             </div>
         </div>
     </div>
-    <div id="auth-status-message" style="text-align: center; margin-top: 20px; font-weight: 500;"></div>
     <?php
 }

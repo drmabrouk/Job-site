@@ -61,7 +61,7 @@ function jobs_handle_forms() {
             Jobs_Auth_Service::send_verification_email( $user_id );
 
             // Redirect to verification page
-            $verify_url = add_query_arg( array( 'action' => 'verify', 'user_id' => $user_id ), home_url( '/login-registration/' ) );
+            $verify_url = add_query_arg( array( 'action' => 'verify', 'user_id' => $user_id ), home_url( '/login/' ) );
             wp_safe_redirect( $verify_url );
             exit;
         } else {
@@ -950,7 +950,7 @@ function jobs_ajax_login_handler() {
             // Log out and require verification
             wp_logout();
             Jobs_Auth_Service::send_verification_email( $user_signon->ID );
-            $verify_url = add_query_arg( array( 'action' => 'verify', 'user_id' => $user_signon->ID ), home_url( '/login-registration/' ) );
+            $verify_url = add_query_arg( array( 'action' => 'verify', 'user_id' => $user_signon->ID ), home_url( '/login/' ) );
             wp_send_json_success( array( 'redirect' => $verify_url ) );
         }
 

@@ -11,7 +11,7 @@
 .jobs-search-wrapper {
     width: 100%;
     max-width: 850px;
-    margin: 0 auto 80px auto;
+    margin: 0 auto 40px auto; /* Reduced from 80px */
     position: relative;
     padding: 0 20px;
 }
@@ -165,7 +165,7 @@
 #jobs-search-results-wrapper {
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: -10px auto 0 auto; /* Negative margin to pull results closer to search bar */
 }
 
 .jobs-results-grid {
@@ -236,8 +236,25 @@
 }
 
 .jobs-main-logo {
+    width: var(--logo-custom-width, 180px);
+    max-width: 100%;
+    height: auto;
     max-height: 120px;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .jobs-main-logo {
+        width: calc(var(--logo-custom-width, 180px) * 0.75);
+        max-height: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .jobs-main-logo {
+        width: calc(var(--logo-custom-width, 180px) * 0.6);
+        max-height: 60px;
+    }
 }
 
 .jobs-main-logo:hover {

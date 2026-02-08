@@ -108,7 +108,7 @@ function jobs_account_icon_shortcode() {
                 </div>
             </div>
         <?php else : ?>
-            <a href="<?php echo get_permalink( get_page_by_path('login-registration') ); ?>" class="jobs-btn-small">Login</a>
+            <a href="<?php echo get_permalink( get_page_by_path('login') ); ?>" class="jobs-btn-small">Login</a>
         <?php endif; ?>
     </div>
     <?php

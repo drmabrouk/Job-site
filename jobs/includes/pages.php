@@ -10,7 +10,7 @@ function jobs_create_pages() {
             'title'   => 'Job Search',
             'content' => '[jobs_search_page]',
         ),
-        'login-registration' => array(
+        'login' => array(
             'title'   => 'Login & Registration',
             'content' => '[jobs_login_registration]',
         ),
@@ -72,7 +72,7 @@ function jobs_create_pages() {
 function jobs_remove_pages() {
     $pages = array(
         'job-search',
-        'login-registration',
+        'login',
         'profile',
         'job-requests',
         'applications-submitted',

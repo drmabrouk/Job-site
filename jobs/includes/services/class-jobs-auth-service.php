@@ -89,7 +89,7 @@ class Jobs_Auth_Service {
 
         $site_name = get_bloginfo( 'name' );
         $subject = "[{$site_name}] Password Reset Request";
-        $reset_url = add_query_arg( array( 'action' => 'rp', 'key' => $key, 'login' => $user->user_login ), home_url('/login-registration/') );
+        $reset_url = add_query_arg( array( 'action' => 'rp', 'key' => $key, 'login' => $user->user_login ), home_url('/login/') );
 
         $message = "Someone has requested a password reset for the following account:\n\n";
         $message .= "Site Name: {$site_name}\n";
