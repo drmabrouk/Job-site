@@ -75,10 +75,18 @@ $is_active       = get_post_status() === 'publish';
         </div>
     </div>
 
-    <!-- Hidden Dropdown Apply Form -->
+    <!-- Professional Expandable Application Panel -->
     <div class="card-apply-dropdown" id="apply-dropdown-<?php the_ID(); ?>" style="display:none;">
         <div class="dropdown-arrow"></div>
-        <p style="font-size: 0.8em; margin-bottom: 10px; color: #64748b;">Quick submit your profile for this position.</p>
-        <button class="jobs-btn-small quick-apply-toggle" data-job-id="<?php the_ID(); ?>" style="width: 100%;">Open Application Form</button>
+        <div class="apply-panel-inner">
+            <h4 style="margin: 0 0 10px 0; color: #1d3469; font-size: 1em;">Apply for this Position</h4>
+            <p style="font-size: 0.85em; margin-bottom: 20px; color: #64748b; line-height: 1.5;">You are about to submit your professional profile to <strong><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></strong>.</p>
+
+            <?php if ( is_user_logged_in() ) : ?>
+                <button class="jobs-btn-small quick-apply-toggle" data-job-id="<?php the_ID(); ?>" style="width: 100%; padding: 12px; border-radius: 10px; background: #1d3469; font-weight: 600;">Confirm and Send Application</button>
+            <?php else : ?>
+                <a href="<?php echo home_url('/login-registration/'); ?>" class="jobs-btn-small" style="display: block; width: 100%; text-align: center; padding: 12px; border-radius: 10px; background: #1d3469; text-decoration: none; color: white; font-weight: 600;">Login to Apply</a>
+            <?php endif; ?>
+        </div>
     </div>
 </div>

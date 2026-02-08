@@ -17,14 +17,22 @@ function jobs_render_top_bar() {
 
     ob_start();
     ?>
-    <div class="jobs-header-system <?php echo $is_homepage ? 'jobs-header-minimal' : 'jobs-header-glass'; ?>">
+    <div class="jobs-header-system <?php echo $is_homepage ? 'jobs-header-minimal' : 'jobs-header-transparent'; ?>">
         <div class="top-bar-content">
             <?php if ( ! $is_homepage ) : ?>
             <div class="top-bar-left">
-                <a href="<?php echo home_url(); ?>" class="top-bar-home">
-                    <span class="dashicons dashicons-admin-site"></span>
-                    <span class="site-name"><?php bloginfo('name'); ?></span>
-                </a>
+                <?php
+                $logo_url = get_option( 'jobs_site_logo' );
+                if ( $logo_url ) : ?>
+                    <a href="<?php echo home_url(); ?>" class="top-bar-logo-link">
+                        <img src="<?php echo esc_url( $logo_url ); ?>" alt="Site Logo" style="max-height: 40px;">
+                    </a>
+                <?php else : ?>
+                    <a href="<?php echo home_url(); ?>" class="top-bar-home">
+                        <span class="dashicons dashicons-admin-site"></span>
+                        <span class="site-name"><?php bloginfo('name'); ?></span>
+                    </a>
+                <?php endif; ?>
             </div>
             <?php endif; ?>
 
@@ -193,22 +201,14 @@ function jobs_render_modules_grid() {
             'type' => 'direct',
             'url' => home_url('/support')
         ),
-        'advanced-settings' => array(
-            'label' => 'Site Settings',
-            'icon' => 'admin-tools',
-            'bg' => '#e8eaf6',
-            'color' => '#303f9f',
-            'check' => 'is_system_admin',
-            'type' => 'modal'
-        ),
-        'terms-conditions' => array(
-            'label' => 'Terms',
-            'icon' => 'media-spreadsheet',
-            'bg' => '#f5f5f5',
-            'color' => '#616161',
-            'check' => 'is_user_logged_in',
+        'analytics-insights' => array(
+            'label' => 'Insights',
+            'icon' => 'chart-area',
+            'bg' => '#e1f5fe',
+            'color' => '#0288d1',
+            'check' => 'can_post_job',
             'type' => 'page',
-            'url' => home_url('/terms-conditions/')
+            'url' => home_url('/analytics-insights/')
         ),
         'articles' => array(
             'label' => 'Articles',
@@ -219,23 +219,6 @@ function jobs_render_modules_grid() {
             'type' => 'direct',
             'url' => home_url('/Articles')
         ),
-        'notifications' => array(
-            'label' => 'Alerts',
-            'icon' => 'bell',
-            'bg' => '#fff9c4',
-            'color' => '#fbc02d',
-            'check' => 'is_user_logged_in',
-            'type' => 'modal'
-        ),
-        'analytics-insights' => array(
-            'label' => 'Insights',
-            'icon' => 'chart-area',
-            'bg' => '#e1f5fe',
-            'color' => '#0288d1',
-            'check' => 'can_post_job',
-            'type' => 'page',
-            'url' => home_url('/analytics-insights/')
-        ),
         'wp-admin' => array(
             'label' => 'Dashboard',
             'icon' => 'dashboard',
@@ -244,6 +227,33 @@ function jobs_render_modules_grid() {
             'check' => 'is_user_logged_in',
             'type' => 'direct',
             'url' => admin_url()
+        ),
+        'advanced-settings' => array(
+            'label' => 'Site Settings',
+            'icon' => 'admin-tools',
+            'bg' => '#e8eaf6',
+            'color' => '#303f9f',
+            'check' => 'is_system_admin',
+            'type' => 'direct',
+            'url' => home_url('/site-settings/')
+        ),
+        'policies' => array(
+            'label' => 'Policies',
+            'icon' => 'media-spreadsheet',
+            'bg' => '#f5f5f5',
+            'color' => '#616161',
+            'check' => 'is_user_logged_in',
+            'type' => 'direct',
+            'url' => home_url('/policies/')
+        ),
+        'support' => array(
+            'label' => 'Support',
+            'icon' => 'editor-help',
+            'bg' => '#e1f5fe',
+            'color' => '#0288d1',
+            'check' => 'is_user_logged_in',
+            'type' => 'direct',
+            'url' => home_url('/support')
         ),
     );
 

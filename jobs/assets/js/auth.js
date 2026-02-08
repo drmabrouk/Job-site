@@ -99,7 +99,7 @@ jQuery(document).ready(function($) {
             if (response.success) {
                 $status.html('<p style="color: green;">' + response.data + '</p>');
                 setTimeout(function() {
-                    window.location.href = jobs_vars.home_url + '/login/';
+                    window.location.href = jobs_vars.home_url + '/login-registration/';
                 }, 2000);
             } else {
                 $status.html('<p style="color: red;">' + response.data + '</p>');
@@ -134,4 +134,19 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    // Account Type Toggle logic
+    $('.account-type-btn').on('click', function() {
+        $('.account-type-btn').removeClass('active').css({'background': '#fff', 'color': '#333', 'border-color': '#ddd'});
+        $(this).addClass('active').css({'background': 'var(--jobs-primary-color)', 'color': '#fff', 'border-color': 'var(--jobs-primary-color)'});
+
+        var role = $(this).data('role');
+        $('#selected-user-role').val(role);
+
+        $('.conditional-fields').hide();
+        $('#' + role.replace('_', '-') + '-fields').fadeIn();
+    });
+
+    // Initialize styling for active button
+    $('.account-type-btn.active').trigger('click');
 });
