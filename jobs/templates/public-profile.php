@@ -86,7 +86,7 @@ get_header();
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
-                        <h1 style="display: flex; align-items: center;"><?php echo esc_html($company['name'] ?? $display_name); ?> <div class="badge-verified-circle" title="Verified Entity"><span class="dashicons dashicons-yes"></span></div></h1>
+                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($company['name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified Entity" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                         <div class="profile-v4-badges">
                             <span class="status-badge-pill badge-hiring">Hiring</span>
                         </div>
@@ -100,13 +100,13 @@ get_header();
                         <span><?php echo esc_html($company['address'] ?? 'International'); ?></span>
                     </div>
                 </div>
-                <div style="margin-left: auto; display: flex; gap: 12px;">
+                <div class="profile-v4-actions" style="margin-left: auto; display: flex; gap: 12px; align-items: center;">
+                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-email-alt" style="margin-right: 8px;"></span> Contact Platform</button>
+                    <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
+                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                     <?php if ( get_current_user_id() === $user_id ) : ?>
                         <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
                     <?php endif; ?>
-                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                    <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
-                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Contact Platform</button>
                 </div>
             </header>
 
@@ -241,7 +241,13 @@ get_header();
                         <div class="v4-card-body">
                             <div style="margin-bottom: 16px;">
                                 <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Founded</small>
-                                <span style="font-weight: 500;"><?php echo esc_html($company['founded_year'] ?? 'N/A'); ?></span>
+                                <span style="font-weight: 500;"><?php
+                                    echo esc_html($company['founded_year'] ?? 'N/A');
+                                    if(!empty($company['founded_year']) && is_numeric($company['founded_year'])) {
+                                        $age = date('Y') - intval($company['founded_year']);
+                                        echo ' (' . esc_html($age) . ' Years in Business)';
+                                    }
+                                ?></span>
                             </div>
                             <div style="margin-bottom: 16px;">
                                 <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Size</small>
@@ -320,12 +326,20 @@ get_header();
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
-                        <h1 style="display: flex; align-items: center;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <div class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></div></h1>
+                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                         <div class="profile-v4-badges">
                             <span class="status-badge-pill badge-open">Open to Work</span>
                         </div>
                     </div>
-                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.</p>
+                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.
+                    <?php
+                    $dob = $cv['personal']['dob'] ?? '';
+                    if($dob):
+                        $age = date_diff(date_create($dob), date_create('today'))->y;
+                        echo ' • ' . esc_html($age) . ' Years Old (' . date('M d, Y', strtotime($dob)) . ')';
+                    endif;
+                    ?>
+                    </p>
 
                     <div class="profile-v4-location-info">
                         <?php
@@ -347,13 +361,13 @@ get_header();
                         <?php endif; ?>
                     </div>
                 </div>
-                <div style="margin-left: auto; display: flex; gap: 12px;">
+                <div class="profile-v4-actions" style="margin-left: auto; display: flex; gap: 12px; align-items: center;">
+                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson" style="margin-right: 8px;"></span> Career Inquiry</button>
+                    <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
+                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                     <?php if ( get_current_user_id() === $user_id ) : ?>
                         <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
                     <?php endif; ?>
-                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                    <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
-                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Career Inquiry</button>
                 </div>
             </header>
 

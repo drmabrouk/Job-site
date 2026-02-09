@@ -211,7 +211,7 @@ function jobs_render_modules_grid() {
             'url' => home_url('/applications-submitted/')
         ),
         'cv-resume' => array(
-            'label' => 'General Account Data Update',
+            'label' => 'Data Editing',
             'icon' => 'media-text',
             'bg' => '#ffebee',
             'color' => '#d32f2f',
