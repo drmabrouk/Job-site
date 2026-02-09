@@ -534,6 +534,11 @@ class Jobs_Data_Service {
             'jordan' => array(
                 'Amman', 'Irbid', 'Zarqa', 'Mafraq', 'Ajloun', 'Jerash', 'Madaba', 'Balqa', 'Karak', 'Tafilah', 'Ma\'an', 'Aqaba'
             ),
+            'qatar' => array('Doha', 'Al Rayyan', 'Al Wakrah', 'Al Khor', 'Umm Salal', 'Al Daayen', 'Al Shahaniya', 'Madinat ash Shamal'),
+            'kuwait' => array('Kuwait City', 'Al Ahmadi', 'Hawalli', 'Farwaniya', 'Mubarak Al-Kabeer', 'Al Jahra'),
+            'bahrain' => array('Manama', 'Muharraq', 'Northern', 'Southern'),
+            'oman' => array('Muscat', 'Dhofar', 'Musandam', 'Al Buraymi', 'Ad Dakhiliyah', 'Al Batinah North', 'Al Batinah South', 'Ash Sharqiyah North', 'Ash Sharqiyah South', 'Ad Dhahirah', 'Al Wusta'),
+            'lebanon' => array('Beirut', 'Mount Lebanon', 'North Lebanon', 'South Lebanon', 'Beqaa', 'Nabatieh', 'Akkar', 'Baalbek-Hermel'),
             'usa' => array(
                 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
                 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
@@ -543,7 +548,9 @@ class Jobs_Data_Service {
             ),
             'uk' => array(
                 'England', 'Scotland', 'Wales', 'Northern Ireland'
-            )
+            ),
+            'canada' => array('Ontario', 'Quebec', 'British Columbia', 'Alberta', 'Manitoba', 'Saskatchewan', 'Nova Scotia', 'New Brunswick', 'Newfoundland and Labrador', 'Prince Edward Island'),
+            'australia' => array('New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Northern Territory', 'Australian Capital Territory')
         );
     }
 }

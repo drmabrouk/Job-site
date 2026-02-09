@@ -363,201 +363,53 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 </div>
 
 <script>
-jQuery(document).ready(function($) {
-    function updateProgress(step) {
-        var totalSteps = 6;
-        var progress = (step / (totalSteps - 1)) * 100;
-        $('#cv-progress-line').css('width', progress + '%');
+    // Module Data for JS
+    var skillsList = <?php echo json_encode($skills_list); ?>;
+    var specializationsData = <?php echo json_encode($specializations_data); ?>;
+    var locationData = <?php echo json_encode($locations); ?>;
+    var profileLink = "<?php echo $profile_link; ?>";
 
-        $('.cv-progress-step').each(function() {
-            var s = $(this).data('step');
-            if (s <= step) {
-                $(this).addClass('active').find('.step-circle').css({
-                    'background': 'var(--jobs-primary-color)',
-                    'color': 'white',
-                    'border-color': 'var(--jobs-primary-color)'
+    jQuery(document).ready(function($) {
+        // Dynamic Professions Logic (Keeping small reactive parts here for instant feedback)
+        $('#cv-specialization').on('change', function() {
+            const spec = $(this).val();
+            const $profSelect = $('#cv-profession');
+            $profSelect.empty().append('<option value="">Select Profession</option>');
+            if (spec && specializationsData[spec]) {
+                specializationsData[spec].forEach(prof => {
+                    $profSelect.append(`<option value="${prof}">${prof}</option>`);
                 });
+                $profSelect.prop('disabled', false);
             } else {
-                $(this).removeClass('active').find('.step-circle').css({
-                    'background': 'white',
-                    'color': '#94a3b8',
-                    'border-color': '#e2e8f0'
+                $profSelect.prop('disabled', true);
+            }
+        });
+
+        $('#cv-country').on('change', function() {
+            const country = $(this).val();
+            const $regionSelect = $('#cv-region');
+            $regionSelect.empty().append('<option value="">Select Region / State</option>');
+            if (country && locationData[country]) {
+                locationData[country].forEach(region => {
+                    $regionSelect.append(`<option value="${region}">${region}</option>`);
+                });
+                $regionSelect.prop('disabled', false);
+            } else {
+                $regionSelect.prop('disabled', true);
+            }
+        });
+
+        // Phone Initialization
+        $('.jobs-intl-phone').each(function() {
+            if (window.intlTelInput) {
+                window.intlTelInput(this, {
+                    preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+                    separateDialCode: true,
                 });
             }
         });
-    }
-
-    $('.next-cv-step').on('click', function() {
-        var next = $(this).data('next');
-        $('.cv-step-panel').hide();
-        $('#cv-step-' + next).fadeIn();
-        updateProgress(next);
     });
-
-    $('.prev-cv-step').on('click', function() {
-        var prev = $(this).data('prev');
-        $('.cv-step-panel').hide();
-        $('#cv-step-' + prev).fadeIn();
-        updateProgress(prev);
-    });
-
-    // Repeater Logic
-    $('.add-repeater').on('click', function() {
-        var type = $(this).data('type');
-        var $container = $('#' + type + '-repeater');
-        var index = $container.find('.repeater-item').length;
-        var $clone = $container.find('.repeater-item').first().clone();
-
-        // Clear inputs and update names
-        $clone.find('input, select, textarea').each(function() {
-            var name = $(this).attr('name');
-            var newName = name.replace(/\[\d+\]/, '[' + index + ']');
-            $(this).attr('name', newName).val('');
-        });
-
-        // Add remove button if not present
-        if($clone.find('.remove-repeater').length === 0) {
-            $clone.append('<button type="button" class="remove-repeater">Remove</button>');
-        }
-
-        $clone.hide().appendTo($container).fadeIn();
-    });
-
-    $(document).on('click', '.remove-repeater', function() {
-        $(this).closest('.repeater-item').fadeOut(function() { $(this).remove(); });
-    });
-
-    // Unified Phone Initialization
-    $('.jobs-intl-phone').each(function() {
-        window.intlTelInput(this, {
-            preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-            separateDialCode: true,
-        });
-    });
-
-    // Skills Suggestions Logic
-    const skillsList = <?php echo json_encode($skills_list); ?>;
-    $('#cv-skills-autocomplete').on('input', function() {
-        const val = $(this).val();
-        const parts = val.split(',');
-        const query = parts[parts.length - 1].trim().toLowerCase();
-
-        if (query.length < 1) {
-            $('#cv-skills-suggestions').hide();
-            return;
-        }
-
-        const matches = skillsList.filter(s => s.toLowerCase().includes(query));
-        if (matches.length > 0) {
-            let html = '';
-            matches.slice(0, 10).forEach(m => {
-                html += `<div class="suggestion-item skill-suggestion-cv" data-val="${m}">${m}</div>`;
-            });
-            $('#cv-skills-suggestions').html(html).show();
-        } else {
-            $('#cv-skills-suggestions').hide();
-        }
-    });
-
-    $(document).on('click', '.skill-suggestion-cv', function() {
-        const skill = $(this).data('val');
-        const $input = $('#cv-skills-autocomplete');
-        const parts = $input.val().split(',');
-        parts[parts.length - 1] = ' ' + skill;
-        $input.val(parts.join(',').trim() + ', ');
-        $('#cv-skills-suggestions').hide();
-        $input.focus();
-    });
-
-    // Employer Suggestions Logic
-    let cvSuggestionTimeout;
-    $(document).on('input', '.employer-suggestion-cv', function() {
-        const $input = $(this);
-        const $list = $input.siblings('.employer-suggestions-cv-list');
-        const query = $input.val();
-
-        clearTimeout(cvSuggestionTimeout);
-        if (query.length < 2) {
-            $list.hide();
-            return;
-        }
-
-        cvSuggestionTimeout = setTimeout(() => {
-            $.post(jobs_vars.ajax_url, {
-                action: 'jobs_suggest_employers',
-                nonce: '<?php echo wp_create_nonce("jobs_main_nonce"); ?>',
-                q: query
-            }, function(response) {
-                if (response.success && response.data.length > 0) {
-                    let html = '';
-                    response.data.forEach(item => {
-                        html += `<div class="suggestion-item cv-emp-suggestion" data-val="${item}">${item}</div>`;
-                    });
-                    $list.html(html).show();
-                } else {
-                    $list.hide();
-                }
-            });
-        }, 300);
-    });
-
-    $(document).on('click', '.cv-emp-suggestion', function() {
-        $(this).closest('.form-group').find('input').val($(this).data('val'));
-        $('.employer-suggestions-cv-list').hide();
-    });
-
-    // Dynamic Professions Logic
-    const specializationsData = <?php echo json_encode($specializations_data); ?>;
-    $('#cv-specialization').on('change', function() {
-        const spec = $(this).val();
-        const $profSelect = $('#cv-profession');
-        $profSelect.empty().append('<option value="">Select Profession</option>');
-
-        if (spec && specializationsData[spec]) {
-            specializationsData[spec].forEach(prof => {
-                $profSelect.append(`<option value="${prof}">${prof}</option>`);
-            });
-            $profSelect.prop('disabled', false);
-        } else {
-            $profSelect.prop('disabled', true);
-        }
-    });
-
-    // Dynamic Regions Logic
-    $('#cv-country').on('change', function() {
-        const country = $(this).val();
-        const $regionSelect = $('#cv-region');
-        const locationData = <?php echo json_encode($locations); ?>;
-
-        $regionSelect.empty().append('<option value="">Select Region / State</option>');
-
-        if (country && locationData[country]) {
-            locationData[country].forEach(region => {
-                $regionSelect.append(`<option value="${region}">${region}</option>`);
-            });
-            $regionSelect.prop('disabled', false);
-        } else {
-            $regionSelect.prop('disabled', true);
-        }
-    });
-
-    $('#jobs-cv-form-v3').on('submit', function(e) {
-        e.preventDefault();
-        var data = $(this).serialize() + '&action=jobs_save_cv_handler_v3';
-        var $status = $('#jobs-cv-status-v3');
-        $status.html('<p style="color:#666; font-weight:600;">Updating your account data and profile...</p>');
-
-        $.post(jobs_vars.ajax_url, data, function(response) {
-            if(response.success) {
-                $status.html('<div style="background:#dcfce7; color:#166534; padding:20px; border-radius:12px; font-weight:600;">✓ Account data updated successfully! Your public profile has been updated instantly. Redirecting...</div>');
-                setTimeout(function() { window.location.href = "<?php echo $profile_link; ?>"; }, 2500);
-            } else {
-                $status.html('<p style="color:#ef4444; font-weight:600;">Error: ' + response.data + '</p>');
-            }
-        });
-    });
-});
 </script>
 
 <style>

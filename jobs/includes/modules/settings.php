@@ -47,6 +47,7 @@ $current_user = wp_get_current_user();
         <div id="jobs-settings-status" style="margin-top:10px; text-align:center;"></div>
     </form>
 
+    <?php if ( current_user_can('administrator') || current_user_can('system_admin') || in_array('reviewer', (array) $current_user->roles) ) : ?>
     <hr>
     <div class="activity-log-section">
         <h4>My Activity Log</h4>
@@ -63,10 +64,13 @@ $current_user = wp_get_current_user();
             ?>
         </div>
     </div>
+    <?php endif; ?>
 
-    <hr>
-    <div class="danger-zone">
-        <h4>Danger Zone</h4>
-        <button class="jobs-btn btn-danger" id="jobs-delete-account">Delete My Account</button>
+    <div class="danger-zone" style="margin-top: 50px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+        <a href="#" id="jobs-delete-account" style="color: #94a3b8; font-size: 0.85em; text-decoration: underline; transition: color 0.2s;">Delete my account permanently</a>
     </div>
 </div>
+
+<style>
+#jobs-delete-account:hover { color: #ef4444; }
+</style>
