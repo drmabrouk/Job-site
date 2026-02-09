@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <p>By accessing and using this job portal, you agree to be bound by these terms and conditions. If you do not agree with any part of these terms, you must not use the platform.</p>
 
         <h3>2. User Responsibilities</h3>
-        <p>Users are responsible for the accuracy of the information provided in their CVs, job postings, and profile details. Any misleading information may lead to account suspension.</p>
+        <p>Users are responsible for the accuracy of the information provided in their account data, job postings, and profile details. Any misleading information may lead to account suspension.</p>
 
         <h3>3. Privacy Policy</h3>
         <p>Your data is handled according to our professional privacy standards. Public profiles are visible to all users unless hidden via the account settings module.</p>

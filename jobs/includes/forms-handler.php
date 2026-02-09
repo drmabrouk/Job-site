@@ -473,18 +473,23 @@ add_action( 'wp_ajax_jobs_delete_user', 'jobs_ajax_delete_user' );
  */
 function jobs_track_user_activity( $user_login, $user ) {
     update_user_meta( $user->ID, '_last_activity', time() );
+    delete_user_meta( $user->ID, '_warning_1month_sent' );
+    delete_user_meta( $user->ID, '_warning_1week_sent' );
 }
 add_action( 'wp_login', 'jobs_track_user_activity', 10, 2 );
 
 function jobs_track_activity_on_load() {
     if ( is_user_logged_in() ) {
-        update_user_meta( get_current_user_id(), '_last_activity', time() );
+        $user_id = get_current_user_id();
+        update_user_meta( $user_id, '_last_activity', time() );
+        delete_user_meta( $user_id, '_warning_1month_sent' );
+        delete_user_meta( $user_id, '_warning_1week_sent' );
     }
 }
 add_action( 'template_redirect', 'jobs_track_activity_on_load' );
 
 /**
- * Handle CV/Resume Saving (V3 - Multi-entry Portfolio)
+ * Handle General Account Data Update (V3 - Multi-entry Portfolio)
  */
 function jobs_ajax_save_cv_handler_v3() {
     check_ajax_referer( 'jobs_save_cv', 'jobs_cv_nonce' );
@@ -589,7 +594,7 @@ function jobs_ajax_save_cv_handler_v3() {
     );
     update_user_meta( $user_id, 'jobs_cv_data', $legacy_cv );
 
-    wp_send_json_success( 'Professional portfolio updated and published.' );
+    wp_send_json_success( 'Account data updated and published.' );
 }
 add_action( 'wp_ajax_jobs_save_cv_handler_v3', 'jobs_ajax_save_cv_handler_v3' );
 

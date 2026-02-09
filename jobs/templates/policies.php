@@ -5,8 +5,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
-get_header();
 ?>
 <div class="jobs-policies-page" style="padding: 100px 20px; background: #f8fafc; font-family: 'Rubik', sans-serif;">
     <div style="max-width: 900px; margin: 0 auto; background: white; padding: 60px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.03);">
@@ -46,4 +44,3 @@ get_header();
         </div>
     </div>
 </div>
-<?php get_footer(); ?>

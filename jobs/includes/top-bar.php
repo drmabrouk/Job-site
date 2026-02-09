@@ -192,6 +192,15 @@ function jobs_render_modules_grid() {
             'type' => 'direct',
             'url' => jobs_get_profile_link( get_current_user_id() )
         ),
+        'public-profile-view' => array(
+            'label' => 'Public Profile View',
+            'icon' => 'visibility',
+            'bg' => '#f3e5f5',
+            'color' => '#7b1fa2',
+            'check' => 'is_user_logged_in',
+            'type' => 'direct',
+            'url' => jobs_get_profile_link( get_current_user_id() )
+        ),
         'applications-submitted' => array(
             'label' => 'Submitted',
             'icon' => 'paper-plane',
@@ -202,11 +211,11 @@ function jobs_render_modules_grid() {
             'url' => home_url('/applications-submitted/')
         ),
         'cv-resume' => array(
-            'label' => 'CV / Resume',
+            'label' => 'General Account Data Update',
             'icon' => 'media-text',
             'bg' => '#ffebee',
             'color' => '#d32f2f',
-            'check' => 'can_apply_job',
+            'check' => 'is_user_logged_in',
             'type' => 'modal'
         ),
         'company-profile' => array(

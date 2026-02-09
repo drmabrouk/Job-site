@@ -1,6 +1,6 @@
 <?php
 /**
- * Module: CV / Resume (Professional Multi-entry Overhaul)
+ * Module: General Account Data Update (Professional Multi-entry Overhaul)
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,7 +22,7 @@ $experience_list = !empty($cv['experience']) && is_array($cv['experience']) && i
 ?>
 <div class="jobs-module-content" id="jobs-cv-module-v3">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
-        <h3 style="margin: 0; font-size: 1.8em; color: var(--jobs-primary-color);">Professional Portfolio Setup</h3>
+        <h3 style="margin: 0; font-size: 1.8em; color: var(--jobs-primary-color);">General Account Data Update</h3>
         <a href="<?php echo esc_url($profile_link); ?>" target="_blank" class="jobs-btn-small" style="background: #10b981;">View Public Portfolio</a>
     </div>
 
@@ -381,11 +381,11 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         var data = $(this).serialize() + '&action=jobs_save_cv_handler_v3';
         var $status = $('#jobs-cv-status-v3');
-        $status.html('<p style="color:#666; font-weight:600;">Saving your professional portfolio and updating your profile...</p>');
+        $status.html('<p style="color:#666; font-weight:600;">Updating your account data and profile...</p>');
 
         $.post(jobs_vars.ajax_url, data, function(response) {
             if(response.success) {
-                $status.html('<div style="background:#dcfce7; color:#166534; padding:20px; border-radius:12px; font-weight:600;">✓ Portfolio published successfully! Your public profile has been updated instantly. Redirecting...</div>');
+                $status.html('<div style="background:#dcfce7; color:#166534; padding:20px; border-radius:12px; font-weight:600;">✓ Account data updated successfully! Your public profile has been updated instantly. Redirecting...</div>');
                 setTimeout(function() { window.location.href = "<?php echo $profile_link; ?>"; }, 2500);
             } else {
                 $status.html('<p style="color:#ef4444; font-weight:600;">Error: ' + response.data + '</p>');

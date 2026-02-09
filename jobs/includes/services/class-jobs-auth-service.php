@@ -105,4 +105,30 @@ class Jobs_Auth_Service {
 
         return $sent;
     }
+
+    /**
+     * Send inactivity warning email
+     */
+    public static function send_inactivity_warning( $user_id, $type ) {
+        $user = get_userdata( $user_id );
+        if ( ! $user ) return false;
+
+        $site_name = get_bloginfo( 'name' );
+        $timeframe = ( $type === 'month' ) ? 'one month' : 'one week';
+
+        $subject = "[{$site_name}] Account Inactivity Notice";
+
+        $message = "Hello " . $user->display_name . ",\n\n";
+        $message .= "We noticed that you haven't logged into your account on {$site_name} for a long time.\n\n";
+        $message .= "To keep our database clean, we automatically delete accounts that have been inactive for over a year.\n\n";
+        $message .= "Your account is scheduled for deletion in {$timeframe} unless you log in soon.\n\n";
+        $message .= "Just log in to your account at " . home_url('/login/') . " to keep it active.\n\n";
+        $message .= "Regards,\nThe {$site_name} Team";
+
+        add_filter( 'wp_mail_from_name', function() use ($site_name) { return $site_name; } );
+        $sent = wp_mail( $user->user_email, $subject, $message );
+        remove_all_filters( 'wp_mail_from_name' );
+
+        return $sent;
+    }
 }

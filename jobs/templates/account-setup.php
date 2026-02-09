@@ -14,8 +14,6 @@ if ( ! is_user_logged_in() ) {
 $user_id = get_current_user_id();
 $user = get_userdata( $user_id );
 $role = $user->roles[0] ?? '';
-
-get_header();
 ?>
 <div class="jobs-setup-page" style="padding: 100px 20px; background: #f0f4f8; min-height: 100vh; font-family: 'Rubik', sans-serif;">
     <div class="setup-container" style="max-width: 800px; margin: 0 auto; background: white; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); overflow: hidden;">
@@ -103,7 +101,7 @@ get_header();
                     </div>
                 </div>
 
-                <!-- Step 3: Final Touches / CV Intro -->
+                <!-- Step 3: Final Touches / Account Data -->
                 <div class="setup-step" id="setup-step-3" style="display: none;">
                     <h3 style="margin-top: 0; color: #1d3469;">Step 3: Finish Setup</h3>
                     <p style="color: #64748b; margin-bottom: 30px;">Almost there! Once you finish, you can access your full dashboard.</p>
@@ -158,4 +156,3 @@ jQuery(document).ready(function($) {
     });
 });
 </script>
-<?php get_footer(); ?>
