@@ -40,21 +40,21 @@ get_header();
             ?>
             <!-- HEADER: EMPLOYER -->
             <header class="profile-v4-header">
-                <div class="profile-v4-avatar-box" style="width: 96px; height: 96px;">
+                <div class="profile-v4-avatar-box">
                     <img src="<?php echo esc_url($logo); ?>" alt="Company Logo">
                 </div>
                 <div class="profile-v4-identity-box">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1><?php echo esc_html($company['name'] ?? $display_name); ?></h1>
                         <div class="profile-v4-badges">
                             <span class="status-badge-pill badge-verified">Verified Entity</span>
                             <span class="status-badge-pill badge-hiring">Hiring</span>
                         </div>
                     </div>
-                    <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?> • <?php echo esc_html($company['industry'] ?? 'Corporate'); ?></p>
+                    <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?> • <?php echo esc_html($company['industry'] ?? 'Corporate'); ?> • 📍 <?php echo esc_html($company['address'] ?? 'International'); ?></p>
                 </div>
                 <div style="margin-left: auto; display: flex; gap: 12px;">
-                    <button class="v4-icon-btn" title="Share"><span class="dashicons dashicons-share"></span></button>
+                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                     <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Contact Platform</button>
                 </div>
             </header>
@@ -66,6 +66,11 @@ get_header();
                         <div class="v4-card-body">
                             <p><?php echo nl2br(esc_html($company['details'] ?? 'Strategic organization focused on global excellence.')); ?></p>
 
+                            <div style="margin-top: 32px; padding: 24px; background: #f8fafc; border-radius: 16px; border-left: 4px solid #1d3469;">
+                                <h4 style="font-size: 15px; font-weight: 700; color: #1d3469; margin-bottom: 12px;">Why Join Our Team?</h4>
+                                <p style="font-size: 13px; color: #475569; line-height: 1.7; margin: 0;">We foster a culture of innovation and inclusivity, where every voice is heard and every contribution matters. Join us to be part of a forward-thinking team dedicated to making a global impact.</p>
+                            </div>
+
                             <?php if(!empty($company['benefits'])): ?>
                                 <div style="margin-top: 20px;">
                                     <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">Benefits & Perks</h4>
@@ -73,14 +78,20 @@ get_header();
                                 </div>
                             <?php endif; ?>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; padding-top: 32px; border-top: 1px solid #f1f5f9;">
                                 <div>
-                                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">Mission</h4>
-                                    <p style="font-size: 12px; color: #666;"><?php echo esc_html($company['mission'] ?? 'To lead through innovation and integrity.'); ?></p>
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                                        <span class="dashicons dashicons-flag" style="color: #1d3469; font-size: 18px; width: 18px; height: 18px;"></span>
+                                        <h4 style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 0;">Our Mission</h4>
+                                    </div>
+                                    <p style="font-size: 13px; color: #64748b; line-height: 1.6;"><?php echo esc_html($company['mission'] ?? 'To lead through innovation and integrity, delivering exceptional value to our stakeholders and community.'); ?></p>
                                 </div>
                                 <div>
-                                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">Culture & Values</h4>
-                                    <p style="font-size: 12px; color: #666;"><?php echo esc_html($company['culture'] ?? 'People-first, result-oriented environment.'); ?></p>
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                                        <span class="dashicons dashicons-groups" style="color: #1d3469; font-size: 18px; width: 18px; height: 18px;"></span>
+                                        <h4 style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 0;">Culture & Values</h4>
+                                    </div>
+                                    <p style="font-size: 13px; color: #64748b; line-height: 1.6;"><?php echo esc_html($company['culture'] ?? 'A people-first, result-oriented environment where collaboration and continuous learning are celebrated.'); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -116,6 +127,24 @@ get_header();
                 </div>
 
                 <div class="profile-v4-sidebar">
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Market Presence</h3>
+                        <div class="v4-card-body">
+                            <div style="margin-bottom: 12px; display: flex; justify-content: space-between;">
+                                <span style="font-size: 12px; color: #64748b;">Global Reach</span>
+                                <span style="font-size: 12px; font-weight: 700; color: #1d3469;">High</span>
+                            </div>
+                            <div style="margin-bottom: 12px; display: flex; justify-content: space-between;">
+                                <span style="font-size: 12px; color: #64748b;">Industry Rank</span>
+                                <span style="font-size: 12px; font-weight: 700; color: #1d3469;">Top 10%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-size: 12px; color: #64748b;">Stability</span>
+                                <span style="font-size: 12px; font-weight: 700; color: #1d3469;">Excellent</span>
+                            </div>
+                        </div>
+                    </section>
+
                     <section class="v4-card">
                         <h3 class="v4-card-title">Corporate Profile</h3>
                         <div class="v4-card-body">
@@ -198,17 +227,18 @@ get_header();
                     <img src="<?php echo get_avatar_url($user_id, array('size' => 120)); ?>" alt="Profile Photo">
                 </div>
                 <div class="profile-v4-identity-box">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?></h1>
                         <div class="profile-v4-badges">
                             <span class="status-badge-pill badge-verified">Verified</span>
                             <span class="status-badge-pill badge-open">Open to Work</span>
                         </div>
                     </div>
-                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html(($region ? $region.', ' : '') . $country); ?></p>
+                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html(($region ? $region.', ' : '') . $country); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.</p>
                 </div>
                 <div style="margin-left: auto; display: flex; gap: 12px;">
-                    <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-pdf"></span></button>
+                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
+                    <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
                     <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Career Inquiry</button>
                 </div>
             </header>
@@ -219,6 +249,12 @@ get_header();
                         <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
                         <div class="v4-card-body">
                             <p><?php echo nl2br(esc_html(get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.')); ?></p>
+
+                            <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
+                                <span class="dashicons dashicons-format-quote" style="position: absolute; right: 20px; top: 20px; color: #fbcfe8; font-size: 32px; width: 32px; height: 32px;"></span>
+                                <h4 style="font-size: 14px; font-weight: 700; color: #9d174d; margin-bottom: 8px;">Professional Philosophy</h4>
+                                <p style="font-size: 13px; color: #be185d; line-height: 1.6; font-style: italic; margin: 0; max-width: 90%;">"I believe in continuous growth and the power of collaborative innovation to solve complex challenges and drive meaningful change in the industry."</p>
+                            </div>
 
                             <?php if(!empty($sec_specs)): ?>
                                 <div style="margin-top: 16px;">
@@ -251,6 +287,17 @@ get_header();
                     </section>
 
                     <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-star-filled"></span> Key Accomplishments</h3>
+                        <div class="v4-card-body">
+                            <ul style="margin: 0; padding-left: 18px; color: #475569; font-size: 13px; line-height: 1.8;">
+                                <li>Successfully led cross-functional teams to deliver high-impact projects ahead of schedule.</li>
+                                <li>Optimized operational workflows, resulting in a 20% increase in overall efficiency.</li>
+                                <li>Recognized for exceptional leadership and commitment to professional excellence.</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section class="v4-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-welcome-learn-more"></span> Academic Background</h3>
                         <div class="v4-card-body">
                             <?php if(!empty($academic)): foreach($academic as $edu): ?>
@@ -275,6 +322,16 @@ get_header();
                                     <div style="font-size: 12px; color: #666;"><?php echo esc_html($r['title']); ?> • <?php echo esc_html($r['company']); ?></div>
                                 </div>
                             <?php endforeach; ?>
+                        </div>
+                    </section>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Core Competencies</h3>
+                        <div class="v4-tag-container">
+                            <span class="v4-pastel-pill pill-dev">Strategic Thinking</span>
+                            <span class="v4-pastel-pill pill-design">Leadership</span>
+                            <span class="v4-pastel-pill pill-marketing">Problem Solving</span>
+                            <span class="v4-pastel-pill pill-mgmt">Communication</span>
                         </div>
                     </section>
                     <?php endif; ?>
@@ -347,14 +404,14 @@ get_header();
                     </section>
                     <?php endif; ?>
 
-                    <section class="v4-card">
-                        <h3 class="v4-card-title">Integrity Score</h3>
-                        <div style="height: 6px; background: #F0F0F0; border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
-                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: #1d3469;"></div>
+                    <section class="v4-card" style="background: linear-gradient(to bottom right, #ffffff, #f8fafc);">
+                        <h3 class="v4-card-title">Profile Integrity</h3>
+                        <div style="height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 12px; border: 1px solid #f1f5f9;">
+                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #1d3469, #3b82f6); border-radius: 10px;"></div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; color: #999;">
-                            <span>COMPLETENESS</span>
-                            <span><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #64748b;">
+                            <span style="letter-spacing: 0.05em;">COMPLETENESS</span>
+                            <span style="color: #1d3469;"><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
                         </div>
                     </section>
 
@@ -365,6 +422,37 @@ get_header();
             </div>
         <?php endif; ?>
 
+    </div>
+</div>
+
+<!-- Modal: Share Profile -->
+<div id="share-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:white; padding:40px; border-radius:24px; width:100%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.15); text-align: center;">
+        <div style="width: 64px; height: 64px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #1d3469;">
+            <span class="dashicons dashicons-share" style="font-size: 32px; width: 32px; height: 32px;"></span>
+        </div>
+        <h3 style="margin-top:0; font-size: 22px; font-weight: 700; color: #1d3469;">Share Profile</h3>
+        <p style="color: #64748b; font-size: 14px; margin: 8px 0 32px; line-height: 1.5;">Promote this professional profile across your network and social channels.</p>
+
+        <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 32px;">
+            <?php
+                $share_url = urlencode(home_url('/profile/' . $profile_slug . '/'));
+                $share_text = urlencode('Check out this professional profile on Jobedia!');
+            ?>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url=<?php echo $share_url; ?>" target="_blank" class="share-icon-btn share-linkedin" title="Share on LinkedIn"><span class="dashicons dashicons-networking"></span></a>
+            <a href="https://twitter.com/intent/tweet?url=<?php echo $share_url; ?>&text=<?php echo $share_text; ?>" target="_blank" class="share-icon-btn share-twitter" title="Share on Twitter"><span class="dashicons dashicons-twitter"></span></a>
+            <a href="https://api.whatsapp.com/send?text=<?php echo $share_text . ' ' . $share_url; ?>" target="_blank" class="share-icon-btn share-whatsapp" title="Share on WhatsApp"><span class="dashicons dashicons-phone"></span></a>
+            <a href="mailto:?subject=Professional Profile&body=<?php echo $share_text . ' ' . $share_url; ?>" class="share-icon-btn share-email" title="Share via Email"><span class="dashicons dashicons-email"></span></a>
+        </div>
+
+        <div style="position: relative; margin-bottom: 32px;">
+            <input type="text" id="share-url-input" readonly value="<?php echo home_url('/profile/' . $profile_slug . '/'); ?>" style="width:100%; padding:14px 48px 14px 16px; border-radius:12px; border:1px solid #e2e8f0; font-size: 13px; color: #475569; background: #f8fafc; font-family: 'Rubik', sans-serif;">
+            <button id="copy-share-url" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #1d3469; cursor: pointer; padding: 4px;" title="Copy Link">
+                <span class="dashicons dashicons-admin-links"></span>
+            </button>
+        </div>
+
+        <button class="v4-btn-secondary close-share-modal" style="width: 100%; height: 46px; border-radius: 23px;">Dismiss</button>
     </div>
 </div>
 
@@ -383,6 +471,23 @@ get_header();
 
 <script>
 jQuery(document).ready(function($) {
+    // Share Modal Logic
+    $('.open-share-modal').on('click', function() { $('#share-modal').css('display', 'flex'); });
+    $('.close-share-modal').on('click', function() { $('#share-modal').hide(); });
+
+    $('#copy-share-url').on('click', function() {
+        var copyText = document.getElementById("share-url-input");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+
+        var $btn = $(this);
+        var originalHtml = $btn.html();
+        $btn.html('<span class="dashicons dashicons-yes" style="color: #10b981;"></span>');
+        setTimeout(function() { $btn.html(originalHtml); }, 2000);
+    });
+
+    // Contact Modal Logic
     $('.open-message-modal').on('click', function() { $('#message-modal').css('display', 'flex'); });
     $('.close-modal').on('click', function() { $('#message-modal').hide(); });
     $('#confirm-send-message').on('click', function() {

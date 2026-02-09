@@ -1,32 +1,34 @@
 /* SaaS Enterprise Professional Profile Styles */
 .jobs-premium-profile-v4 {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Rubik', sans-serif;
     background: #FFFFFF;
     color: #1A1A1A;
-    line-height: 1.5;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
 
 .profile-layout-container {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 100px 40px;
+    padding: 80px 40px;
 }
 
 /* Header Section */
 .profile-v4-header {
     display: flex;
     align-items: center;
-    gap: 24px;
-    margin-bottom: 48px;
+    gap: 32px;
+    margin-bottom: 60px;
 }
 
 .profile-v4-avatar-box {
-    width: 80px;
-    height: 80px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
+    border: 4px solid #FFFFFF;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
 .profile-v4-avatar-box img {
@@ -36,10 +38,11 @@
 }
 
 .profile-v4-identity-box h1 {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0 0 4px 0;
-    color: #111111;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: #1d3469;
+    letter-spacing: -0.02em;
 }
 
 .profile-v4-headline {
@@ -51,31 +54,30 @@
 
 .profile-v4-badges {
     display: flex;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 12px;
 }
 
 .status-badge-pill {
-    height: 16px;
-    padding: 0 8px;
-    border-radius: 8px;
+    height: 22px;
+    padding: 0 12px;
+    border-radius: 50px;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
 }
 
-.badge-verified { background: #E6F4EA; color: #1E8E3E; }
-.badge-open { background: #E8F0FE; color: #1967D2; }
-.badge-hiring { background: #FCE8E6; color: #C5221F; }
+.badge-verified { background: #ecfdf5; color: #059669; }
+.badge-open { background: #eff6ff; color: #2563eb; }
+.badge-hiring { background: #fff1f2; color: #e11d48; }
 
 /* Grid System */
 .profile-v4-grid {
     display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 32px;
+    grid-template-columns: 1fr 380px;
+    gap: 40px;
 }
 
 /* Card Styling */
@@ -155,22 +157,33 @@
 }
 
 .v4-pastel-pill {
-    height: 26px;
-    padding: 0 12px;
-    border-radius: 13px;
+    height: 30px;
+    padding: 0 16px;
+    border-radius: 50px;
     font-size: 12px;
     font-weight: 500;
     display: flex;
     align-items: center;
-    background: #F1F3F4;
-    color: #3C4043;
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
 }
 
-/* Fixed color meanings */
-.pill-dev { background: #E8F0FE; color: #1967D2; }
-.pill-design { background: #FEF7E0; color: #B06000; }
-.pill-marketing { background: #E6F4EA; color: #1E8E3E; }
-.pill-mgmt { background: #FCE8E6; color: #C5221F; }
+.v4-pastel-pill:hover {
+    background: #f1f5f9;
+    transform: translateY(-1px);
+}
+
+/* Fixed color meanings - Modern Pastels */
+.pill-dev { background: #eff6ff; color: #1d4ed8; border-color: #dbeafe; }
+.pill-design { background: #faf5ff; color: #7e22ce; border-color: #f3e8ff; }
+.pill-marketing { background: #ecfdf5; color: #047857; border-color: #d1fae5; }
+.pill-mgmt { background: #fff7ed; color: #c2410c; border-color: #ffedd5; }
+.pill-yellow { background: #fefce8; color: #a16207; border-color: #fef08a; }
+.pill-blue { background: #eff6ff; color: #1d4ed8; border-color: #dbeafe; }
+.pill-green { background: #ecfdf5; color: #047857; border-color: #d1fae5; }
+.pill-purple { background: #faf5ff; color: #7e22ce; border-color: #f3e8ff; }
 
 /* Buttons */
 .v4-btn-primary {
@@ -242,24 +255,88 @@
 }
 
 .v4-stat-item {
-    background: #FAFAFA;
-    border-radius: 10px;
-    padding: 12px;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 16px;
     text-align: center;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+.v4-stat-item:hover {
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border-color: #e2e8f0;
 }
 
 .v4-stat-value {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 700;
-    color: #111111;
+    color: #1d3469;
     display: block;
+    margin-bottom: 4px;
 }
 
 .v4-stat-label {
     font-size: 10px;
-    font-weight: 600;
-    color: #999999;
+    font-weight: 700;
+    color: #64748b;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Share Modal & Social Icons */
+.share-icon-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #475569;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.share-icon-btn .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.share-icon-btn:hover {
+    transform: translateY(-3px);
+    background: #1d3469;
+    color: #FFFFFF;
+}
+
+.share-linkedin:hover { background: #0077b5; }
+.share-twitter:hover { background: #1DA1F2; }
+.share-whatsapp:hover { background: #25D366; }
+.share-email:hover { background: #ea4335; }
+
+#copy-share-url:active {
+    transform: translateY(-50%) scale(0.9);
+}
+
+/* Modal Overlay Animation */
+.jobs-modal {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 /* Responsiveness */
