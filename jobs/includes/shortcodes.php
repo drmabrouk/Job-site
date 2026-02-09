@@ -12,6 +12,14 @@ add_shortcode( 'jobs_job_seekers_page', 'jobs_render_job_seekers_page' );
 add_shortcode( 'profile_management', 'jobs_profile_management_shortcode' );
 add_shortcode( 'account_icon', 'jobs_account_icon_shortcode' );
 add_shortcode( 'jobedia_logo', 'jobs_logo_shortcode' );
+add_shortcode( 'jobs_account_setup', 'jobs_render_account_setup' );
+add_shortcode( 'jobs_policies', 'jobs_render_policies' );
+
+function jobs_render_account_setup() {
+    ob_start();
+    include JOBS_PLUGIN_DIR . 'templates/account-setup.php';
+    return ob_get_clean();
+}
 
 function jobs_render_search_page() {
     ob_start();
@@ -49,6 +57,12 @@ function jobs_render_public_profile() {
 function jobs_render_job_seekers_page() {
     ob_start();
     include JOBS_PLUGIN_DIR . 'templates/job-seekers-page.php';
+    return ob_get_clean();
+}
+
+function jobs_render_policies() {
+    ob_start();
+    include JOBS_PLUGIN_DIR . 'templates/policies.php';
     return ob_get_clean();
 }
 

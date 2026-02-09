@@ -123,6 +123,8 @@ function jobs_handle_forms() {
             if ( isset( $_POST['jobs_archive_days'] ) ) update_option( 'jobs_archive_days', intval( $_POST['jobs_archive_days'] ) );
             if ( isset( $_POST['jobs_visible_modules'] ) ) update_option( 'jobs_visible_modules', array_map( 'sanitize_text_field', $_POST['jobs_visible_modules'] ) );
             if ( isset( $_POST['jobs_adsense_code'] ) ) update_option( 'jobs_adsense_code', wp_kses_post( $_POST['jobs_adsense_code'] ) );
+            if ( isset( $_POST['jobs_seo_description'] ) ) update_option( 'jobs_seo_description', sanitize_textarea_field( $_POST['jobs_seo_description'] ) );
+            update_option( 'jobs_index_profiles', isset( $_POST['jobs_index_profiles'] ) ? 1 : 0 );
         }
     }
 
@@ -902,6 +904,87 @@ function jobs_ajax_send_job_offer() {
  */
 add_action( 'wp_ajax_jobs_verify_email', 'jobs_ajax_verify_email_handler' );
 add_action( 'wp_ajax_nopriv_jobs_verify_email', 'jobs_ajax_verify_email_handler' );
+
+/**
+ * AJAX Handler: Complete Account Setup
+ */
+/**
+ * AJAX Handler: Regenerate Sitemap
+ */
+add_action( 'wp_ajax_jobs_regenerate_sitemap', function() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+    if ( ! Jobs_Permission_Service::is_system_admin() ) wp_send_json_error('Denied');
+
+    flush_rewrite_rules();
+    wp_send_json_success('Sitemap regenerated and rewrite rules flushed.');
+});
+
+/**
+ * AJAX Handler: Export Settings
+ */
+add_action( 'wp_ajax_jobs_export_settings', function() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+    if ( ! Jobs_Permission_Service::is_system_admin() ) wp_send_json_error('Denied');
+
+    $data = Jobs_Backup_Service::export_settings();
+    wp_send_json_success( $data );
+});
+
+/**
+ * AJAX Handler: Import Settings
+ */
+add_action( 'wp_ajax_jobs_import_settings', function() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+    if ( ! Jobs_Permission_Service::is_system_admin() ) wp_send_json_error('Denied');
+
+    $settings = json_decode( stripslashes($_POST['settings']), true );
+    if ( Jobs_Backup_Service::import_settings( $settings ) ) {
+        wp_send_json_success('Settings imported successfully.');
+    } else {
+        wp_send_json_error('Import failed.');
+    }
+});
+
+add_action( 'wp_ajax_jobs_complete_setup', 'jobs_ajax_complete_setup_handler' );
+function jobs_ajax_complete_setup_handler() {
+    check_ajax_referer( 'jobs_setup_account', 'jobs_setup_nonce' );
+
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) wp_send_json_error( 'Unauthorized' );
+
+    $role = sanitize_text_field( $_POST['user_role'] );
+
+    // Update basic info
+    if ( isset( $_POST['display_name'] ) ) {
+        wp_update_user( array(
+            'ID' => $user_id,
+            'display_name' => sanitize_text_field( $_POST['display_name'] )
+        ) );
+    }
+
+    if ( isset( $_POST['phone'] ) ) {
+        update_user_meta( $user_id, '_phone', sanitize_text_field( $_POST['phone'] ) );
+    }
+
+    if ( $role === 'employer' ) {
+        $company_data = array(
+            'name' => sanitize_text_field( $_POST['company_name'] ),
+            'logo' => esc_url_raw( $_POST['company_logo'] ),
+            'details' => sanitize_textarea_field( $_POST['company_description'] )
+        );
+        update_user_meta( $user_id, 'jobs_company_data', $company_data );
+        $redirect = home_url( '/dashboard/#company-profile' );
+    } else {
+        update_user_meta( $user_id, '_specialization', sanitize_text_field( $_POST['specialization'] ) );
+        update_user_meta( $user_id, '_bio', sanitize_textarea_field( $_POST['bio'] ) );
+        $redirect = home_url( '/dashboard/#cv-resume' );
+    }
+
+    // Mark setup as complete
+    update_user_meta( $user_id, '_setup_complete', 1 );
+
+    wp_send_json_success( array( 'redirect' => $redirect ) );
+}
 function jobs_ajax_verify_email_handler() {
     $user_id = intval( $_POST['user_id'] );
     $code = sanitize_text_field( $_POST['code'] );
@@ -915,14 +998,8 @@ function jobs_ajax_verify_email_handler() {
     // Success - Log them in
     wp_set_auth_cookie( $user_id );
 
-    // Role-based redirection
-    $user = get_userdata( $user_id );
-    $redirect = home_url();
-    if ( in_array( 'job_seeker', (array) $user->roles ) ) {
-        $redirect = home_url( '/dashboard/#cv-resume' );
-    } elseif ( in_array( 'employer', (array) $user->roles ) ) {
-        $redirect = home_url( '/dashboard/#company-profile' );
-    }
+    // Redirect to Step-by-Step Setup
+    $redirect = home_url( '/account-setup/' );
 
     wp_send_json_success( array( 'redirect' => $redirect ) );
 }

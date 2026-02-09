@@ -52,7 +52,11 @@ function jobs_create_pages() {
         ),
         'policies' => array(
             'title'   => 'Policies',
-            'content' => '<!-- Policies Content -->',
+            'content' => '[jobs_policies]',
+        ),
+        'account-setup' => array(
+            'title'   => 'Account Setup',
+            'content' => '[jobs_account_setup]',
         ),
     );
 
@@ -82,7 +86,8 @@ function jobs_remove_pages() {
         'analytics-insights',
         'job-seekers',
         'site-settings',
-        'policies'
+        'policies',
+        'account-setup'
     );
     foreach ( $pages as $slug ) {
         $page = get_page_by_path( $slug );

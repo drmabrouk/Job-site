@@ -22,6 +22,11 @@ class Jobs_SEO_Service {
     public static function inject_meta_tags() {
         if ( is_admin() ) return;
 
+        // Robots exclusion for profiles if disabled
+        if ( get_query_var('profile_user') && ! get_option('jobs_index_profiles', 1) ) {
+            echo '<meta name="robots" content="noindex, nofollow">' . "\n";
+        }
+
         $description = self::get_seo_description();
         $canonical = self::get_canonical_url();
         $title = self::get_seo_title();
@@ -123,7 +128,7 @@ class Jobs_SEO_Service {
 
     public static function get_seo_description() {
         if ( is_singular('job') ) return wp_trim_words(get_the_excerpt(), 25);
-        return get_bloginfo('description');
+        return get_option('jobs_seo_description', get_bloginfo('description'));
     }
 
     private static function get_canonical_url() {
@@ -159,10 +164,12 @@ class Jobs_SEO_Service {
                 echo '<url><loc>' . get_term_link($term) . '</loc><changefreq>weekly</changefreq></url>';
             }
 
-            // User Profiles
-            $users = get_users(array('role' => 'job_seeker', 'number' => 50));
-            foreach ($users as $user) {
-                echo '<url><loc>' . jobs_get_profile_link($user->ID) . '</loc><changefreq>weekly</changefreq></url>';
+            // User Profiles (only if indexed)
+            if ( get_option('jobs_index_profiles', 1) ) {
+                $users = get_users(array('role' => 'job_seeker', 'number' => 50));
+                foreach ($users as $user) {
+                    echo '<url><loc>' . jobs_get_profile_link($user->ID) . '</loc><changefreq>weekly</changefreq></url>';
+                }
             }
 
             echo '</urlset>';
