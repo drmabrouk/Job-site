@@ -592,6 +592,36 @@ function jobs_ajax_save_cv_handler_v3() {
         }
     }
 
+    // Portfolio / Work Samples
+    if(isset($_POST['portfolio']) && is_array($_POST['portfolio'])) {
+        foreach($_POST['portfolio'] as $index => $item) {
+            if(empty($item['title'])) continue;
+            foreach($item as $k => $v) {
+                $cv_data['portfolio'][$index][$k] = sanitize_text_field($v);
+            }
+        }
+    }
+
+    // Certifications (Expanded)
+    if(isset($_POST['certs']) && is_array($_POST['certs'])) {
+        foreach($_POST['certs'] as $index => $item) {
+            if(empty($item['name'])) continue;
+            foreach($item as $k => $v) {
+                $cv_data['certs'][$index][$k] = sanitize_text_field($v);
+            }
+        }
+    }
+
+    // References
+    if(isset($_POST['references']) && is_array($_POST['references'])) {
+        foreach($_POST['references'] as $index => $item) {
+            if(empty($item['name'])) continue;
+            foreach($item as $k => $v) {
+                $cv_data['references'][$index][$k] = sanitize_text_field($v);
+            }
+        }
+    }
+
     // Preferences
     if(isset($_POST['preferences'])) {
         foreach($_POST['preferences'] as $k => $v) {
@@ -601,12 +631,21 @@ function jobs_ajax_save_cv_handler_v3() {
 
     $cv_data['last_update'] = current_time( 'mysql' );
 
+    // Calculate completeness (Simple logic)
+    $fields_to_check = array('personal', 'academic', 'experience', 'skills', 'languages');
+    $filled = 0;
+    foreach($fields_to_check as $f) { if(!empty($cv_data[$f])) $filled++; }
+    $cv_data['completeness'] = round(($filled / count($fields_to_check)) * 100);
+
     // Critical: Update meta and confirm propagation
     update_user_meta( $user_id, 'jobs_cv_data_v2', $cv_data );
 
     // Sync to individual meta for seeker filtering/directory
-    $primary_spec = $cv_data['academic'][0]['spec_main'] ?? ($cv_data['experience'][0]['title'] ?? '');
+    $primary_spec = sanitize_text_field($_POST['personal']['specialization'] ?? '');
     update_user_meta( $user_id, '_specialization', $primary_spec );
+    if (isset($_POST['personal']['secondary_specs'])) {
+        update_user_meta( $user_id, '_secondary_specs', array_map('sanitize_text_field', $_POST['personal']['secondary_specs']) );
+    }
     update_user_meta( $user_id, '_experience', ceil($total_experience_years) );
     update_user_meta( $user_id, '_nationality', $cv_data['personal']['country'] ?? '' );
     update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] ?? '' );
@@ -674,14 +713,30 @@ function jobs_ajax_save_company_handler() {
     if ( ! $user_id ) wp_send_json_error( 'Not logged in.' );
 
     $company_data = array(
-        'name'           => sanitize_text_field( $_POST['company_name'] ),
-        'logo'           => esc_url_raw( $_POST['company_logo'] ),
-        'details'        => sanitize_textarea_field( $_POST['company_details'] ),
-        'address'        => sanitize_text_field( $_POST['company_address'] ),
-        'employee_count' => sanitize_text_field( $_POST['company_employee_count'] ),
+        'name'             => sanitize_text_field( $_POST['company_name'] ),
+        'legal_name'       => sanitize_text_field( $_POST['legal_name'] ),
+        'logo'             => esc_url_raw( $_POST['company_logo'] ),
+        'industry'         => sanitize_text_field( $_POST['industry'] ),
+        'details'          => sanitize_textarea_field( $_POST['company_details'] ),
+        'mission'          => sanitize_textarea_field( $_POST['mission'] ),
+        'culture'          => sanitize_textarea_field( $_POST['culture'] ),
+        'values'           => sanitize_textarea_field( $_POST['values'] ),
+        'address'          => sanitize_text_field( $_POST['company_address'] ),
+        'branches'         => sanitize_textarea_field( $_POST['branches'] ),
+        'employee_count'   => sanitize_text_field( $_POST['company_employee_count'] ),
+        'company_type'     => sanitize_text_field( $_POST['company_type'] ),
+        'founded_year'     => sanitize_text_field( $_POST['founded_year'] ),
+        'work_environment' => sanitize_text_field( $_POST['work_environment'] ),
+        'benefits'         => sanitize_textarea_field( $_POST['benefits'] ),
+        'website'          => esc_url_raw( $_POST['website'] ),
+        'last_update'      => current_time('mysql')
     );
 
     update_user_meta( $user_id, 'jobs_company_data', $company_data );
+
+    // Sync to separate meta for search
+    update_user_meta( $user_id, '_company_industry', $company_data['industry'] );
+    update_user_meta( $user_id, '_company_type', $company_data['company_type'] );
 
     wp_send_json_success( 'Company profile updated successfully.' );
 }
@@ -1019,12 +1074,16 @@ function jobs_ajax_complete_setup_v2_handler() {
 
     if ( $role === 'employer' ) {
         $company_data = array(
-            'name'           => sanitize_text_field( $_POST['company_name'] ),
-            'industry'       => sanitize_text_field( $_POST['company_industry'] ),
-            'employee_count' => sanitize_text_field( $_POST['company_employee_count'] ),
-            'logo'           => esc_url_raw( $_POST['company_logo'] ),
-            'website'        => esc_url_raw( $_POST['company_website'] ),
-            'details'        => sanitize_textarea_field( $_POST['company_description'] )
+            'name'             => sanitize_text_field( $_POST['company_name'] ),
+            'legal_name'       => sanitize_text_field( $_POST['legal_name'] ?? $_POST['company_name'] ),
+            'industry'         => sanitize_text_field( $_POST['company_industry'] ),
+            'employee_count'   => sanitize_text_field( $_POST['company_employee_count'] ),
+            'company_type'     => sanitize_text_field( $_POST['company_type'] ?? '' ),
+            'founded_year'     => sanitize_text_field( $_POST['founded_year'] ?? '' ),
+            'logo'             => esc_url_raw( $_POST['company_logo'] ),
+            'website'          => esc_url_raw( $_POST['company_website'] ),
+            'details'          => sanitize_textarea_field( $_POST['company_description'] ),
+            'last_update'      => current_time('mysql')
         );
         update_user_meta( $user_id, 'jobs_company_data', $company_data );
         $redirect = home_url( '/dashboard/#company-profile' );
@@ -1037,18 +1096,16 @@ function jobs_ajax_complete_setup_v2_handler() {
         update_user_meta( $user_id, '_bio', sanitize_textarea_field( $_POST['bio'] ) );
         update_user_meta( $user_id, '_experience', sanitize_text_field( $_POST['experience_years'] ) );
 
-        if(isset($_POST['academic'])) update_user_meta( $user_id, 'jobs_cv_academic', $_POST['academic'] );
-        if(isset($_POST['experience'])) update_user_meta( $user_id, 'jobs_cv_experience', $_POST['experience'] );
-        if(isset($_POST['skills'])) update_user_meta( $user_id, 'jobs_cv_skills', $_POST['skills'] );
-        if(isset($_POST['preferences'])) update_user_meta( $user_id, 'jobs_cv_preferences', $_POST['preferences'] );
-
         // Sync to unified CV data for compatibility
         $cv_data = array(
             'personal' => array(
                 'full_name' => $_POST['display_name'],
                 'phone' => $_POST['phone'],
                 'gender' => $_POST['gender'],
-                'country' => $_POST['country']
+                'country' => $_POST['country'],
+                'specialization' => $_POST['specialization'],
+                'profession' => $_POST['profession'],
+                'availability' => $_POST['availability'] ?? ''
             ),
             'academic' => $_POST['academic'] ?? array(),
             'experience' => $_POST['experience'] ?? array(),

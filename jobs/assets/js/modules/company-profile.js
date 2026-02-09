@@ -2,12 +2,17 @@
     $(document).on('submit', '#jobs-company-form', function(e) {
         e.preventDefault();
         var data = $(this).serialize() + '&action=jobs_save_company_handler';
-        $('#jobs-company-status').html('<p>Saving company details...</p>');
+        var $status = $('#jobs-company-status');
+        $status.html('<p style="color: #666; font-weight: 600;">Updating corporate identity...</p>');
+
         $.post(jobs_vars.ajax_url, data, function(response) {
             if(response.success) {
-                $('#jobs-company-status').html('<p style="color: green;">' + response.data + '</p>');
+                $status.html('<div style="background:#dcfce7; color:#166534; padding:20px; border-radius:12px; font-weight:600;">✓ Corporate profile updated! Your public presence has been refreshed.</div>');
+                if (typeof profileLink !== 'undefined') {
+                    setTimeout(function() { window.location.href = profileLink; }, 2000);
+                }
             } else {
-                $('#jobs-company-status').html('<p style="color: red;">' + response.data + '</p>');
+                $status.html('<p style="color: #ef4444; font-weight: 600;">Error: ' + response.data + '</p>');
             }
         });
     });
