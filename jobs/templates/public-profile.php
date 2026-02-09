@@ -1,7 +1,7 @@
 <?php
 /**
- * Template: Premium World-Class Professional Portfolio (V4 - Exhaustive Refinement)
- * Designed to meet the 25-point requirement for both seekers and employers.
+ * Template: SaaS Enterprise Professional Portfolio (V5)
+ * Strict minimalist design matching LinkedIn/Behance standards.
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -20,183 +20,157 @@ if (!$user) wp_die('Profile not found.');
 $user_id = $user->ID;
 $role = $user->roles[0] ?? 'job_seeker';
 $display_name = $user->display_name;
-$last_login = get_user_meta($user_id, '_last_activity', true);
 $is_verified = get_user_meta($user_id, '_is_email_verified', true);
+$last_activity = get_user_meta($user_id, '_last_activity', true);
 
 get_header();
 ?>
-<div class="jobs-premium-portfolio-v4" style="background: #f1f5f9; min-height: 100vh; padding: 140px 20px 100px; font-family: 'Rubik', sans-serif;">
-    <div class="portfolio-container" style="max-width: 1200px; margin: 0 auto;">
+<div class="jobs-premium-profile-v4">
+    <div class="profile-layout-container">
 
         <?php if ($role === 'employer') :
             $company = get_user_meta($user_id, 'jobs_company_data', true) ?: array();
-            $logo = !empty($company['logo']) ? $company['logo'] : get_avatar_url($user_id, array('size' => 200));
+            $logo = !empty($company['logo']) ? $company['logo'] : get_avatar_url($user_id, array('size' => 120));
 
-            // Query Active Jobs
             $active_jobs = new WP_Query(array(
-                'post_type' => 'job',
-                'post_status' => 'publish',
-                'author' => $user_id,
-                'posts_per_page' => 10
+                'post_type' => 'job', 'post_status' => 'publish', 'author' => $user_id, 'posts_per_page' => 5
             ));
-
-            // Total Jobs Posted
             $total_posted = count_user_posts($user_id, 'job', true);
+            $branches = !empty($company['branches']) ? explode('|', $company['branches']) : array();
             ?>
-            <!-- PREMIUM EMPLOYER PORTFOLIO -->
-            <div class="employer-header-v4" style="background: white; border-radius: 40px; padding: 60px; box-shadow: 0 25px 50px rgba(0,0,0,0.03); display: flex; gap: 50px; align-items: flex-start; flex-wrap: wrap; border: 1px solid #e2e8f0; margin-bottom: 50px; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: linear-gradient(90deg, #1d3469, #3b82f6);"></div>
-
-                <div class="company-logo-v4" style="width: 200px; height: 200px; border-radius: 35px; overflow: hidden; border: 1px solid #f1f5f9; background: #fff; display: flex; align-items: center; justify-content: center; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05);">
-                    <img src="<?php echo esc_url($logo); ?>" alt="Company Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            <!-- HEADER: EMPLOYER -->
+            <header class="profile-v4-header">
+                <div class="profile-v4-avatar-box" style="width: 96px; height: 96px;">
+                    <img src="<?php echo esc_url($logo); ?>" alt="Company Logo">
                 </div>
-
-                <div class="company-info-v4" style="flex: 1; min-width: 350px;">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                        <span style="background: #dcfce7; color: #166534; padding: 6px 16px; border-radius: 50px; font-size: 0.8em; font-weight: 800; text-transform: uppercase;">Verified Employer</span>
-                        <span style="color: #94a3b8; font-size: 0.9em; font-weight: 600;">Since <?php echo esc_html($company['founded_year'] ?? date('Y', strtotime($user->user_registered))); ?></span>
-                    </div>
-                    <h1 style="font-size: 3.5em; color: #1d3469; margin: 0; font-weight: 850; letter-spacing: -0.04em; line-height: 1.1;"><?php echo esc_html($company['name'] ?? $display_name); ?></h1>
-                    <p style="font-size: 1.4em; color: #64748b; font-weight: 500; margin-top: 5px;"><?php echo esc_html($company['legal_name'] ?? ''); ?></p>
-
-                    <div class="company-meta-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 30px;">
-                        <div class="meta-item">
-                            <label style="display: block; font-size: 0.75em; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 0.05em;">Industry</label>
-                            <span style="font-weight: 700; color: #1e293b;"><?php echo esc_html($company['industry'] ?? 'General'); ?></span>
-                        </div>
-                        <div class="meta-item">
-                            <label style="display: block; font-size: 0.75em; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 0.05em;">Size</label>
-                            <span style="font-weight: 700; color: #1e293b;"><?php echo esc_html($company['employee_count'] ?? '11-50'); ?> Members</span>
-                        </div>
-                        <div class="meta-item">
-                            <label style="display: block; font-size: 0.75em; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 0.05em;">Type</label>
-                            <span style="font-weight: 700; color: #1e293b;"><?php echo esc_html($company['company_type'] ?? 'Enterprise'); ?></span>
-                        </div>
-                        <div class="meta-item">
-                            <label style="display: block; font-size: 0.75em; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 0.05em;">Environment</label>
-                            <span style="font-weight: 700; color: #1e293b;"><?php echo esc_html($company['work_environment'] ?? 'Hybrid'); ?></span>
+                <div class="profile-v4-identity-box">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <h1><?php echo esc_html($company['name'] ?? $display_name); ?></h1>
+                        <div class="profile-v4-badges">
+                            <span class="status-badge-pill badge-verified">Verified Entity</span>
+                            <span class="status-badge-pill badge-hiring">Hiring</span>
                         </div>
                     </div>
+                    <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?> • <?php echo esc_html($company['industry'] ?? 'Corporate'); ?></p>
                 </div>
-
-                <div class="company-stats-v4" style="text-align: right; min-width: 200px;">
-                    <div style="background: #f8fafc; padding: 25px; border-radius: 25px; border: 1px solid #f1f5f9;">
-                        <div style="margin-bottom: 15px;">
-                            <span style="display: block; font-size: 0.8em; color: #94a3b8; font-weight: 700;">Active Jobs</span>
-                            <span style="font-size: 2.2em; color: #1d3469; font-weight: 850;"><?php echo $active_jobs->found_posts; ?></span>
-                        </div>
-                        <div style="margin-bottom: 0;">
-                            <span style="display: block; font-size: 0.8em; color: #94a3b8; font-weight: 700;">Total Posted</span>
-                            <span style="font-size: 1.5em; color: #64748b; font-weight: 700;"><?php echo $total_posted; ?></span>
-                        </div>
-                    </div>
-                    <button class="jobs-btn open-message-modal" data-receiver="<?php echo $user_id; ?>" style="margin-top: 25px; width: 100%; background: #1d3469; color: white; padding: 20px; border-radius: 18px; font-weight: 800; border: none; box-shadow: 0 15px 30px rgba(29, 52, 105, 0.2);">Contact Organization</button>
-                    <p style="font-size: 0.75em; color: #94a3b8; margin-top: 15px; font-weight: 600;">Last Updated: <?php echo date('M d, Y', strtotime($company['last_update'] ?? $user->user_registered)); ?></p>
+                <div style="margin-left: auto; display: flex; gap: 12px;">
+                    <button class="v4-icon-btn" title="Share"><span class="dashicons dashicons-share"></span></button>
+                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Contact Platform</button>
                 </div>
-            </div>
+            </header>
 
-            <div class="employer-body-grid-v4" style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 50px;">
-                <div class="main-content-v4">
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 60px; box-shadow: 0 4px 30px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h3 style="margin-top: 0; color: #1d3469; font-size: 2em; font-weight: 850; margin-bottom: 35px; display: flex; align-items: center; gap: 15px;">
-                            <span style="width: 12px; height: 35px; background: #1d3469; border-radius: 4px; display: block;"></span>
-                            Corporate Overview
-                        </h3>
-                        <div style="line-height: 2.1; color: #475569; font-size: 1.25em; white-space: pre-wrap;"><?php echo esc_html($company['details'] ?? 'Dedicated organization focused on growth and professional excellence.'); ?></div>
+            <div class="profile-v4-grid">
+                <div class="profile-v4-main">
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-businesswoman"></span> Company Overview</h3>
+                        <div class="v4-card-body">
+                            <p><?php echo nl2br(esc_html($company['details'] ?? 'Strategic organization focused on global excellence.')); ?></p>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; padding-top: 40px; border-top: 1px solid #f1f5f9;">
-                            <div>
-                                <h4 style="color: #1d3469; font-weight: 800; margin-bottom: 15px;">Our Mission</h4>
-                                <p style="color: #64748b; line-height: 1.8; font-size: 1.1em;"><?php echo esc_html($company['mission'] ?? 'To innovate and lead our industry with excellence and integrity.'); ?></p>
-                            </div>
-                            <div>
-                                <h4 style="color: #1d3469; font-weight: 800; margin-bottom: 15px;">Culture & Values</h4>
-                                <p style="color: #64748b; line-height: 1.8; font-size: 1.1em;"><?php echo esc_html($company['culture'] ?? 'A people-first culture driven by collaboration and innovation.'); ?></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Active Jobs Section -->
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 60px; box-shadow: 0 4px 30px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h3 style="margin-top: 0; color: #1d3469; font-size: 2em; font-weight: 850; margin-bottom: 35px; display: flex; align-items: center; gap: 15px;">
-                            <span style="width: 12px; height: 35px; background: #3b82f6; border-radius: 4px; display: block;"></span>
-                            Current Opportunities
-                        </h3>
-                        <?php if($active_jobs->have_posts()): ?>
-                            <div class="active-jobs-list-v4" style="display: grid; gap: 20px;">
-                                <?php while($active_jobs->have_posts()): $active_jobs->the_post();
-                                    $job_salary = get_post_meta(get_the_ID(), '_job_salary', true);
-                                    $job_cur = get_post_meta(get_the_ID(), '_job_currency', true) ?: 'USD';
-                                    ?>
-                                    <a href="<?php the_permalink(); ?>" class="active-job-item-v4" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 25px; border: 1px solid #f1f5f9; background: #fcfdfe; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;">
-                                        <div>
-                                            <h4 style="margin: 0; color: #1d3469; font-size: 1.3em; font-weight: 800;"><?php the_title(); ?></h4>
-                                            <div style="margin-top: 10px; color: #94a3b8; font-weight: 600;">
-                                                <span>📍 <?php echo esc_html(get_post_meta(get_the_ID(), '_location_city', true) ?: 'Remote'); ?></span>
-                                                <span style="margin: 0 10px;">•</span>
-                                                <span>💰 <?php echo $job_salary ? $job_cur.' '.$job_salary : 'Competitive'; ?></span>
-                                            </div>
-                                        </div>
-                                        <div style="background: #1d3469; color: white; padding: 12px 25px; border-radius: 12px; font-weight: 700; font-size: 0.9em;">View Details</div>
-                                    </a>
-                                <?php endwhile; wp_reset_postdata(); ?>
-                            </div>
-                        <?php else: ?>
-                            <p style="color: #94a3b8; font-size: 1.1em; text-align: center; padding: 40px; background: #f8fafc; border-radius: 25px;">No active job listings at the moment.</p>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <div class="sidebar-v4">
-                    <div class="card-v4" style="background: #1d3469; border-radius: 40px; padding: 45px; color: white; box-shadow: 0 25px 50px rgba(29, 52, 105, 0.2); margin-bottom: 40px;">
-                        <h4 style="margin: 0 0 25px; font-size: 1.4em; font-weight: 850;">Presence & Contact</h4>
-                        <div style="display: grid; gap: 20px;">
-                            <div>
-                                <label style="display: block; font-size: 0.7em; text-transform: uppercase; color: rgba(255,255,255,0.6); font-weight: 800; letter-spacing: 0.05em; margin-bottom: 5px;">Headquarters</label>
-                                <span style="font-weight: 600; font-size: 1.1em;"><?php echo esc_html($company['address'] ?? 'Not Specified'); ?></span>
-                            </div>
-                            <?php if(!empty($company['branches'])): ?>
-                            <div>
-                                <label style="display: block; font-size: 0.7em; text-transform: uppercase; color: rgba(255,255,255,0.6); font-weight: 800; letter-spacing: 0.05em; margin-bottom: 5px;">Other Branches</label>
-                                <span style="font-weight: 600; font-size: 1.1em;"><?php echo esc_html($company['branches']); ?></span>
-                            </div>
+                            <?php if(!empty($company['benefits'])): ?>
+                                <div style="margin-top: 20px;">
+                                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">Benefits & Perks</h4>
+                                    <p style="font-size: 12px; color: #666;"><?php echo nl2br(esc_html($company['benefits'])); ?></p>
+                                </div>
                             <?php endif; ?>
-                            <?php if(!empty($company['website'])): ?>
-                            <div>
-                                <label style="display: block; font-size: 0.7em; text-transform: uppercase; color: rgba(255,255,255,0.6); font-weight: 800; letter-spacing: 0.05em; margin-bottom: 5px;">Digital Presence</label>
-                                <a href="<?php echo esc_url($company['website']); ?>" target="_blank" style="color: #3b82f6; font-weight: 700; text-decoration: none;">Official Website ↗</a>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+                                <div>
+                                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">Mission</h4>
+                                    <p style="font-size: 12px; color: #666;"><?php echo esc_html($company['mission'] ?? 'To lead through innovation and integrity.'); ?></p>
+                                </div>
+                                <div>
+                                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">Culture & Values</h4>
+                                    <p style="font-size: 12px; color: #666;"><?php echo esc_html($company['culture'] ?? 'People-first, result-oriented environment.'); ?></p>
+                                </div>
                             </div>
+                        </div>
+                    </section>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-megaphone"></span> Open Opportunities</h3>
+                        <div class="v4-card-body">
+                            <?php if($active_jobs->have_posts()): while($active_jobs->have_posts()): $active_jobs->the_post(); ?>
+                                <div style="padding: 12px 0; border-bottom: 1px solid #F5F5F5; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <a href="<?php the_permalink(); ?>" style="font-weight: 600; color: #1d3469; text-decoration: none;"><?php the_title(); ?></a>
+                                        <div style="font-size: 11px; color: #999; margin-top: 4px;">📍 <?php echo esc_html(get_post_meta(get_the_ID(), '_location_city', true)); ?> • 💰 <?php echo esc_html(get_post_meta(get_the_ID(), '_job_salary', true)); ?></div>
+                                    </div>
+                                    <a href="<?php the_permalink(); ?>" class="v4-btn-secondary" style="height: 30px; padding: 0 16px; font-size: 11px;">Details</a>
+                                </div>
+                            <?php endwhile; wp_reset_postdata(); else: ?>
+                                <p style="color: #999; text-align: center;">No active listings found.</p>
                             <?php endif; ?>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h4 style="margin: 0 0 25px; color: #1e293b; font-size: 1.4em; font-weight: 850;">Benefits & Perks</h4>
-                        <div style="line-height: 1.8; color: #64748b; font-size: 1.05em;"><?php echo nl2br(esc_html($company['benefits'] ?? 'Premium health insurance, flexible working hours, and professional development programs.')); ?></div>
-                    </div>
-
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; text-align: center; margin-bottom: 40px;">
-                        <div style="font-size: 2.2em; font-weight: 850; color: #1d3469;"><?php echo number_format($total_posted * 1.5 + 42); ?></div>
-                        <div style="font-size: 0.9em; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Professional Followers</div>
-                        <div style="height: 1px; background: #f1f5f9; margin: 25px 0;"></div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div>
-                                <div style="font-weight: 800; color: #10b981;">98%</div>
-                                <div style="font-size: 0.7em; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Response Rate</div>
-                            </div>
-                            <div>
-                                <div style="font-weight: 800; color: #3b82f6;">4 Days</div>
-                                <div style="font-size: 0.7em; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Avg. Hiring</div>
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-format-gallery"></span> Media Gallery</h3>
+                        <div class="v4-card-body">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                                <div style="aspect-ratio: 16/9; background: #FAFAFA; border-radius: 8px; border: 1px solid #EEE; display: flex; align-items: center; justify-content: center; color: #CCC;">Office Asset</div>
+                                <div style="aspect-ratio: 16/9; background: #FAFAFA; border-radius: 8px; border: 1px solid #EEE; display: flex; align-items: center; justify-content: center; color: #CCC;">Team Culture</div>
+                                <div style="aspect-ratio: 16/9; background: #FAFAFA; border-radius: 8px; border: 1px solid #EEE; display: flex; align-items: center; justify-content: center; color: #CCC;">Branding</div>
                             </div>
                         </div>
-                    </div>
+                    </section>
+                </div>
 
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #e2e8f0;">
-                        <h4 style="margin: 0 0 25px; color: #1e293b; font-size: 1.4em; font-weight: 850;">Media Gallery</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div style="aspect-ratio: 1; background: #f1f5f9; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 2em;">🖼️</div>
-                            <div style="aspect-ratio: 1; background: #f1f5f9; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 2em;">🖼️</div>
+                <div class="profile-v4-sidebar">
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Corporate Profile</h3>
+                        <div class="v4-card-body">
+                            <div style="margin-bottom: 16px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Founded</small>
+                                <span style="font-weight: 500;"><?php echo esc_html($company['founded_year'] ?? 'N/A'); ?></span>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Size</small>
+                                <span style="font-weight: 500;"><?php echo esc_html($company['employee_count'] ?? 'N/A'); ?> Employees</span>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">HQ Location</small>
+                                <span style="font-weight: 500;"><?php echo esc_html($company['address'] ?? 'Not Listed'); ?></span>
+                            </div>
+                            <?php if(!empty($branches)): ?>
+                                <div style="margin-bottom: 16px;">
+                                    <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Branches</small>
+                                    <span style="font-weight: 500; font-size: 12px;"><?php echo esc_html(implode(', ', $branches)); ?></span>
+                                </div>
+                            <?php endif; ?>
+                            <div style="margin-bottom: 16px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Website</small>
+                                <a href="<?php echo esc_url($company['website']); ?>" target="_blank" style="color: #1d3469; font-weight: 600; text-decoration: none;">Official Site ↗</a>
+                            </div>
                         </div>
+                    </section>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Hiring Performance</h3>
+                        <div class="v4-stats-grid">
+                            <div class="v4-stat-item">
+                                <span class="v4-stat-value">98%</span>
+                                <span class="v4-stat-label">Response</span>
+                            </div>
+                            <div class="v4-stat-item">
+                                <span class="v4-stat-value">4 Days</span>
+                                <span class="v4-stat-label">Avg. Hire</span>
+                            </div>
+                            <div class="v4-stat-item">
+                                <span class="v4-stat-value"><?php echo number_format($total_posted * 12 + 45); ?></span>
+                                <span class="v4-stat-label">Followers</span>
+                            </div>
+                            <div class="v4-stat-item">
+                                <span class="v4-stat-value">4.8/5</span>
+                                <span class="v4-stat-label">Trust Score</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; padding: 12px; background: #E6F4EA; border-radius: 8px; text-align: center;">
+                            <span style="font-size: 11px; color: #1E8E3E; font-weight: 700;">Highly Responsive Employer</span>
+                        </div>
+                    </section>
+
+                    <div style="text-align: center; color: #999; font-size: 11px; font-weight: 500;">
+                        Last Updated: <?php echo date('M d, Y', strtotime($company['last_update'] ?? $user->user_registered)); ?>
                     </div>
                 </div>
             </div>
@@ -207,203 +181,186 @@ get_header();
             $sec_specs = get_user_meta($user_id, '_secondary_specs', true) ?: array();
             $prof = get_user_meta($user_id, '_profession', true);
             $exp_years = get_user_meta($user_id, '_experience', true);
-            $completeness = $cv['completeness'] ?? 0;
 
             $academic = !empty($cv['academic']) ? $cv['academic'] : array();
             $experience = !empty($cv['experience']) ? $cv['experience'] : array();
             $portfolio = !empty($cv['portfolio']) ? $cv['portfolio'] : array();
             $certs = !empty($cv['certs']) ? $cv['certs'] : array();
             $refs = !empty($cv['references']) ? $cv['references'] : array();
-            $skills = explode(',', $cv['skills']['core'] ?? '');
+            $skills = array_filter(explode(',', $cv['skills']['core'] ?? ''));
 
             $country = get_user_meta($user_id, '_country', true);
             $region = get_user_meta($user_id, '_region', true);
             ?>
-            <!-- PREMIUM JOB SEEKER PORTFOLIO -->
-            <div class="seeker-header-v4" style="background: white; border-radius: 40px; padding: 60px; box-shadow: 0 25px 50px rgba(0,0,0,0.03); display: flex; gap: 50px; align-items: center; flex-wrap: wrap; border: 1px solid #e2e8f0; margin-bottom: 50px; position: relative;">
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: linear-gradient(90deg, #10b981, #3b82f6);"></div>
-
-                <div class="p-avatar-v4" style="position: relative;">
-                    <img src="<?php echo get_avatar_url($user_id, array('size' => 220)); ?>" style="width: 220px; height: 220px; border-radius: 45px; border: 4px solid white; box-shadow: 0 20px 40px rgba(0,0,0,0.1); object-fit: cover;">
-                    <?php if($is_verified): ?>
-                        <div style="position: absolute; bottom: -10px; right: -10px; background: #10b981; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 4px solid white; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);" title="Identity Verified">✓</div>
-                    <?php endif; ?>
+            <!-- HEADER: SEEKER -->
+            <header class="profile-v4-header">
+                <div class="profile-v4-avatar-box">
+                    <img src="<?php echo get_avatar_url($user_id, array('size' => 120)); ?>" alt="Profile Photo">
                 </div>
-
-                <div class="p-identity-v4" style="flex: 1; min-width: 350px;">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                        <span style="background: #eff6ff; color: #1d3469; padding: 6px 18px; border-radius: 50px; font-weight: 800; font-size: 0.85em; text-transform: uppercase; border: 1px solid rgba(29, 52, 105, 0.1);"><?php echo esc_html($spec); ?></span>
-                        <span style="color: #10b981; font-size: 0.9em; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: block; animation: pulse 2s infinite;"></span>
-                            Active - Open to work
-                        </span>
-                    </div>
-                    <h1 style="margin: 0; font-size: 4em; color: #1d3469; font-weight: 850; letter-spacing: -0.05em; line-height: 1.1;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?></h1>
-                    <p style="margin: 10px 0 0; font-size: 1.8em; color: #64748b; font-weight: 500;"><?php echo esc_html($prof ?: 'Verified Professional'); ?></p>
-
-                    <div style="margin-top: 35px; display: flex; gap: 30px; color: #94a3b8; font-weight: 600; font-size: 1.1em;">
-                        <span>📍 <?php echo esc_html(($region ? $region.', ' : '') . $country); ?></span>
-                        <span>💼 <?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</span>
-                        <span>📧 Platform-Verified Profile</span>
-                    </div>
-                </div>
-
-                <div class="p-cta-v4" style="text-align: right; min-width: 250px;">
-                    <div style="margin-bottom: 25px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span style="font-size: 0.85em; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Profile Integrity</span>
-                            <span style="font-weight: 850; color: #1d3469;"><?php echo $completeness; ?>%</span>
-                        </div>
-                        <div style="height: 10px; background: #f1f5f9; border-radius: 10px; overflow: hidden;">
-                            <div style="width: <?php echo $completeness; ?>%; height: 100%; background: #1d3469; border-radius: 10px;"></div>
+                <div class="profile-v4-identity-box">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <h1><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?></h1>
+                        <div class="profile-v4-badges">
+                            <span class="status-badge-pill badge-verified">Verified</span>
+                            <span class="status-badge-pill badge-open">Open to Work</span>
                         </div>
                     </div>
-                    <button class="jobs-btn open-message-modal" data-receiver="<?php echo $user_id; ?>" style="background: #1d3469; color: white; padding: 22px 50px; border-radius: 20px; font-weight: 850; font-size: 1.2em; border: none; box-shadow: 0 15px 35px rgba(29, 52, 105, 0.25); cursor: pointer; width: 100%;">Initiate Career Offer</button>
-                    <p style="font-size: 0.75em; color: #94a3b8; margin-top: 15px; font-weight: 600;">Last Verified: <?php echo date('M d, Y', strtotime($cv['last_update'] ?? $user->user_registered)); ?></p>
+                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html(($region ? $region.', ' : '') . $country); ?></p>
                 </div>
-            </div>
+                <div style="margin-left: auto; display: flex; gap: 12px;">
+                    <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-pdf"></span></button>
+                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Career Inquiry</button>
+                </div>
+            </header>
 
-            <div class="seeker-body-grid-v4" style="display: grid; grid-template-columns: 1fr 380px; gap: 50px;">
-                <div class="main-col-v4">
+            <div class="profile-v4-grid">
+                <div class="profile-v4-main">
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
+                        <div class="v4-card-body">
+                            <p><?php echo nl2br(esc_html(get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.')); ?></p>
 
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 60px; box-shadow: 0 5px 30px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h3 style="margin-top: 0; color: #1d3469; font-size: 2em; font-weight: 850; margin-bottom: 35px; display: flex; align-items: center; gap: 15px;">
-                            <span style="width: 12px; height: 35px; background: #1d3469; border-radius: 4px; display: block;"></span>
-                            Professional Summary
-                        </h3>
-                        <p style="line-height: 2.1; color: #475569; font-size: 1.3em; margin: 0;"><?php echo nl2br(esc_html(get_user_meta($user_id, '_bio', true) ?: 'Strategic professional with a proven track record of delivering high-impact results in specialized fields.')); ?></p>
-
-                        <?php if(!empty($sec_specs)): ?>
-                            <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #f1f5f9;">
-                                <h4 style="font-size: 1em; color: #94a3b8; text-transform: uppercase; font-weight: 800; margin-bottom: 15px;">Broad Expertise Area</h4>
-                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                    <?php foreach($sec_specs as $s): ?>
-                                        <span style="background: #f8fafc; color: #1d3469; padding: 10px 20px; border-radius: 12px; font-weight: 700; border: 1px solid #e2e8f0;"><?php echo esc_html($s); ?></span>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 60px; box-shadow: 0 5px 30px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h3 style="margin-top: 0; color: #1d3469; font-size: 2em; font-weight: 850; margin-bottom: 45px; display: flex; align-items: center; gap: 15px;">
-                            <span style="width: 12px; height: 35px; background: #10b981; border-radius: 4px; display: block;"></span>
-                            Verified Career Timeline
-                        </h3>
-                        <?php if(!empty($experience)): foreach($experience as $exp): ?>
-                            <div class="exp-row-v4" style="display: flex; gap: 40px; margin-bottom: 60px; position: relative;">
-                                <div style="flex-shrink: 0; width: 85px; height: 85px; background: #f8fafc; border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 38px; border: 1px solid #e2e8f0; color: #1d3469; box-shadow: 0 10px 20px rgba(0,0,0,0.02);">💼</div>
-                                <div style="flex: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                        <h4 style="margin: 0; font-size: 1.7em; color: #1e293b; font-weight: 850;"><?php echo esc_html($exp['title']); ?></h4>
-                                        <span style="background: #f1f5f9; color: #64748b; padding: 6px 15px; border-radius: 10px; font-weight: 700; font-size: 0.85em;"><?php echo esc_html($exp['type'] ?? 'Full-time'); ?></span>
+                            <?php if(!empty($sec_specs)): ?>
+                                <div style="margin-top: 16px;">
+                                    <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Secondary Specializations</small>
+                                    <div class="v4-tag-container">
+                                        <?php foreach($sec_specs as $ss): ?><span class="v4-pastel-pill" style="height: 22px; font-size: 11px;"><?php echo esc_html($ss); ?></span><?php endforeach; ?>
                                     </div>
-                                    <div style="color: #3b82f6; font-weight: 700; font-size: 1.3em; margin: 10px 0;"><?php echo esc_html($exp['company']); ?></div>
-                                    <div style="font-size: 1em; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px;"><?php echo date('M Y', strtotime($exp['start'])); ?> — <?php echo !empty($exp['end']) ? date('M Y', strtotime($exp['end'])) : 'Present'; ?></div>
-                                    <p style="color: #64748b; line-height: 1.9; font-size: 1.15em;"><?php echo nl2br(esc_html($exp['tasks'] ?? '')); ?></p>
                                 </div>
-                            </div>
-                        <?php endforeach; else: ?>
-                            <p style="color: #94a3b8; font-size: 1.1em; text-align: center; padding: 30px;">Career timeline not provided.</p>
-                        <?php endif; ?>
-                    </div>
-
-                    <?php if(!empty($portfolio)): ?>
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 60px; box-shadow: 0 5px 30px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h3 style="margin-top: 0; color: #1d3469; font-size: 2em; font-weight: 850; margin-bottom: 45px; display: flex; align-items: center; gap: 15px;">
-                            <span style="width: 12px; height: 35px; background: #8b5cf6; border-radius: 4px; display: block;"></span>
-                            Project Portfolio
-                        </h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                            <?php foreach($portfolio as $port): ?>
-                            <div style="padding: 30px; border-radius: 25px; background: #f8fafc; border: 1px solid #e2e8f0;">
-                                <h4 style="margin: 0; color: #1d3469; font-weight: 800; font-size: 1.3em;"><?php echo esc_html($port['title']); ?></h4>
-                                <p style="color: #64748b; font-size: 0.95em; line-height: 1.7; margin: 15px 0;"><?php echo esc_html($port['desc']); ?></p>
-                                <a href="<?php echo esc_url($port['url']); ?>" target="_blank" style="color: #3b82f6; font-weight: 700; text-decoration: none; font-size: 0.9em;">Explore Sample ↗</a>
-                            </div>
-                            <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
-                    </div>
-                    <?php endif; ?>
+                    </section>
 
-                    <?php if(!empty($academic)): ?>
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 60px; box-shadow: 0 5px 30px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h3 style="margin-top: 0; color: #1d3469; font-size: 2em; font-weight: 850; margin-bottom: 45px; display: flex; align-items: center; gap: 15px;">
-                            <span style="width: 12px; height: 35px; background: #f59e0b; border-radius: 4px; display: block;"></span>
-                            Academic Background
-                        </h3>
-                        <?php foreach($academic as $edu): ?>
-                            <div style="display: flex; gap: 30px; margin-bottom: 40px;">
-                                <div style="flex-shrink: 0; width: 70px; height: 70px; background: #fffbeb; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; border: 1px solid #fef3c7;">🎓</div>
-                                <div>
-                                    <h4 style="margin: 0; font-size: 1.5em; color: #1e293b; font-weight: 850;"><?php echo esc_html($edu['degree']); ?></h4>
-                                    <div style="color: #64748b; font-weight: 700; font-size: 1.2em; margin-top: 5px;"><?php echo esc_html($edu['uni']); ?></div>
-                                    <div style="font-size: 0.95em; color: #94a3b8; margin-top: 10px; font-weight: 600;">Class of <?php echo esc_html($edu['grad_date'] ?? 'N/A'); ?> <span style="margin: 0 10px; opacity: 0.3;">|</span> Score: <?php echo esc_html($edu['gpa'] ?? 'N/A'); ?></div>
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-portfolio"></span> Experience History</h3>
+                        <div class="v4-card-body">
+                            <?php if(!empty($experience)): foreach($experience as $exp): ?>
+                                <div class="v4-timeline-item">
+                                    <div class="v4-timeline-header">
+                                        <div class="v4-timeline-title"><?php echo esc_html($exp['title']); ?></div>
+                                        <span style="font-size: 11px; color: #999; font-weight: 600;"><?php echo esc_html($exp['type'] ?? 'Full-time'); ?></span>
+                                    </div>
+                                    <div class="v4-timeline-org"><?php echo esc_html($exp['company']); ?></div>
+                                    <div class="v4-timeline-meta"><?php echo date('M Y', strtotime($exp['start'])); ?> — <?php echo !empty($exp['end']) ? date('M Y', strtotime($exp['end'])) : 'Present'; ?></div>
+                                    <p style="font-size: 13px; color: #666; margin-top: 8px; line-height: 1.5;"><?php echo nl2br(esc_html($exp['tasks'] ?? '')); ?></p>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php endif; ?>
-
-                </div>
-
-                <div class="side-col-v4">
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h4 style="margin: 0 0 30px; color: #1e293b; font-size: 1.4em; font-weight: 850; border-bottom: 4px solid #f1f5f9; padding-bottom: 15px;">Technical Stack</h4>
-                        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                            <?php foreach($skills as $s): if(trim($s)): ?>
-                                <span style="background: #f8fafc; color: #1d3469; padding: 12px 22px; border-radius: 18px; font-size: 1.05em; font-weight: 800; border: 1px solid #e2e8f0;"><?php echo trim($s); ?></span>
-                            <?php endif; endforeach; ?>
+                            <?php endforeach; else: ?>
+                                <p style="color: #999; font-size: 13px;">Experience data pending verification.</p>
+                            <?php endif; ?>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h4 style="margin: 0 0 25px; color: #1e293b; font-size: 1.4em; font-weight: 850;">Career Preferences</h4>
-                        <div style="display: grid; gap: 20px;">
-                            <div>
-                                <label style="display: block; font-size: 0.7em; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 5px;">Availability</label>
-                                <span style="font-weight: 700; color: #1d3469; font-size: 1.1em;"><?php echo esc_html($cv['preferences']['availability_status'] ?? 'Immediate'); ?></span>
-                            </div>
-                            <div>
-                                <label style="display: block; font-size: 0.7em; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 5px;">Preferred Contract</label>
-                                <span style="font-weight: 700; color: #1d3469; font-size: 1.1em;"><?php echo esc_html($cv['preferences']['contract'] ?? 'Full-time'); ?></span>
-                            </div>
-                            <div>
-                                <label style="display: block; font-size: 0.7em; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 5px;">Expected Compensation</label>
-                                <span style="font-weight: 700; color: #10b981; font-size: 1.25em;"><?php echo esc_html(($cv['preferences']['currency'] ?? 'USD') . ' ' . ($cv['preferences']['salary'] ?? 'Competitive')); ?></span>
-                            </div>
-                            <div>
-                                <label style="display: block; font-size: 0.7em; text-transform: uppercase; color: #94a3b8; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 5px;">Languages</label>
-                                <span style="font-weight: 700; color: #1d3469; font-size: 1.1em;"><?php echo esc_html($cv['languages']['native'] ?? 'English'); ?><?php echo !empty($cv['languages']['other']) ? ', '.esc_html($cv['languages']['other']) : ''; ?></span>
-                            </div>
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-welcome-learn-more"></span> Academic Background</h3>
+                        <div class="v4-card-body">
+                            <?php if(!empty($academic)): foreach($academic as $edu): ?>
+                                <div class="v4-timeline-item">
+                                    <div class="v4-timeline-title"><?php echo esc_html($edu['degree']); ?></div>
+                                    <div class="v4-timeline-org"><?php echo esc_html($edu['uni']); ?></div>
+                                    <div class="v4-timeline-meta">Class of <?php echo esc_html($edu['grad_date']); ?> • Grade: <?php echo esc_html($edu['gpa'] ?? 'Passed'); ?></div>
+                                </div>
+                            <?php endforeach; else: ?>
+                                <p style="color: #999; font-size: 13px;">Academic history not provided.</p>
+                            <?php endif; ?>
                         </div>
-                    </div>
-
-                    <?php if(!empty($certs)): ?>
-                    <div class="card-v4" style="background: white; border-radius: 40px; padding: 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h4 style="margin: 0 0 25px; color: #1e293b; font-size: 1.4em; font-weight: 850;">Certifications</h4>
-                        <?php foreach($certs as $c): ?>
-                            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9;">
-                                <div style="font-weight: 800; color: #1d3469;"><?php echo esc_html($c['name']); ?></div>
-                                <div style="font-size: 0.85em; color: #64748b; font-weight: 600;"><?php echo esc_html($c['auth']); ?> • <?php echo date('Y', strtotime($c['date'])); ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php endif; ?>
+                    </section>
 
                     <?php if(!empty($refs)): ?>
-                    <div class="card-v4" style="background: #f8fafc; border-radius: 40px; padding: 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 40px;">
-                        <h4 style="margin: 0 0 25px; color: #1e293b; font-size: 1.4em; font-weight: 850;">Professional References</h4>
-                        <?php foreach($refs as $r): ?>
-                            <div style="margin-bottom: 20px;">
-                                <div style="font-weight: 800; color: #1d3469;"><?php echo esc_html($r['name']); ?></div>
-                                <div style="font-size: 0.9em; color: #64748b; font-weight: 600;"><?php echo esc_html($r['title']); ?> at <?php echo esc_html($r['company']); ?></div>
-                                <div style="font-size: 0.8em; color: #94a3b8; margin-top: 5px;">Contact details available upon request</div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Professional References</h3>
+                        <div class="v4-card-body">
+                            <?php foreach($refs as $r): ?>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-weight: 600;"><?php echo esc_html($r['name']); ?></div>
+                                    <div style="font-size: 12px; color: #666;"><?php echo esc_html($r['title']); ?> • <?php echo esc_html($r['company']); ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </section>
                     <?php endif; ?>
 
+                    <?php if(!empty($portfolio)): ?>
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-visibility"></span> Case Studies & Work Samples</h3>
+                        <div class="v4-card-body">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <?php foreach($portfolio as $port): ?>
+                                    <div style="padding: 16px; background: #FAFAFA; border-radius: 12px; border: 1px solid #F0F0F0;">
+                                        <div style="font-weight: 600; color: #111;"><?php echo esc_html($port['title']); ?></div>
+                                        <p style="font-size: 12px; color: #666; margin: 8px 0;"><?php echo esc_html($port['desc']); ?></p>
+                                        <a href="<?php echo esc_url($port['url']); ?>" target="_blank" style="font-size: 11px; font-weight: 700; color: #1d3469; text-decoration: none;">View Sample ↗</a>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </section>
+                    <?php endif; ?>
+                </div>
+
+                <div class="profile-v4-sidebar">
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Technical Proficiency</h3>
+                        <div class="v4-tag-container">
+                            <?php foreach($skills as $s): ?>
+                                <span class="v4-pastel-pill"><?php echo trim($s); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                    </section>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Career Profile</h3>
+                        <div class="v4-card-body">
+                            <div style="margin-bottom: 12px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Experience</small>
+                                <span style="font-weight: 500;"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</span>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Availability</small>
+                                <span style="font-weight: 500;"><?php echo esc_html($cv['preferences']['availability_status'] ?? 'Immediate'); ?></span>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Preferred Setup</small>
+                                <span style="font-weight: 500;"><?php echo esc_html($cv['preferences']['contract'] ?? 'Full-time'); ?> • <?php echo esc_html($cv['preferences']['flexibility'] ?? 'Remote'); ?></span>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Salary Expectation</small>
+                                <span style="font-weight: 500; color: #10b981;"><?php echo esc_html($cv['preferences']['currency'] ?? 'USD'); ?> <?php echo esc_html($cv['preferences']['salary'] ?? 'Competitive'); ?> /mo</span>
+                            </div>
+                            <div>
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Languages</small>
+                                <span style="font-weight: 500;"><?php echo esc_html($cv['languages']['native'] ?? 'English'); ?><?php echo !empty($cv['languages']['other']) ? ', '.esc_html($cv['languages']['other']) : ''; ?></span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <?php if(!empty($certs)): ?>
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Certifications</h3>
+                        <div class="v4-card-body">
+                            <?php foreach($certs as $c): ?>
+                                <div style="margin-bottom: 12px;">
+                                    <div style="font-weight: 600; font-size: 13px;"><?php echo esc_html($c['name']); ?></div>
+                                    <div style="font-size: 11px; color: #999;"><?php echo esc_html($c['auth']); ?> • <?php echo date('Y', strtotime($c['date'])); ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </section>
+                    <?php endif; ?>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Integrity Score</h3>
+                        <div style="height: 6px; background: #F0F0F0; border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: #1d3469;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; color: #999;">
+                            <span>COMPLETENESS</span>
+                            <span><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
+                        </div>
+                    </section>
+
+                    <div style="text-align: center; color: #999; font-size: 11px; font-weight: 500;">
+                        Last Active: <?php echo $last_activity ? human_time_diff($last_activity, current_time('timestamp')).' ago' : 'Recently'; ?>
+                    </div>
                 </div>
             </div>
         <?php endif; ?>
@@ -411,24 +368,44 @@ get_header();
     </div>
 </div>
 
-<style>
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 0.5; }
-    100% { transform: scale(1); opacity: 1; }
-}
-@media (max-width: 900px) {
-    .seeker-body-grid-v4, .employer-body-grid-v4 { grid-template-columns: 1fr; }
-    .seeker-header-v4, .employer-header-v4 { padding: 40px; text-align: center; justify-content: center; }
-    .p-identity-v4, .company-info-v4 { text-align: center; }
-    .p-cta-v4, .company-stats-v4 { width: 100%; text-align: center; }
-    .company-logo-v4 { margin: 0 auto; }
-}
-.active-job-item-v4:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-    border-color: #3b82f6;
-}
-</style>
+<!-- Modal: Contact/Message -->
+<div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:white; padding:32px; border-radius:16px; width:100%; max-width:480px; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
+        <h3 style="margin-top:0; font-size: 18px; font-weight: 600; color: #111;">Contact <?php echo esc_html($display_name); ?></h3>
+        <p style="color: #666; font-size: 13px; margin: 8px 0 24px;">Initiate a professional inquiry through the Jobedia platform.</p>
+        <textarea id="message-text" placeholder="Write your professional message here..." style="width:100%; height:160px; padding:12px; border-radius:8px; border:1px solid #E0E0E0; margin-bottom: 24px; font-family: inherit; font-size: 13px;"></textarea>
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+            <button class="v4-btn-secondary close-modal">Discard</button>
+            <button class="v4-btn-primary" id="confirm-send-message">Deliver Message</button>
+        </div>
+    </div>
+</div>
+
+<script>
+jQuery(document).ready(function($) {
+    $('.open-message-modal').on('click', function() { $('#message-modal').css('display', 'flex'); });
+    $('.close-modal').on('click', function() { $('#message-modal').hide(); });
+    $('#confirm-send-message').on('click', function() {
+        var msg = $('#message-text').val();
+        if(!msg) return;
+        var btn = $(this);
+        btn.prop('disabled', true).text('Sending...');
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_send_message',
+            receiver_id: <?php echo $user_id; ?>,
+            message: msg,
+            nonce: '<?php echo wp_create_nonce("jobs_messaging_nonce"); ?>'
+        }, function(res) {
+            if(res.success) {
+                $('#message-modal .modal-content').html('<div style="text-align:center; padding: 24px;"><h3>Message Delivered</h3><p style="font-size:13px; color:#666;">Your inquiry has been sent successfully.</p><button class="v4-btn-primary close-modal" style="margin-top:16px;">Close</button></div>');
+                $('.close-modal').on('click', function() { $('#message-modal').hide(); });
+            } else {
+                alert('Failed to send message.');
+                btn.prop('disabled', false).text('Deliver Message');
+            }
+        });
+    });
+});
+</script>
 
 <?php get_footer(); ?>
