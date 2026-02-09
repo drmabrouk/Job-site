@@ -26,6 +26,7 @@ require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-job-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-seo-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-sample-data-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-auth-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-backup-service.php';
 
 // Initialize Services
 Jobs_SEO_Service::init();
@@ -43,6 +44,7 @@ require_once JOBS_PLUGIN_DIR . 'includes/admin-panel.php';
 require_once JOBS_PLUGIN_DIR . 'includes/admin-settings.php';
 require_once JOBS_PLUGIN_DIR . 'includes/assets.php';
 require_once JOBS_PLUGIN_DIR . 'includes/cache-prevention.php';
+require_once JOBS_PLUGIN_DIR . 'includes/security.php';
 
 // Activation and Deactivation hooks
 register_activation_hook( __FILE__, 'jobs_plugin_activate' );
@@ -122,3 +124,63 @@ function jobs_template_loader( $template ) {
     return $template;
 }
 add_filter( 'template_include', 'jobs_template_loader' );
+
+/**
+ * Add copyright footer to plugin pages
+ */
+function jobs_render_plugin_footer() {
+    if ( is_admin() ) return;
+
+    // Check if it's a plugin page
+    $plugin_pages = array( 'job-search', 'login', 'profile', 'job-requests', 'applications-submitted', 'company-profile', 'advanced-settings', 'terms-conditions', 'analytics-insights', 'job-seekers', 'site-settings', 'policies', 'account-setup' );
+
+    $is_plugin_page = false;
+    foreach ( $plugin_pages as $slug ) {
+        if ( is_page( $slug ) ) {
+            $is_plugin_page = true;
+            break;
+        }
+    }
+
+    if ( is_singular('job') || get_query_var('profile_user') ) {
+        $is_plugin_page = true;
+    }
+
+    if ( $is_plugin_page ) {
+        ?>
+        <footer class="jobs-global-footer" style="padding: 40px 20px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05); background: transparent; color: #94a3b8; font-size: 0.9em; font-family: 'Rubik', sans-serif;">
+            <p>&copy; <?php echo date('Y'); ?> <?php echo get_bloginfo('name'); ?>. All Rights Reserved.</p>
+            <div style="margin-top: 10px; display: flex; justify-content: center; gap: 20px;">
+                <a href="<?php echo home_url('/policies/'); ?>" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+                <a href="<?php echo home_url('/policies/'); ?>" style="color: inherit; text-decoration: none;">Terms of Use</a>
+                <a href="<?php echo home_url('/support/'); ?>" style="color: inherit; text-decoration: none;">Support</a>
+            </div>
+        </footer>
+        <?php
+    }
+}
+add_action( 'wp_footer', 'jobs_render_plugin_footer' );
+
+/**
+ * Automatic Update Support
+ */
+add_filter( 'pre_set_site_transient_update_plugins', 'jobs_check_for_updates' );
+function jobs_check_for_updates( $transient ) {
+    if ( empty( $transient->checked ) ) {
+        return $transient;
+    }
+
+    // This is a placeholder for actual remote update check logic
+    // In a production environment, you would call a remote API here.
+
+    return $transient;
+}
+
+add_filter( 'plugins_api', 'jobs_plugin_info', 20, 3 );
+function jobs_plugin_info( $res, $action, $args ) {
+    if ( $action !== 'plugin_information' ) return $res;
+    if ( $args->slug !== 'jobs' ) return $res;
+
+    // Placeholder for remote plugin info
+    return $res;
+}
