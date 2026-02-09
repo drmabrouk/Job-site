@@ -100,13 +100,15 @@ get_header();
                         <span><?php echo esc_html($company['address'] ?? 'International'); ?></span>
                     </div>
                 </div>
-                <div class="profile-v4-actions" style="margin-left: auto; display: flex; gap: 12px; align-items: center;">
-                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-email-alt" style="margin-right: 8px;"></span> Contact Platform</button>
-                    <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
-                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                    <?php if ( get_current_user_id() === $user_id ) : ?>
-                        <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
-                    <?php endif; ?>
+                <div class="profile-v4-actions">
+                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-email-alt"></span> Contact Platform</button>
+                    <div class="v4-action-group">
+                        <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
+                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
+                        <?php if ( get_current_user_id() === $user_id ) : ?>
+                            <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </header>
 
@@ -341,33 +343,35 @@ get_header();
                     ?>
                     </p>
 
-                    <div class="profile-v4-location-info">
+                    <div class="profile-v4-location-info v4-mobile-row">
                         <?php
                         $nationality = get_user_meta($user_id, '_nationality', true);
                         $residence = get_user_meta($user_id, '_country', true);
                         ?>
                         <?php if($nationality): ?>
-                            <div style="display: flex; align-items: center; gap: 6px;" title="Nationality">
+                            <div class="location-item-row" title="Nationality">
                                 <?php if($f = jobs_get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
                                 <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
                             </div>
                         <?php endif; ?>
 
                         <?php if($residence): ?>
-                            <div style="display: flex; align-items: center; gap: 6px;" title="Country of Residence">
+                            <div class="location-item-row" title="Country of Residence">
                                 <?php if($f = jobs_get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                <span>Resident in <?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
+                                <span><?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
-                <div class="profile-v4-actions" style="margin-left: auto; display: flex; gap: 12px; align-items: center;">
-                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson" style="margin-right: 8px;"></span> Career Inquiry</button>
-                    <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
-                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                    <?php if ( get_current_user_id() === $user_id ) : ?>
-                        <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
-                    <?php endif; ?>
+                <div class="profile-v4-actions">
+                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Career Inquiry</button>
+                    <div class="v4-action-group">
+                        <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
+                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
+                        <?php if ( get_current_user_id() === $user_id ) : ?>
+                            <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </header>
 

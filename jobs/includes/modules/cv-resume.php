@@ -25,12 +25,12 @@ $currencies = Jobs_Data_Service::get_currencies();
 $specializations_data = Jobs_Data_Service::get_specializations();
 ?>
 <div class="jobs-module-content" id="jobs-cv-module-v3">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
-        <h3 style="margin: 0; font-size: 1.8em; color: var(--jobs-primary-color);">Data Editing</h3>
-        <a href="<?php echo esc_url($profile_link); ?>" target="_blank" class="jobs-btn-small" style="background: #10b981;">View Public Portfolio</a>
+    <div class="module-v4-header">
+        <h3 class="module-v4-title">Data Editing</h3>
+        <a href="<?php echo esc_url($profile_link); ?>" target="_blank" class="v4-btn-view-profile">View Public Portfolio</a>
     </div>
 
-    <div class="cv-progress-bar" style="display: flex; justify-content: space-between; margin-bottom: 40px; position: relative; padding: 0 10px;">
+    <div class="cv-progress-bar">
         <div style="position: absolute; top: 15px; left: 0; right: 0; height: 2px; background: #e2e8f0; z-index: 1;"></div>
         <div id="cv-progress-line" style="position: absolute; top: 15px; left: 0; width: 0%; height: 2px; background: var(--jobs-primary-color); z-index: 2; transition: width 0.4s ease;"></div>
 
@@ -44,13 +44,13 @@ $specializations_data = Jobs_Data_Service::get_specializations();
         <?php endforeach; ?>
     </div>
 
-    <form id="jobs-cv-form-v3" method="POST">
+    <form id="jobs-cv-form-v3" method="POST" class="v4-professional-form">
         <?php wp_nonce_field( 'jobs_save_cv', 'jobs_cv_nonce' ); ?>
 
         <!-- Step 0: Personal Information -->
         <div class="cv-step-panel active" id="cv-step-0">
-            <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 30px; background: #f8fafc; padding: 30px; border-radius: 20px; border: 1px solid #e2e8f0;">
-                <div class="cv-photo-upload-container" style="position: relative; width: 120px; height: 120px; flex-shrink: 0;">
+            <div class="v4-identity-upload-box">
+                <div class="cv-photo-upload-container">
                     <?php
                     $photo_url = get_user_meta($current_user_id, '_jobs_profile_photo', true) ?: get_avatar_url($current_user_id, array('size' => 120));
                     ?>
@@ -510,6 +510,80 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 </script>
 
 <style>
+.module-v4-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 20px;
+}
+.module-v4-title {
+    margin: 0;
+    font-size: 1.8em;
+    color: var(--jobs-primary-color);
+    font-weight: 800;
+}
+.v4-btn-view-profile {
+    background: #10b981;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+.v4-btn-view-profile:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.cv-progress-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    position: relative;
+    padding: 0 10px;
+}
+.cv-progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+.v4-professional-form {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+}
+
+.v4-identity-upload-box {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    margin-bottom: 30px;
+    background: #f8fafc;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.cv-photo-upload-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+}
+
 .v4-toggle-switch {
     position: relative;
     display: inline-block;
