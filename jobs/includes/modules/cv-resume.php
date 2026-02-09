@@ -19,6 +19,7 @@ $work_settings = array('Remote', 'On-site', 'Hybrid');
 // Normalize multi-entry fields
 $academic_list = !empty($cv['academic']) && is_array($cv['academic']) && isset($cv['academic'][0]) ? $cv['academic'] : array($cv['academic'] ?? array());
 $experience_list = !empty($cv['experience']) && is_array($cv['experience']) && isset($cv['experience'][0]) ? $cv['experience'] : array($cv['experience'] ?? array());
+$locations = Jobs_Data_Service::get_countries_with_regions();
 ?>
 <div class="jobs-module-content" id="jobs-cv-module-v3">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
@@ -73,13 +74,27 @@ $experience_list = !empty($cv['experience']) && is_array($cv['experience']) && i
                     <input type="text" name="personal[address]" value="<?php echo esc_attr($cv['personal']['address'] ?? ''); ?>" placeholder="Residential Address">
                 </div>
                 <div class="form-group">
-                    <input type="text" name="personal[city]" value="<?php echo esc_attr($cv['personal']['city'] ?? ''); ?>" placeholder="City">
+                    <select name="personal[country]" id="cv-country">
+                        <option value="">Select Country</option>
+                        <?php foreach(array_keys($locations) as $c): ?>
+                            <option value="<?php echo esc_attr($c); ?>" <?php selected($cv['personal']['country'] ?? '', $c); ?>><?php echo esc_html(ucwords(str_replace('-', ' ', $c))); ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="personal[state]" value="<?php echo esc_attr($cv['personal']['state'] ?? ''); ?>" placeholder="State / Province">
+                    <select name="personal[state]" id="cv-region" <?php echo empty($cv['personal']['country']) ? 'disabled' : ''; ?>>
+                        <option value="">Select Region / State</option>
+                        <?php
+                        if(!empty($cv['personal']['country']) && isset($locations[$cv['personal']['country']])) {
+                            foreach($locations[$cv['personal']['country']] as $reg) {
+                                echo '<option value="'.esc_attr($reg).'" '.selected($cv['personal']['state'] ?? '', $reg, false).'>'.esc_html($reg).'</option>';
+                            }
+                        }
+                        ?>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="personal[country]" value="<?php echo esc_attr($cv['personal']['country'] ?? ''); ?>" placeholder="Country">
+                    <input type="text" name="personal[city]" value="<?php echo esc_attr($cv['personal']['city'] ?? ''); ?>" placeholder="Specific City / District">
                 </div>
                 <div class="form-group">
                     <input type="text" name="personal[postal]" value="<?php echo esc_attr($cv['personal']['postal'] ?? ''); ?>" placeholder="Postal Code">
@@ -375,6 +390,24 @@ jQuery(document).ready(function($) {
 
     $(document).on('click', '.remove-repeater', function() {
         $(this).closest('.repeater-item').fadeOut(function() { $(this).remove(); });
+    });
+
+    // Dynamic Regions Logic
+    $('#cv-country').on('change', function() {
+        const country = $(this).val();
+        const $regionSelect = $('#cv-region');
+        const locationData = <?php echo json_encode($locations); ?>;
+
+        $regionSelect.empty().append('<option value="">Select Region / State</option>');
+
+        if (country && locationData[country]) {
+            locationData[country].forEach(region => {
+                $regionSelect.append(`<option value="${region}">${region}</option>`);
+            });
+            $regionSelect.prop('disabled', false);
+        } else {
+            $regionSelect.prop('disabled', true);
+        }
     });
 
     $('#jobs-cv-form-v3').on('submit', function(e) {
