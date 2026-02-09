@@ -14,12 +14,14 @@
                         'color': 'white',
                         'border-color': 'var(--jobs-primary-color)'
                     });
+                    $(this).find('span').css('color', '#1d3469');
                 } else {
                     $(this).removeClass('active').find('.step-circle').css({
                         'background': 'white',
                         'color': '#94a3b8',
                         'border-color': '#e2e8f0'
                     });
+                    $(this).find('span').css('color', '#94a3b8');
                 }
             });
         }

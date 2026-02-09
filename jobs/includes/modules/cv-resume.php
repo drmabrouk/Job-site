@@ -26,7 +26,7 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 ?>
 <div class="jobs-module-content" id="jobs-cv-module-v3">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
-        <h3 style="margin: 0; font-size: 1.8em; color: var(--jobs-primary-color);">General Account Data Update</h3>
+        <h3 style="margin: 0; font-size: 1.8em; color: var(--jobs-primary-color);">Data Editing</h3>
         <a href="<?php echo esc_url($profile_link); ?>" target="_blank" class="jobs-btn-small" style="background: #10b981;">View Public Portfolio</a>
     </div>
 
@@ -35,11 +35,11 @@ $specializations_data = Jobs_Data_Service::get_specializations();
         <div id="cv-progress-line" style="position: absolute; top: 15px; left: 0; width: 0%; height: 2px; background: var(--jobs-primary-color); z-index: 2; transition: width 0.4s ease;"></div>
 
         <?php
-        $steps = array('Personal', 'Academic', 'Experience', 'Skills', 'Languages', 'Preferences');
+        $steps = array('Personal', 'Academic', 'Experience', 'Proficiency', 'Languages', 'Settings');
         foreach($steps as $i => $step): ?>
-            <div class="cv-progress-step <?php echo $i==0?'active':''; ?>" data-step="<?php echo $i; ?>" style="z-index: 3; text-align: center;">
-                <div class="step-circle" style="width: 28px; height: 28px; border-radius: 50%; background: <?php echo $i==0?'var(--jobs-primary-color)':'white'; ?>; border: 2px solid <?php echo $i==0?'var(--jobs-primary-color)':'#e2e8f0'; ?>; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: <?php echo $i==0?'white':'#94a3b8'; ?>; font-size: 12px;"><?php echo $i+1; ?></div>
-                <span style="font-size: 0.7em; font-weight: 600; color: #64748b;"><?php echo $step; ?></span>
+            <div class="cv-progress-step <?php echo $i==0?'active':''; ?>" data-step="<?php echo $i; ?>" style="z-index: 3; text-align: center; flex: 1;">
+                <div class="step-circle" style="width: 32px; height: 32px; border-radius: 50%; background: <?php echo $i==0?'var(--jobs-primary-color)':'white'; ?>; border: 2px solid <?php echo $i==0?'var(--jobs-primary-color)':'#e2e8f0'; ?>; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: <?php echo $i==0?'white':'#94a3b8'; ?>; font-size: 13px; transition: all 0.3s ease;"><?php echo $i+1; ?></div>
+                <span style="font-size: 11px; font-weight: 700; color: <?php echo $i==0?'#1d3469':'#94a3b8'; ?>; text-transform: uppercase; letter-spacing: 0.05em;"><?php echo $step; ?></span>
             </div>
         <?php endforeach; ?>
     </div>
@@ -564,11 +564,13 @@ input:checked + .v4-toggle-slider:before { transform: translateX(24px); }
 .iti { width: 100%; }
 
 .cv-step-panel .step-title {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     color: #1d3469;
-    border-left: 4px solid #1d3469;
-    padding-left: 15px;
-    font-size: 1.3em;
+    border-left: 5px solid #1d3469;
+    padding-left: 20px;
+    font-size: 1.5em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
 }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .span-2 { grid-column: span 2; }
@@ -576,11 +578,17 @@ input:checked + .v4-toggle-slider:before { transform: translateX(24px); }
     width: 100%;
     padding: 14px 18px;
     border-radius: 12px;
-    border: 1px solid #cbd5e1;
-    background: #fff;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
     font-family: inherit;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     font-size: 0.95em;
+    color: #1e293b;
+}
+
+.form-group input:hover, .form-group select:hover, .form-group textarea:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     border-color: var(--jobs-primary-color);

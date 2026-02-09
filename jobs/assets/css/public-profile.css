@@ -89,8 +89,8 @@
 }
 
 .badge-verified-circle {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     background: #1d3469;
     color: #FFFFFF;
     border-radius: 50%;
@@ -98,16 +98,16 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    margin-left: 8px;
+    margin-left: 10px;
     vertical-align: middle;
-    position: relative;
-    top: -2px;
+    box-shadow: 0 2px 4px rgba(29, 52, 105, 0.2);
+    border: 1.5px solid #FFFFFF;
 }
 
 .badge-verified-circle .dashicons {
-    font-size: 12px;
-    width: 12px;
-    height: 12px;
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
 }
 
 .badge-verified { background: #ecfdf5; color: #059669; }
@@ -293,7 +293,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #E2E8F0;
+    border: 1.5px solid #E2E8F0;
     background: #FFFFFF;
     color: #475569;
     cursor: pointer;
@@ -301,13 +301,15 @@
     flex-shrink: 0;
     padding: 0;
     line-height: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .v4-icon-btn:hover {
     border-color: #1d3469;
     color: #1d3469;
     background: #f8fafc;
-    transform: scale(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(29, 52, 105, 0.1);
 }
 
 .jobs-module-link.v4-icon-btn {
@@ -518,10 +520,11 @@
     }
     .profile-v4-location-info {
         justify-content: center;
-        flex-direction: column;
-        gap: 8px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 16px;
     }
-    .profile-v4-header div[style*="margin-left: auto"] {
+    .profile-v4-actions {
         margin: 0 auto !important;
         width: 100%;
         justify-content: center;
@@ -535,8 +538,8 @@
         gap: 8px;
     }
     .profile-v4-avatar-box {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
     }
 }
 
