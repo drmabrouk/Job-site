@@ -49,14 +49,14 @@ function jobs_custom_avatar_url( $url, $id_or_email, $args ) {
     if ( $user_id ) {
         $custom_photo = get_user_meta( $user_id, '_jobs_profile_photo', true );
         if ( $custom_photo ) {
-            // Append timestamp for cache busting
-            return add_query_arg( 't', time(), $custom_photo );
+            // Force immediate propagation with high-resolution timestamp
+            return add_query_arg( 'v', time(), $custom_photo );
         }
     }
 
     return $url;
 }
-add_filter( 'get_avatar_url', 'jobs_custom_avatar_url', 10, 3 );
+add_filter( 'get_avatar_url', 'jobs_custom_avatar_url', 999, 3 );
 
 /**
  * Ensure custom avatar is used in all avatar data requests
@@ -74,9 +74,9 @@ function jobs_custom_avatar_data( $args, $id_or_email ) {
     if ( $user_id ) {
         $custom_photo = get_user_meta( $user_id, '_jobs_profile_photo', true );
         if ( $custom_photo ) {
-            $args['url'] = add_query_arg( 't', time(), $custom_photo );
+            $args['url'] = add_query_arg( 'v', time(), $custom_photo );
         }
     }
     return $args;
 }
-add_filter( 'pre_get_avatar_data', 'jobs_custom_avatar_data', 10, 2 );
+add_filter( 'pre_get_avatar_data', 'jobs_custom_avatar_data', 999, 2 );

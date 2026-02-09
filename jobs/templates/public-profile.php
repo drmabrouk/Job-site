@@ -101,8 +101,8 @@ get_header();
                     </div>
                 </div>
                 <div class="profile-v4-actions">
-                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-email-alt"></span> Contact Platform</button>
                     <div class="v4-action-group">
+                        <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-email-alt"></span> Contact Platform</button>
                         <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
                         <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                         <?php if ( get_current_user_id() === $user_id ) : ?>
@@ -187,35 +187,19 @@ get_header();
                             $c_email = $company['email'] ?? $user->user_email;
                             $c_phone = $company['phone'] ?? get_user_meta($user_id, '_phone', true);
                             ?>
-                            <div style="margin-bottom: 16px;">
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Direct Email</small>
-                                <a href="mailto:<?php echo esc_attr($c_email); ?>" class="v4-btn-secondary" style="width: 100%; justify-content: flex-start; gap: 10px; height: 42px;">
-                                    <span class="dashicons dashicons-email" style="font-size: 16px;"></span>
-                                    <span style="overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html($c_email); ?></span>
-                                </a>
-                            </div>
-
-                            <div style="margin-bottom: 16px;">
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Phone Number</small>
-                                <div class="reveal-phone-box" style="position: relative;">
-                                    <button class="v4-btn-secondary reveal-btn" style="width: 100%; justify-content: flex-start; gap: 10px; height: 42px;">
-                                        <span class="dashicons dashicons-phone"></span>
-                                        <span>Click to Reveal</span>
-                                    </button>
-                                    <div class="hidden-phone" style="display: none; align-items: center; gap: 10px; font-weight: 600; color: #1d3469; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                        <?php if($f = jobs_get_flag_url($c_slug)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                        <span><?php echo esc_html($c_phone ?: 'Not provided'); ?></span>
-                                    </div>
-                                </div>
+                            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <span class="dashicons dashicons-email" style="color: #64748b; font-size: 18px; width: 18px; height: 18px;"></span>
+                                <a href="mailto:<?php echo esc_attr($c_email); ?>" style="color: #1d3469; font-weight: 600; text-decoration: none; font-size: 13px; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html($c_email); ?></a>
                             </div>
 
                             <?php if($c_phone): ?>
-                                <div>
-                                    <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $c_phone); ?>" target="_blank" class="v4-btn-primary" style="width: 100%; gap: 10px; background: #25D366; height: 42px;">
-                                        <span class="dashicons dashicons-phone"></span>
-                                        <span>Chat on WhatsApp</span>
-                                    </a>
-                                </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <span class="dashicons dashicons-phone" style="color: #64748b; font-size: 18px; width: 18px; height: 18px;"></span>
+                                <span style="color: #1d3469; font-weight: 600; font-size: 13px;"><?php echo esc_html($c_phone); ?></span>
+                                <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $c_phone); ?>" target="_blank" style="margin-left: auto; color: #25D366;" title="WhatsApp Chat">
+                                    <span class="dashicons dashicons-whatsapp"></span>
+                                </a>
+                            </div>
                             <?php endif; ?>
                         </div>
                     </section>
@@ -322,23 +306,23 @@ get_header();
             ?>
             <!-- HEADER: SEEKER -->
             <header class="profile-v4-header">
-                <div class="profile-v4-avatar-box">
+                <div class="profile-v4-avatar-box" style="position: relative;">
                     <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
                     <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
+                    <?php if(($cv['preferences']['availability_status'] ?? '') === 'Immediate'): ?>
+                        <div class="v4-open-to-work-overlay" title="Open to Work"></div>
+                    <?php endif; ?>
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
-                        <div class="profile-v4-badges">
-                            <span class="status-badge-pill badge-open">Open to Work</span>
-                        </div>
                     </div>
                     <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.
                     <?php
                     $dob = $cv['personal']['dob'] ?? '';
                     if($dob):
                         $age = date_diff(date_create($dob), date_create('today'))->y;
-                        echo ' • ' . esc_html($age) . ' Years Old (' . date('M d, Y', strtotime($dob)) . ')';
+                        echo ' • ' . esc_html($age) . ' Years Old';
                     endif;
                     ?>
                     </p>
@@ -364,8 +348,8 @@ get_header();
                     </div>
                 </div>
                 <div class="profile-v4-actions">
-                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Career Inquiry</button>
                     <div class="v4-action-group">
+                        <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Career Inquiry</button>
                         <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
                         <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                         <?php if ( get_current_user_id() === $user_id ) : ?>
@@ -493,37 +477,20 @@ get_header();
                             <?php
                             $s_email = $cv['personal']['email'] ?? $user->user_email;
                             $s_phone = $cv['personal']['phone'] ?? get_user_meta($user_id, '_phone', true);
-                            $s_country = get_user_meta($user_id, '_country', true);
                             ?>
-                            <div style="margin-bottom: 16px;">
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Professional Email</small>
-                                <a href="mailto:<?php echo esc_attr($s_email); ?>" class="v4-btn-secondary" style="width: 100%; justify-content: flex-start; gap: 10px; height: 42px;">
-                                    <span class="dashicons dashicons-email" style="font-size: 16px;"></span>
-                                    <span style="overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html($s_email); ?></span>
-                                </a>
-                            </div>
-
-                            <div style="margin-bottom: 16px;">
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Phone Connection</small>
-                                <div class="reveal-phone-box" style="position: relative;">
-                                    <button class="v4-btn-secondary reveal-btn" style="width: 100%; justify-content: flex-start; gap: 10px; height: 42px;">
-                                        <span class="dashicons dashicons-phone"></span>
-                                        <span>Click to Reveal</span>
-                                    </button>
-                                    <div class="hidden-phone" style="display: none; align-items: center; gap: 10px; font-weight: 600; color: #1d3469; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                        <?php if($f = jobs_get_flag_url($s_country)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                        <span><?php echo esc_html($s_phone ?: 'Not provided'); ?></span>
-                                    </div>
-                                </div>
+                            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <span class="dashicons dashicons-email" style="color: #64748b; font-size: 18px; width: 18px; height: 18px;"></span>
+                                <a href="mailto:<?php echo esc_attr($s_email); ?>" style="color: #1d3469; font-weight: 600; text-decoration: none; font-size: 13px; overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html($s_email); ?></a>
                             </div>
 
                             <?php if($s_phone): ?>
-                                <div>
-                                    <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $s_phone); ?>" target="_blank" class="v4-btn-primary" style="width: 100%; gap: 10px; background: #25D366; height: 42px;">
-                                        <span class="dashicons dashicons-phone"></span>
-                                        <span>Open WhatsApp Chat</span>
-                                    </a>
-                                </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <span class="dashicons dashicons-phone" style="color: #64748b; font-size: 18px; width: 18px; height: 18px;"></span>
+                                <span style="color: #1d3469; font-weight: 600; font-size: 13px;"><?php echo esc_html($s_phone); ?></span>
+                                <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $s_phone); ?>" target="_blank" style="margin-left: auto; color: #25D366;" title="WhatsApp Chat">
+                                    <span class="dashicons dashicons-whatsapp"></span>
+                                </a>
+                            </div>
                             <?php endif; ?>
                         </div>
                     </section>
