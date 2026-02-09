@@ -20,6 +20,13 @@ class Jobs_Auth_Service {
     }
 
     /**
+     * Helper to set mail from name
+     */
+    public static function get_mail_from_name() {
+        return get_bloginfo( 'name' );
+    }
+
+    /**
      * Send verification email with 6-digit code
      */
     public static function send_verification_email( $user_id ) {
@@ -41,13 +48,12 @@ class Jobs_Auth_Service {
         $message .= "If you did not request this, please ignore this email.\n\n";
         $message .= "Regards,\nThe {$site_name} Team";
 
-        // Set professional filters
-        add_filter( 'wp_mail_from_name', function() use ($site_name) { return $site_name; } );
+        // Set professional filters safely
+        add_filter( 'wp_mail_from_name', array( 'Jobs_Auth_Service', 'get_mail_from_name' ) );
 
         $sent = wp_mail( $user->user_email, $subject, $message );
 
-        // Remove filters to avoid affecting other emails
-        remove_all_filters( 'wp_mail_from_name' );
+        remove_filter( 'wp_mail_from_name', array( 'Jobs_Auth_Service', 'get_mail_from_name' ) );
 
         return $sent;
     }
@@ -99,9 +105,9 @@ class Jobs_Auth_Service {
         $message .= $reset_url . "\n\n";
         $message .= "Regards,\nThe {$site_name} Team";
 
-        add_filter( 'wp_mail_from_name', function() use ($site_name) { return $site_name; } );
+        add_filter( 'wp_mail_from_name', array( 'Jobs_Auth_Service', 'get_mail_from_name' ) );
         $sent = wp_mail( $user->user_email, $subject, $message );
-        remove_all_filters( 'wp_mail_from_name' );
+        remove_filter( 'wp_mail_from_name', array( 'Jobs_Auth_Service', 'get_mail_from_name' ) );
 
         return $sent;
     }
@@ -125,9 +131,9 @@ class Jobs_Auth_Service {
         $message .= "Just log in to your account at " . home_url('/login/') . " to keep it active.\n\n";
         $message .= "Regards,\nThe {$site_name} Team";
 
-        add_filter( 'wp_mail_from_name', function() use ($site_name) { return $site_name; } );
+        add_filter( 'wp_mail_from_name', array( 'Jobs_Auth_Service', 'get_mail_from_name' ) );
         $sent = wp_mail( $user->user_email, $subject, $message );
-        remove_all_filters( 'wp_mail_from_name' );
+        remove_filter( 'wp_mail_from_name', array( 'Jobs_Auth_Service', 'get_mail_from_name' ) );
 
         return $sent;
     }

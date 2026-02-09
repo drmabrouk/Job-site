@@ -58,8 +58,15 @@ function jobs_handle_forms() {
             $user = new WP_User( $user_id );
             $user->set_role( $role );
 
+            // Save Initial Registration Data
+            if ( $role === 'employer' && isset( $_POST['company_name'] ) ) {
+                update_user_meta( $user_id, 'jobs_company_data', array( 'name' => sanitize_text_field( $_POST['company_name'] ) ) );
+            } elseif ( $role === 'job_seeker' && isset( $_POST['specialization'] ) ) {
+                update_user_meta( $user_id, '_specialization', sanitize_text_field( $_POST['specialization'] ) );
+            }
+
             // Save First and Last Name
-            if ( isset( $_POST['first_name'] ) ) {
+            if ( ! empty( $_POST['first_name'] ) ) {
                 wp_update_user( array(
                     'ID'         => $user_id,
                     'first_name' => sanitize_text_field( $_POST['first_name'] ),
@@ -231,6 +238,19 @@ function jobs_ajax_send_message() {
         'user_id' => $receiver_id,
         'content' => 'You have a new message from ' . get_userdata($sender_id)->display_name,
     ) );
+
+    // Email Notification
+    $recipient = get_userdata( $receiver_id );
+    $sender = get_userdata( $sender_id );
+    $site_name = get_bloginfo( 'name' );
+
+    $subject = "[{$site_name}] New Message Received";
+    $body = "Hello " . $recipient->display_name . ",\n\n";
+    $body .= "You have received a new message from " . $sender->display_name . ".\n\n";
+    $body .= "Message content:\n\"" . $message . "\"\n\n";
+    $body .= "Log in to your dashboard to reply: " . home_url('/dashboard/') . "\n\n";
+
+    wp_mail( $recipient->user_email, $subject, $body );
 
     wp_send_json_success( 'Message sent' );
 }
@@ -895,6 +915,7 @@ function jobs_ajax_send_job_offer() {
 
     $seeker_id = intval( $_POST['seeker_id'] );
     $message   = sanitize_textarea_field( $_POST['message'] );
+    $sender_id = get_current_user_id();
 
     if ( ! $seeker_id || ! $message ) {
         wp_send_json_error( 'Invalid request.' );
@@ -903,13 +924,27 @@ function jobs_ajax_send_job_offer() {
     global $wpdb;
     $table = Jobs_DB_Service::get_table( 'messages' );
     $wpdb->insert( $table, array(
-        'sender_id'   => get_current_user_id(),
+        'sender_id'   => $sender_id,
         'receiver_id' => $seeker_id,
         'message'     => 'DIRECT JOB OFFER: ' . $message,
     ) );
 
-    // Notify seeker
-    Jobs_Job_Service::add_notification( $seeker_id, 'You have received a direct job offer!' );
+    // Notify seeker in dashboard
+    Jobs_Job_Service::add_notification( $seeker_id, 'You have received a direct job offer from ' . get_userdata($sender_id)->display_name );
+
+    // Send Email Notification
+    $recipient = get_userdata( $seeker_id );
+    $sender = get_userdata( $sender_id );
+    $site_name = get_bloginfo( 'name' );
+
+    $subject = "[{$site_name}] New Direct Job Offer Received";
+    $body = "Hello " . $recipient->display_name . ",\n\n";
+    $body .= "You have received a new direct job offer from " . $sender->display_name . ".\n\n";
+    $body .= "Message:\n\"" . $message . "\"\n\n";
+    $body .= "You can view and reply to this offer in your dashboard: " . home_url('/dashboard/') . "\n\n";
+    $body .= "Regards,\nThe {$site_name} Team";
+
+    wp_mail( $recipient->user_email, $subject, $body );
 
     wp_send_json_success( 'Job offer sent successfully.' );
 }
