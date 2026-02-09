@@ -631,6 +631,15 @@ function jobs_ajax_save_cv_handler_v3() {
 
     $cv_data['last_update'] = current_time( 'mysql' );
 
+    // Handle Profile Photo Upload
+    if ( ! empty( $_FILES['profile_photo']['name'] ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        $uploaded_file = wp_handle_upload( $_FILES['profile_photo'], array( 'test_form' => false ) );
+        if ( ! isset( $uploaded_file['error'] ) ) {
+            update_user_meta( $user_id, '_jobs_profile_photo', $uploaded_file['url'] );
+        }
+    }
+
     // Calculate completeness (Simple logic)
     $fields_to_check = array('personal', 'academic', 'experience', 'skills', 'languages');
     $filled = 0;
@@ -641,6 +650,9 @@ function jobs_ajax_save_cv_handler_v3() {
     update_user_meta( $user_id, 'jobs_cv_data_v2', $cv_data );
 
     // Sync to individual meta for seeker filtering/directory
+    $visibility = (isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public') ? 'public' : 'private';
+    update_user_meta( $user_id, 'profile_visibility', $visibility );
+
     $primary_spec = sanitize_text_field($_POST['personal']['specialization'] ?? '');
     update_user_meta( $user_id, '_specialization', $primary_spec );
     if (isset($_POST['personal']['secondary_specs'])) {
@@ -649,7 +661,6 @@ function jobs_ajax_save_cv_handler_v3() {
     update_user_meta( $user_id, '_experience', ceil($total_experience_years) );
     update_user_meta( $user_id, '_nationality', sanitize_text_field($_POST['personal']['nationality'] ?? '') );
     update_user_meta( $user_id, '_country', sanitize_text_field($_POST['personal']['country'] ?? '') );
-    update_user_meta( $user_id, 'profile_visibility', sanitize_text_field($_POST['personal']['visibility'] ?? 'public') );
     update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] ?? '' );
     update_user_meta( $user_id, '_qualification', $cv_data['academic'][0]['degree'] ?? '' );
     update_user_meta( $user_id, '_english_level', $cv_data['languages']['score'] ?? '' );
@@ -709,15 +720,26 @@ add_action( 'wp_ajax_jobs_load_module', 'jobs_ajax_load_module' );
 
 // Handle Company Profile Save
 function jobs_ajax_save_company_handler() {
-    check_ajax_referer( 'jobs_save_company', 'jobs_company_nonce' );
+    check_ajax_referer( 'jobs_save_company', 'nonce' );
 
     $user_id = get_current_user_id();
     if ( ! $user_id ) wp_send_json_error( 'Not logged in.' );
 
+    // Handle Logo Upload
+    $logo_url = sanitize_text_field( $_POST['company_logo'] );
+    if ( ! empty( $_FILES['profile_photo']['name'] ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        $uploaded_file = wp_handle_upload( $_FILES['profile_photo'], array( 'test_form' => false ) );
+        if ( ! isset( $uploaded_file['error'] ) ) {
+            $logo_url = $uploaded_file['url'];
+            update_user_meta( $user_id, '_jobs_profile_photo', $logo_url );
+        }
+    }
+
     $company_data = array(
         'name'             => sanitize_text_field( $_POST['company_name'] ),
         'legal_name'       => sanitize_text_field( $_POST['legal_name'] ),
-        'logo'             => esc_url_raw( $_POST['company_logo'] ),
+        'logo'             => esc_url_raw( $logo_url ),
         'industry'         => sanitize_text_field( $_POST['industry'] ),
         'details'          => sanitize_textarea_field( $_POST['company_details'] ),
         'mission'          => sanitize_textarea_field( $_POST['mission'] ),
@@ -736,9 +758,8 @@ function jobs_ajax_save_company_handler() {
 
     update_user_meta( $user_id, 'jobs_company_data', $company_data );
 
-    if ( isset( $_POST['profile_visibility'] ) ) {
-        update_user_meta( $user_id, 'profile_visibility', sanitize_text_field( $_POST['profile_visibility'] ) );
-    }
+    $visibility = (isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public') ? 'public' : 'private';
+    update_user_meta( $user_id, 'profile_visibility', $visibility );
 
     // Sync to separate meta for search
     update_user_meta( $user_id, '_company_industry', $company_data['industry'] );

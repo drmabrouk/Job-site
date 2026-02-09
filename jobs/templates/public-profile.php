@@ -71,7 +71,7 @@ get_header();
 
         <?php if ($role === 'employer') :
             $company = get_user_meta($user_id, 'jobs_company_data', true) ?: array();
-            $logo = !empty($company['logo']) ? $company['logo'] : get_avatar_url($user_id, array('size' => 120));
+            $logo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: (!empty($company['logo']) ? $company['logo'] : get_avatar_url($user_id, array('size' => 120)));
 
             $active_jobs = new WP_Query(array(
                 'post_type' => 'job', 'post_status' => 'publish', 'author' => $user_id, 'posts_per_page' => 5
@@ -86,9 +86,8 @@ get_header();
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
-                        <h1><?php echo esc_html($company['name'] ?? $display_name); ?></h1>
+                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($company['name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified Entity" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                         <div class="profile-v4-badges">
-                            <div class="badge-verified-circle" title="Verified Entity"><span class="dashicons dashicons-yes"></span></div>
                             <span class="status-badge-pill badge-hiring">Hiring</span>
                         </div>
                     </div>
@@ -101,13 +100,15 @@ get_header();
                         <span><?php echo esc_html($company['address'] ?? 'International'); ?></span>
                     </div>
                 </div>
-                <div style="margin-left: auto; display: flex; gap: 12px;">
-                    <?php if ( get_current_user_id() === $user_id ) : ?>
-                        <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
-                    <?php endif; ?>
-                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                    <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
-                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Contact Platform</button>
+                <div class="profile-v4-actions">
+                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-email-alt"></span> Contact Platform</button>
+                    <div class="v4-action-group">
+                        <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
+                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
+                        <?php if ( get_current_user_id() === $user_id ) : ?>
+                            <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </header>
 
@@ -242,7 +243,13 @@ get_header();
                         <div class="v4-card-body">
                             <div style="margin-bottom: 16px;">
                                 <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Founded</small>
-                                <span style="font-weight: 500;"><?php echo esc_html($company['founded_year'] ?? 'N/A'); ?></span>
+                                <span style="font-weight: 500;"><?php
+                                    echo esc_html($company['founded_year'] ?? 'N/A');
+                                    if(!empty($company['founded_year']) && is_numeric($company['founded_year'])) {
+                                        $age = date('Y') - intval($company['founded_year']);
+                                        echo ' (' . esc_html($age) . ' Years in Business)';
+                                    }
+                                ?></span>
                             </div>
                             <div style="margin-bottom: 16px;">
                                 <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Size</small>
@@ -316,45 +323,55 @@ get_header();
             <!-- HEADER: SEEKER -->
             <header class="profile-v4-header">
                 <div class="profile-v4-avatar-box">
-                    <img src="<?php echo get_avatar_url($user_id, array('size' => 120)); ?>" alt="Profile Photo">
+                    <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
+                    <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
-                        <h1><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?></h1>
+                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                         <div class="profile-v4-badges">
-                            <div class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></div>
                             <span class="status-badge-pill badge-open">Open to Work</span>
                         </div>
                     </div>
-                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.</p>
+                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.
+                    <?php
+                    $dob = $cv['personal']['dob'] ?? '';
+                    if($dob):
+                        $age = date_diff(date_create($dob), date_create('today'))->y;
+                        echo ' • ' . esc_html($age) . ' Years Old (' . date('M d, Y', strtotime($dob)) . ')';
+                    endif;
+                    ?>
+                    </p>
 
-                    <div class="profile-v4-location-info">
+                    <div class="profile-v4-location-info v4-mobile-row">
                         <?php
                         $nationality = get_user_meta($user_id, '_nationality', true);
                         $residence = get_user_meta($user_id, '_country', true);
                         ?>
                         <?php if($nationality): ?>
-                            <div style="display: flex; align-items: center; gap: 6px;" title="Nationality">
+                            <div class="location-item-row" title="Nationality">
                                 <?php if($f = jobs_get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
                                 <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
                             </div>
                         <?php endif; ?>
 
                         <?php if($residence): ?>
-                            <div style="display: flex; align-items: center; gap: 6px;" title="Country of Residence">
+                            <div class="location-item-row" title="Country of Residence">
                                 <?php if($f = jobs_get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                <span>Resident in <?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
+                                <span><?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
-                <div style="margin-left: auto; display: flex; gap: 12px;">
-                    <?php if ( get_current_user_id() === $user_id ) : ?>
-                        <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
-                    <?php endif; ?>
-                    <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                    <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
-                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Career Inquiry</button>
+                <div class="profile-v4-actions">
+                    <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Career Inquiry</button>
+                    <div class="v4-action-group">
+                        <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
+                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
+                        <?php if ( get_current_user_id() === $user_id ) : ?>
+                            <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </header>
 
