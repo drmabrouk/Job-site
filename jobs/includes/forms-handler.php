@@ -637,6 +637,7 @@ function jobs_ajax_save_cv_handler_v3() {
         $uploaded_file = wp_handle_upload( $_FILES['profile_photo'], array( 'test_form' => false ) );
         if ( ! isset( $uploaded_file['error'] ) ) {
             update_user_meta( $user_id, '_jobs_profile_photo', $uploaded_file['url'] );
+            clean_user_cache( $user_id ); // Force cache refresh
         }
     }
 
@@ -733,6 +734,7 @@ function jobs_ajax_save_company_handler() {
         if ( ! isset( $uploaded_file['error'] ) ) {
             $logo_url = $uploaded_file['url'];
             update_user_meta( $user_id, '_jobs_profile_photo', $logo_url );
+            clean_user_cache( $user_id ); // Force cache refresh
         }
     }
 
