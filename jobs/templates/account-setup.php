@@ -162,11 +162,11 @@ $currencies = Jobs_Data_Service::get_currencies();
                                 <input type="number" name="experience_years" placeholder="Total years">
                             </div>
                             <div class="form-group">
-                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Current Status</label>
-                                <select name="employment_status">
-                                    <option value="Employed">Employed</option>
-                                    <option value="Unemployed">Actively Looking</option>
-                                    <option value="Freelance">Freelancing</option>
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Availability Status</label>
+                                <select name="availability">
+                                    <?php foreach(Jobs_Data_Service::get_availability_statuses() as $s): ?>
+                                        <option value="<?php echo $s; ?>"><?php echo $s; ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
@@ -247,26 +247,40 @@ $currencies = Jobs_Data_Service::get_currencies();
                         <h2 style="color: #1d3469; margin-bottom: 30px;">Company Information</h2>
                         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
                             <div class="form-group">
-                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Company Name</label>
-                                <input type="text" name="company_name" placeholder="Legal company name" required>
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Company Display Name</label>
+                                <input type="text" name="company_name" placeholder="Brand name" required>
+                            </div>
+                            <div class="form-group">
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Legal Name</label>
+                                <input type="text" name="legal_name" placeholder="Official registered name">
                             </div>
                             <div class="form-group">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">Industry</label>
                                 <select name="company_industry">
-                                    <option value="Technology">Technology</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="Healthcare">Healthcare</option>
-                                    <option value="Education">Education</option>
+                                    <?php foreach(array_keys(Jobs_Data_Service::get_specializations()) as $spec): ?>
+                                        <option value="<?php echo $spec; ?>"><?php echo $spec; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Company Type</label>
+                                <select name="company_type">
+                                    <?php foreach(Jobs_Data_Service::get_company_types() as $t): ?>
+                                        <option value="<?php echo $t; ?>"><?php echo $t; ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">Company Size</label>
                                 <select name="company_employee_count">
-                                    <option value="1-10">1-10 employees</option>
-                                    <option value="11-50">11-50 employees</option>
-                                    <option value="51-200">51-200 employees</option>
-                                    <option value="201+">201+ employees</option>
+                                    <?php foreach(Jobs_Data_Service::get_company_sizes() as $s): ?>
+                                        <option value="<?php echo $s; ?>"><?php echo $s; ?></option>
+                                    <?php endforeach; ?>
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Founded Year</label>
+                                <input type="number" name="founded_year" placeholder="e.g. 2010">
                             </div>
                             <div class="form-group">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">Headquarters Country</label>

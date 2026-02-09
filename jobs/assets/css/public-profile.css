@@ -1,308 +1,288 @@
-.jobs-profile-wrapper {
-    padding: 60px 20px;
-    background: #f8fafc;
-    min-height: 100vh;
+/* SaaS Enterprise Professional Profile Styles */
+.jobs-premium-profile-v4 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: #FFFFFF;
+    color: #1A1A1A;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
 
-.jobs-profile-container {
-    max-width: 1100px;
+.profile-layout-container {
+    max-width: 1200px;
     margin: 0 auto;
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 10px 40px rgba(29, 52, 105, 0.06);
-    overflow: hidden;
+    padding: 100px 40px;
 }
 
-/* Header & Banner */
-.profile-card-header {
-    position: relative;
-    background: #fff;
-}
-
-.profile-header-content {
-    padding: 0 50px 40px 50px;
+/* Header Section */
+.profile-v4-header {
     display: flex;
-    align-items: flex-end;
-    gap: 30px;
-    margin-top: -60px;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 48px;
 }
 
-.profile-avatar-wrapper {
-    width: 160px;
-    height: 160px;
-    border-radius: 30px;
-    background: #fff;
-    padding: 6px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+.profile-v4-avatar-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
     flex-shrink: 0;
 }
 
-.profile-img {
+.profile-v4-avatar-box img {
     width: 100%;
     height: 100%;
-    border-radius: 24px;
     object-fit: cover;
 }
 
-.profile-main-meta {
-    flex: 1;
-    padding-bottom: 10px;
-}
-
-.profile-title-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.profile-title-row h1 {
-    margin: 0;
-    font-size: 2.2em;
-    color: #1d3469;
-    font-weight: 800;
-}
-
-.verification-badge {
-    color: #10b981;
-}
-
-.verification-badge .dashicons {
-    font-size: 28px;
-    width: 28px;
-    height: 28px;
-}
-
-.profile-tagline {
-    font-size: 1.15em;
-    color: #64748b;
-    font-weight: 500;
-    margin: 5px 0 15px 0;
-}
-
-.profile-quick-tags {
-    display: flex;
-    gap: 15px;
-}
-
-.q-tag {
-    font-size: 0.85em;
-    color: #94a3b8;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 600;
-}
-
-.q-tag .dashicons {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    color: #cbd5e1;
-}
-
-.profile-actions {
-    display: flex;
-    gap: 12px;
-    padding-bottom: 15px;
-}
-
-/* Layout Grid */
-.profile-grid {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 40px;
-    padding: 40px 50px;
-    border-top: 1px solid #f1f5f9;
-}
-
-/* Sidebar */
-.profile-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-}
-
-.profile-section .s-title {
-    font-size: 1.1em;
-    font-weight: 700;
-    color: #1d3469;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.profile-section .s-content {
-    font-size: 0.95em;
-    line-height: 1.6;
-    color: #475569;
-}
-
-.h-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.h-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.h-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.h-icon .dashicons {
+.profile-v4-identity-box h1 {
     font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: #111111;
 }
 
-.h-text small {
-    display: block;
-    font-size: 0.75em;
-    color: #94a3b8;
+.profile-v4-headline {
+    font-size: 14px;
+    color: #666666;
+    margin: 0;
+    font-weight: 400;
+}
+
+.profile-v4-badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.status-badge-pill {
+    height: 16px;
+    padding: 0 8px;
+    border-radius: 8px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
-}
-
-.h-text strong {
-    font-size: 0.95em;
-    color: #1e293b;
-    font-weight: 700;
-}
-
-.s-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: #f1f5f9;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: #64748b;
-    text-decoration: none;
-    transition: all 0.2s;
-    font-weight: 800;
+    letter-spacing: 0.02em;
 }
 
-.s-icon:hover {
-    background: #1d3469;
-    color: #fff;
-    transform: translateY(-2px);
+.badge-verified { background: #E6F4EA; color: #1E8E3E; }
+.badge-open { background: #E8F0FE; color: #1967D2; }
+.badge-hiring { background: #FCE8E6; color: #C5221F; }
+
+/* Grid System */
+.profile-v4-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
 }
 
-/* Main Content */
-.profile-main {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+/* Card Styling */
+.v4-card {
+    background: #FFFFFF;
+    border: 1px solid #F0F0F0;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 24px;
+    /* subtle shadow */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
-.p-card {
-    background: #fff;
-    border: 1px solid #f1f5f9;
-    border-radius: 20px;
-    padding: 30px;
-}
-
-.card-title {
-    font-size: 1.25em;
-    font-weight: 700;
-    color: #1d3469;
+.v4-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111111;
     margin: 0 0 20px 0;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.card-title .dashicons {
-    color: #cbd5e1;
+.v4-card-title .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #999999;
 }
 
-.card-body {
-    font-size: 1.05em;
-    line-height: 1.8;
-    color: #475569;
+.v4-card-body {
+    font-size: 13px;
+    color: #444444;
+    line-height: 1.6;
 }
 
-.skill-pill {
-    display: inline-block;
-    background: #f1f5f9;
-    color: #1d3469;
-    padding: 6px 16px;
-    border-radius: 30px;
-    font-size: 0.9em;
-    font-weight: 600;
-    margin: 0 8px 8px 0;
-    border: 1px solid #e2e8f0;
+/* Timelines */
+.v4-timeline-item {
+    margin-bottom: 24px;
+    position: relative;
+    padding-left: 0;
 }
 
-.e-job-item {
+.v4-timeline-item:last-child { margin-bottom: 0; }
+
+.v4-timeline-header {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+}
+
+.v4-timeline-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111111;
+}
+
+.v4-timeline-org {
+    font-size: 13px;
+    font-weight: 500;
+    color: #444444;
+    margin-bottom: 4px;
+}
+
+.v4-timeline-meta {
+    font-size: 11px;
+    color: #999999;
+    font-weight: 500;
+}
+
+/* Skills & Tags */
+.v4-tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.v4-pastel-pill {
+    height: 26px;
+    padding: 0 12px;
+    border-radius: 13px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
     align-items: center;
-    padding: 15px 20px;
-    background: #f8fafc;
-    border-radius: 12px;
-    text-decoration: none;
+    background: #F1F3F4;
+    color: #3C4043;
+}
+
+/* Fixed color meanings */
+.pill-dev { background: #E8F0FE; color: #1967D2; }
+.pill-design { background: #FEF7E0; color: #B06000; }
+.pill-marketing { background: #E6F4EA; color: #1E8E3E; }
+.pill-mgmt { background: #FCE8E6; color: #C5221F; }
+
+/* Buttons */
+.v4-btn-primary {
+    height: 38px;
+    padding: 0 24px;
+    border-radius: 19px;
+    background: #1d3469;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.v4-btn-primary:hover {
+    background: #2a4a8c;
+    transform: translateY(-1px);
+}
+
+.v4-btn-secondary {
+    height: 38px;
+    padding: 0 24px;
+    border-radius: 19px;
+    background: #FAFAFA;
+    color: #444444;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid #E0E0E0;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.v4-btn-secondary:hover {
+    background: #F0F0F0;
+}
+
+.v4-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #E0E0E0;
+    background: #FFFFFF;
+    color: #666666;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.v4-icon-btn:hover {
+    border-color: #1d3469;
     color: #1d3469;
-    margin-bottom: 10px;
-    transition: background 0.2s;
 }
 
-.e-job-item:hover {
-    background: #eef2ff;
+/* Stats Box */
+.v4-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
 }
 
-.e-job-item strong {
-    font-size: 0.95em;
+.v4-stat-item {
+    background: #FAFAFA;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
 }
 
-.e-job-item .dashicons {
-    font-size: 18px;
-    color: #94a3b8;
+.v4-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111111;
+    display: block;
 }
 
-/* Responsive */
-@media (max-width: 991px) {
-    .profile-grid {
+.v4-stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #999999;
+    text-transform: uppercase;
+}
+
+/* Responsiveness */
+@media (max-width: 960px) {
+    .profile-v4-grid {
         grid-template-columns: 1fr;
-        padding: 30px;
     }
-    .profile-header-content {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 0 30px 40px 30px;
-    }
-    .profile-avatar-wrapper {
-        margin-top: -80px;
-    }
-    .profile-title-row {
-        justify-content: center;
-    }
-    .profile-quick-tags {
-        justify-content: center;
-    }
-    .profile-actions {
-        margin-top: 20px;
+    .profile-layout-container {
+        padding: 60px 24px;
     }
 }
 
 @media (max-width: 640px) {
-    .profile-banner {
-        height: 140px !important;
+    .profile-v4-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
     }
-    .profile-avatar-wrapper {
-        width: 130px;
-        height: 130px;
+    .profile-v4-badges {
+        justify-content: center;
     }
-    .profile-title-row h1 {
-        font-size: 1.8em;
+    .profile-v4-avatar-box {
+        width: 64px;
+        height: 64px;
     }
 }

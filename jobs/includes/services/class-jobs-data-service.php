@@ -518,6 +518,26 @@ class Jobs_Data_Service {
         );
     }
 
+    public static function get_company_types() {
+        return array('Startup', 'SME', 'Enterprise', 'Agency', 'Non-profit', 'Government', 'Conglomerate');
+    }
+
+    public static function get_work_environments() {
+        return array('Onsite', 'Remote', 'Hybrid');
+    }
+
+    public static function get_availability_statuses() {
+        return array('Immediate', 'Within 1 month', 'Within 2 months', 'Within 3 months', 'Not looking but open');
+    }
+
+    public static function get_employment_types() {
+        return array('Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship');
+    }
+
+    public static function get_company_sizes() {
+        return array('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+');
+    }
+
     public static function get_countries_with_regions() {
         return array(
             'egypt' => array(
