@@ -90,6 +90,12 @@ function jobs_enqueue_assets() {
         wp_enqueue_style( 'jobs-seekers-style', JOBS_PLUGIN_URL . 'assets/css/job-seekers.css', array(), JOBS_VERSION );
         wp_enqueue_script( 'jobs-seekers-script', JOBS_PLUGIN_URL . 'assets/js/job-seekers.js', array('jquery', 'jobs-base-script'), JOBS_VERSION, true );
     }
+
+    // Account Setup specific
+    if ( is_page('account-setup') ) {
+        wp_enqueue_style('intl-tel-input', 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css');
+        wp_enqueue_script('intl-tel-input', 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js', array('jquery'), '17.0.19', true);
+    }
 }
 add_action( 'wp_enqueue_scripts', 'jobs_enqueue_assets' );
 

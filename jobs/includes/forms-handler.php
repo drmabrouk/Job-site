@@ -950,8 +950,8 @@ add_action( 'wp_ajax_jobs_import_settings', function() {
     }
 });
 
-add_action( 'wp_ajax_jobs_complete_setup', 'jobs_ajax_complete_setup_handler' );
-function jobs_ajax_complete_setup_handler() {
+add_action( 'wp_ajax_jobs_complete_setup_v2', 'jobs_ajax_complete_setup_v2_handler' );
+function jobs_ajax_complete_setup_v2_handler() {
     check_ajax_referer( 'jobs_setup_account', 'jobs_setup_nonce' );
 
     $user_id = get_current_user_id();
@@ -959,7 +959,7 @@ function jobs_ajax_complete_setup_handler() {
 
     $role = sanitize_text_field( $_POST['user_role'] );
 
-    // Update basic info
+    // Update display name
     if ( isset( $_POST['display_name'] ) ) {
         wp_update_user( array(
             'ID' => $user_id,
@@ -967,28 +967,90 @@ function jobs_ajax_complete_setup_handler() {
         ) );
     }
 
-    if ( isset( $_POST['phone'] ) ) {
-        update_user_meta( $user_id, '_phone', sanitize_text_field( $_POST['phone'] ) );
-    }
+    // Common meta
+    if ( isset( $_POST['phone'] ) ) update_user_meta( $user_id, '_phone', sanitize_text_field( $_POST['phone'] ) );
+    if ( isset( $_POST['country'] ) ) update_user_meta( $user_id, '_country', sanitize_text_field( $_POST['country'] ) );
+    if ( isset( $_POST['region'] ) ) update_user_meta( $user_id, '_region', sanitize_text_field( $_POST['region'] ) );
 
     if ( $role === 'employer' ) {
         $company_data = array(
-            'name' => sanitize_text_field( $_POST['company_name'] ),
-            'logo' => esc_url_raw( $_POST['company_logo'] ),
-            'details' => sanitize_textarea_field( $_POST['company_description'] )
+            'name'           => sanitize_text_field( $_POST['company_name'] ),
+            'industry'       => sanitize_text_field( $_POST['company_industry'] ),
+            'employee_count' => sanitize_text_field( $_POST['company_employee_count'] ),
+            'logo'           => esc_url_raw( $_POST['company_logo'] ),
+            'website'        => esc_url_raw( $_POST['company_website'] ),
+            'details'        => sanitize_textarea_field( $_POST['company_description'] )
         );
         update_user_meta( $user_id, 'jobs_company_data', $company_data );
         $redirect = home_url( '/dashboard/#company-profile' );
     } else {
+        // Job Seeker data
+        update_user_meta( $user_id, '_gender', sanitize_text_field( $_POST['gender'] ) );
+        update_user_meta( $user_id, '_nationality', sanitize_text_field( $_POST['nationality'] ) );
         update_user_meta( $user_id, '_specialization', sanitize_text_field( $_POST['specialization'] ) );
+        update_user_meta( $user_id, '_profession', sanitize_text_field( $_POST['profession'] ) );
         update_user_meta( $user_id, '_bio', sanitize_textarea_field( $_POST['bio'] ) );
-        $redirect = home_url( '/dashboard/#cv-resume' );
+        update_user_meta( $user_id, '_experience', sanitize_text_field( $_POST['experience_years'] ) );
+
+        if(isset($_POST['academic'])) update_user_meta( $user_id, 'jobs_cv_academic', $_POST['academic'] );
+        if(isset($_POST['experience'])) update_user_meta( $user_id, 'jobs_cv_experience', $_POST['experience'] );
+        if(isset($_POST['skills'])) update_user_meta( $user_id, 'jobs_cv_skills', $_POST['skills'] );
+        if(isset($_POST['preferences'])) update_user_meta( $user_id, 'jobs_cv_preferences', $_POST['preferences'] );
+
+        // Sync to unified CV data for compatibility
+        $cv_data = array(
+            'personal' => array(
+                'full_name' => $_POST['display_name'],
+                'phone' => $_POST['phone'],
+                'gender' => $_POST['gender'],
+                'country' => $_POST['country']
+            ),
+            'academic' => $_POST['academic'] ?? array(),
+            'experience' => $_POST['experience'] ?? array(),
+            'skills' => $_POST['skills'] ?? array(),
+            'preferences' => $_POST['preferences'] ?? array(),
+            'last_update' => current_time('mysql')
+        );
+        update_user_meta( $user_id, 'jobs_cv_data_v2', $cv_data );
+
+        $redirect = home_url( '/dashboard/' );
     }
 
-    // Mark setup as complete
     update_user_meta( $user_id, '_setup_complete', 1 );
-
     wp_send_json_success( array( 'redirect' => $redirect ) );
+}
+
+/**
+ * AJAX Handler: Suggest Employers
+ */
+add_action( 'wp_ajax_jobs_suggest_employers', 'jobs_ajax_suggest_employers' );
+function jobs_ajax_suggest_employers() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+    $q = sanitize_text_field( $_POST['q'] );
+
+    // Search for users with role 'employer' whose company name matches
+    $args = array(
+        'role' => 'employer',
+        'meta_query' => array(
+            array(
+                'key' => 'jobs_company_data',
+                'value' => $q,
+                'compare' => 'LIKE'
+            )
+        ),
+        'fields' => array('ID')
+    );
+    $users = get_users($args);
+    $suggestions = array();
+
+    foreach($users as $user) {
+        $data = get_user_meta($user->ID, 'jobs_company_data', true);
+        if(!empty($data['name'])) {
+            $suggestions[] = $data['name'];
+        }
+    }
+
+    wp_send_json_success( array_unique($suggestions) );
 }
 function jobs_ajax_verify_email_handler() {
     $user_id = intval( $_POST['user_id'] );

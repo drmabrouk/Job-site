@@ -27,6 +27,7 @@ require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-seo-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-sample-data-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-auth-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-backup-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-data-service.php';
 
 // Initialize Services
 Jobs_SEO_Service::init();
