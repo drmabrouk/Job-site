@@ -16,6 +16,16 @@ function jobs_handle_forms() {
 
         $username = sanitize_user( $_POST['user_login'] );
         $email    = sanitize_email( $_POST['user_email'] );
+
+        // Username validation: must be at least 4 English letters
+        if ( strlen( $username ) < 4 ) {
+            $jobs_registration_error = 'Username must be at least 4 characters long.';
+            return;
+        }
+        if ( ! preg_match( '/^[A-Za-z]+$/', $username ) ) {
+            $jobs_registration_error = 'Username must contain only English letters.';
+            return;
+        }
         $password = $_POST['user_pass'];
         $password_confirm = $_POST['user_pass_confirm'];
         $role     = sanitize_text_field( $_POST['user_role'] );

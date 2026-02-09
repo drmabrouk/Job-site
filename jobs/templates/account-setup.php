@@ -17,6 +17,8 @@ $role = $user->roles[0] ?? 'job_seeker';
 
 $specializations = Jobs_Data_Service::get_specializations();
 $locations = Jobs_Data_Service::get_countries_with_regions();
+$skills_list = Jobs_Data_Service::get_skills();
+$currencies = Jobs_Data_Service::get_currencies();
 ?>
 <div class="jobs-setup-wrapper" style="background: white; min-height: 100vh; font-family: 'Rubik', sans-serif; color: #1e293b;">
     <div class="setup-main-container" style="max-width: 900px; margin: 0 auto; padding: 60px 20px;">
@@ -60,7 +62,7 @@ $locations = Jobs_Data_Service::get_countries_with_regions();
                             </div>
                             <div class="form-group">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">Contact Phone</label>
-                                <input type="tel" id="setup-phone" name="phone" style="width: 100%;">
+                                <input type="tel" id="setup-phone" name="phone" class="jobs-intl-phone" style="width: 100%;">
                             </div>
                             <div class="form-group">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">Gender</label>
@@ -178,9 +180,10 @@ $locations = Jobs_Data_Service::get_countries_with_regions();
                     <div class="setup-panel" id="setup-panel-5" style="display: none;">
                         <h2 style="color: #1d3469; margin-bottom: 30px;">Skills & Preferences</h2>
                         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
-                            <div class="form-group span-2" style="grid-column: span 2;">
-                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Top Skills (Comma Separated)</label>
-                                <input type="text" name="skills[core]" placeholder="e.g. React, PHP, Team Leadership">
+                            <div class="form-group span-2" style="grid-column: span 2; position: relative;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Key Skills (Type to see suggestions)</label>
+                                <input type="text" id="setup-skills-autocomplete" name="skills[core]" placeholder="e.g. React, PHP, SEO" autocomplete="off">
+                                <div id="skills-suggestions-list" class="suggestions-list"></div>
                             </div>
                             <div class="form-group">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">Preferred Country</label>
@@ -199,7 +202,14 @@ $locations = Jobs_Data_Service::get_countries_with_regions();
                             </div>
                             <div class="form-group">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">Expected Salary</label>
-                                <input type="text" name="preferences[salary]" placeholder="Monthly expectation">
+                                <div style="display: flex; gap: 10px;">
+                                    <select name="preferences[currency]" style="width: 100px; flex-shrink: 0;">
+                                        <?php foreach($currencies as $code => $sym): ?>
+                                            <option value="<?php echo esc_attr($code); ?>" <?php selected($code, 'USD'); ?>><?php echo esc_html($code); ?> (<?php echo esc_html($sym); ?>)</option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="text" name="preferences[salary]" placeholder="Monthly expectation" style="flex: 1;">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label style="display: block; font-weight: 600; margin-bottom: 8px;">Work Setting</label>
@@ -388,14 +398,14 @@ jQuery(document).ready(function($) {
     let currentStep = 1;
     const totalSteps = <?php echo count($steps); ?>;
 
-    // Initialize Phone Input
-    const phoneInput = document.querySelector("#setup-phone");
-    if(phoneInput) {
-        window.intlTelInput(phoneInput, {
+    // Initialize Phone Input for all unified phone fields
+    $('.jobs-intl-phone').each(function() {
+        window.intlTelInput(this, {
             preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
             utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+            separateDialCode: true,
         });
-    }
+    });
 
     // Dynamic Professions Logic
     $('#setup-specialization').on('change', function() {
@@ -472,6 +482,40 @@ jQuery(document).ready(function($) {
         currentStep = step;
         window.scrollTo(0, 0);
     }
+
+    // Skills Suggestions Logic
+    const skillsList = <?php echo json_encode($skills_list); ?>;
+    $('#setup-skills-autocomplete').on('input', function() {
+        const val = $(this).val();
+        const parts = val.split(',');
+        const query = parts[parts.length - 1].trim().toLowerCase();
+
+        if (query.length < 1) {
+            $('#skills-suggestions-list').hide();
+            return;
+        }
+
+        const matches = skillsList.filter(s => s.toLowerCase().includes(query));
+        if (matches.length > 0) {
+            let html = '';
+            matches.slice(0, 10).forEach(m => {
+                html += `<div class="suggestion-item skill-suggestion" data-val="${m}">${m}</div>`;
+            });
+            $('#skills-suggestions-list').html(html).show();
+        } else {
+            $('#skills-suggestions-list').hide();
+        }
+    });
+
+    $(document).on('click', '.skill-suggestion', function() {
+        const skill = $(this).data('val');
+        const $input = $('#setup-skills-autocomplete');
+        const parts = $input.val().split(',');
+        parts[parts.length - 1] = ' ' + skill;
+        $input.val(parts.join(',').trim() + ', ');
+        $('#skills-suggestions-list').hide();
+        $input.focus();
+    });
 
     // Employer Suggestions Logic
     let suggestionTimeout;

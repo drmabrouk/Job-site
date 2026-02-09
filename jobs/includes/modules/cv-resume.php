@@ -20,6 +20,9 @@ $work_settings = array('Remote', 'On-site', 'Hybrid');
 $academic_list = !empty($cv['academic']) && is_array($cv['academic']) && isset($cv['academic'][0]) ? $cv['academic'] : array($cv['academic'] ?? array());
 $experience_list = !empty($cv['experience']) && is_array($cv['experience']) && isset($cv['experience'][0]) ? $cv['experience'] : array($cv['experience'] ?? array());
 $locations = Jobs_Data_Service::get_countries_with_regions();
+$skills_list = Jobs_Data_Service::get_skills();
+$currencies = Jobs_Data_Service::get_currencies();
+$specializations_data = Jobs_Data_Service::get_specializations();
 ?>
 <div class="jobs-module-content" id="jobs-cv-module-v3">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
@@ -55,7 +58,7 @@ $locations = Jobs_Data_Service::get_countries_with_regions();
                     <input type="email" name="personal[email]" value="<?php echo esc_attr($cv['personal']['email'] ?? ''); ?>" placeholder="Email Address" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="personal[phone]" value="<?php echo esc_attr($cv['personal']['phone'] ?? ''); ?>" placeholder="Phone Number">
+                    <input type="tel" name="personal[phone]" value="<?php echo esc_attr($cv['personal']['phone'] ?? ''); ?>" class="jobs-intl-phone" placeholder="Phone Number" style="width: 100%;">
                 </div>
                 <div class="form-group">
                     <input type="text" name="personal[alt_phone]" value="<?php echo esc_attr($cv['personal']['alt_phone'] ?? ''); ?>" placeholder="Alternative Phone">
@@ -104,6 +107,29 @@ $locations = Jobs_Data_Service::get_countries_with_regions();
                         <option value="" disabled <?php echo empty($cv['personal']['residency']) ? 'selected':''; ?>>Residency Status</option>
                         <option value="Citizen" <?php selected($cv['personal']['residency'] ?? '', 'Citizen'); ?>>Citizen</option>
                         <option value="Resident" <?php selected($cv['personal']['residency'] ?? '', 'Resident'); ?>>Resident</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.8em; color: #64748b;">Specialization</label>
+                    <select name="personal[specialization]" id="cv-specialization">
+                        <option value="">Select Specialization</option>
+                        <?php foreach(array_keys($specializations_data) as $spec): ?>
+                            <option value="<?php echo esc_attr($spec); ?>" <?php selected(get_user_meta($current_user_id, '_specialization', true), $spec); ?>><?php echo esc_html($spec); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.8em; color: #64748b;">Specific Profession</label>
+                    <select name="personal[profession]" id="cv-profession" <?php echo empty(get_user_meta($current_user_id, '_specialization', true)) ? 'disabled' : ''; ?>>
+                        <option value="">Select Profession</option>
+                        <?php
+                        $current_spec = get_user_meta($current_user_id, '_specialization', true);
+                        if($current_spec && isset($specializations_data[$current_spec])) {
+                            foreach($specializations_data[$current_spec] as $p) {
+                                echo '<option value="'.esc_attr($p).'" '.selected(get_user_meta($current_user_id, '_profession', true), $p, false).'>'.esc_html($p).'</option>';
+                            }
+                        }
+                        ?>
                     </select>
                 </div>
             </div>
@@ -165,8 +191,9 @@ $locations = Jobs_Data_Service::get_countries_with_regions();
                 <?php foreach($experience_list as $index => $item): ?>
                 <div class="repeater-item experience-item">
                     <div class="grid-2">
-                        <div class="form-group">
-                            <input type="text" name="experience[<?php echo $index; ?>][company]" value="<?php echo esc_attr($item['company'] ?? ''); ?>" placeholder="Company Name">
+                        <div class="form-group" style="position: relative;">
+                            <input type="text" name="experience[<?php echo $index; ?>][company]" value="<?php echo esc_attr($item['company'] ?? ''); ?>" class="employer-suggestion-cv" placeholder="Company Name" autocomplete="off">
+                            <div class="suggestions-list employer-suggestions-cv-list"></div>
                         </div>
                         <div class="form-group">
                             <input type="text" name="experience[<?php echo $index; ?>][title]" value="<?php echo esc_attr($item['title'] ?? ''); ?>" placeholder="Job Title">
@@ -208,8 +235,9 @@ $locations = Jobs_Data_Service::get_countries_with_regions();
         <div class="cv-step-panel" id="cv-step-3" style="display:none;">
             <h4 class="step-title">Skills & Certifications</h4>
             <div class="grid-2">
-                <div class="form-group span-2">
-                    <input type="text" name="skills[core]" value="<?php echo esc_attr($cv['skills']['core'] ?? ''); ?>" placeholder="Core Skills (Comma separated, e.g. PHP, Management, React)">
+                <div class="form-group span-2" style="position: relative;">
+                    <input type="text" id="cv-skills-autocomplete" name="skills[core]" value="<?php echo esc_attr($cv['skills']['core'] ?? ''); ?>" placeholder="Key Skills (Type to see suggestions)" autocomplete="off">
+                    <div id="cv-skills-suggestions" class="suggestions-list"></div>
                 </div>
                 <div class="form-group">
                     <input type="text" name="skills[technical]" value="<?php echo esc_attr($cv['skills']['technical'] ?? ''); ?>" placeholder="Technical Skills">
@@ -285,7 +313,14 @@ $locations = Jobs_Data_Service::get_countries_with_regions();
                     </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="preferences[salary]" value="<?php echo esc_attr($cv['preferences']['salary'] ?? ''); ?>" placeholder="Expected Monthly Salary">
+                    <div style="display: flex; gap: 10px;">
+                        <select name="preferences[currency]" style="width: 100px; flex-shrink: 0;">
+                            <?php foreach($currencies as $code => $sym): ?>
+                                <option value="<?php echo esc_attr($code); ?>" <?php selected($cv['preferences']['currency'] ?? 'USD', $code); ?>><?php echo esc_html($code); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <input type="text" name="preferences[salary]" value="<?php echo esc_attr($cv['preferences']['salary'] ?? ''); ?>" placeholder="Expected Monthly Salary" style="flex: 1;">
+                    </div>
                 </div>
                 <div class="form-group">
                     <input type="date" name="preferences[availability]" value="<?php echo esc_attr($cv['preferences']['availability'] ?? ''); ?>" placeholder="Availability Date">
@@ -392,6 +427,103 @@ jQuery(document).ready(function($) {
         $(this).closest('.repeater-item').fadeOut(function() { $(this).remove(); });
     });
 
+    // Unified Phone Initialization
+    $('.jobs-intl-phone').each(function() {
+        window.intlTelInput(this, {
+            preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+            separateDialCode: true,
+        });
+    });
+
+    // Skills Suggestions Logic
+    const skillsList = <?php echo json_encode($skills_list); ?>;
+    $('#cv-skills-autocomplete').on('input', function() {
+        const val = $(this).val();
+        const parts = val.split(',');
+        const query = parts[parts.length - 1].trim().toLowerCase();
+
+        if (query.length < 1) {
+            $('#cv-skills-suggestions').hide();
+            return;
+        }
+
+        const matches = skillsList.filter(s => s.toLowerCase().includes(query));
+        if (matches.length > 0) {
+            let html = '';
+            matches.slice(0, 10).forEach(m => {
+                html += `<div class="suggestion-item skill-suggestion-cv" data-val="${m}">${m}</div>`;
+            });
+            $('#cv-skills-suggestions').html(html).show();
+        } else {
+            $('#cv-skills-suggestions').hide();
+        }
+    });
+
+    $(document).on('click', '.skill-suggestion-cv', function() {
+        const skill = $(this).data('val');
+        const $input = $('#cv-skills-autocomplete');
+        const parts = $input.val().split(',');
+        parts[parts.length - 1] = ' ' + skill;
+        $input.val(parts.join(',').trim() + ', ');
+        $('#cv-skills-suggestions').hide();
+        $input.focus();
+    });
+
+    // Employer Suggestions Logic
+    let cvSuggestionTimeout;
+    $(document).on('input', '.employer-suggestion-cv', function() {
+        const $input = $(this);
+        const $list = $input.siblings('.employer-suggestions-cv-list');
+        const query = $input.val();
+
+        clearTimeout(cvSuggestionTimeout);
+        if (query.length < 2) {
+            $list.hide();
+            return;
+        }
+
+        cvSuggestionTimeout = setTimeout(() => {
+            $.post(jobs_vars.ajax_url, {
+                action: 'jobs_suggest_employers',
+                nonce: '<?php echo wp_create_nonce("jobs_main_nonce"); ?>',
+                q: query
+            }, function(response) {
+                if (response.success && response.data.length > 0) {
+                    let html = '';
+                    response.data.forEach(item => {
+                        html += `<div class="suggestion-item cv-emp-suggestion" data-val="${item}">${item}</div>`;
+                    });
+                    $list.html(html).show();
+                } else {
+                    $list.hide();
+                }
+            });
+        }, 300);
+    });
+
+    $(document).on('click', '.cv-emp-suggestion', function() {
+        $(this).closest('.form-group').find('input').val($(this).data('val'));
+        $('.employer-suggestions-cv-list').hide();
+    });
+
+    // Dynamic Professions Logic
+    const specializationsData = <?php echo json_encode($specializations_data); ?>;
+    $('#cv-specialization').on('change', function() {
+        const spec = $(this).val();
+        const $profSelect = $('#cv-profession');
+        $profSelect.empty().append('<option value="">Select Profession</option>');
+
+        if (spec && specializationsData[spec]) {
+            specializationsData[spec].forEach(prof => {
+                $profSelect.append(`<option value="${prof}">${prof}</option>`);
+            });
+            $profSelect.prop('disabled', false);
+        } else {
+            $profSelect.prop('disabled', true);
+        }
+    });
+
     // Dynamic Regions Logic
     $('#cv-country').on('change', function() {
         const country = $(this).val();
@@ -429,6 +561,29 @@ jQuery(document).ready(function($) {
 </script>
 
 <style>
+.suggestions-list {
+    position: absolute;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+    width: 100%;
+}
+.suggestion-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: #1e293b;
+    font-size: 0.9em;
+    text-align: left;
+}
+.suggestion-item:hover { background: #f8fafc; color: #1d3469; }
+.iti { width: 100%; }
+
 .cv-step-panel .step-title {
     margin-bottom: 25px;
     color: #1d3469;
