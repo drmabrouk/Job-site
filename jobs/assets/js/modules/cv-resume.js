@@ -20,11 +20,11 @@ window.toggleCvStep = function(step) {
             var data = $(this).serialize() + '&action=jobs_save_cv_handler';
 
             var $status = $('#jobs-cv-status');
-            $status.html('<p style="color: #666;">Saving your CV data...</p>');
+            $status.html('<p style="color: #666;">Updating your account data...</p>');
 
             $.post(jobs_vars.ajax_url, data, function(response) {
                 if(response.success) {
-                    $status.html('<p style="color: #2e7d32; font-weight: 500;">✓ CV updated successfully!</p>');
+                    $status.html('<p style="color: #2e7d32; font-weight: 500;">✓ Account data updated successfully!</p>');
                     setTimeout(function() { $status.fadeOut(); }, 3000);
                 } else {
                     $status.html('<p style="color: #d32f2f;">Error: ' + response.data + '</p>');

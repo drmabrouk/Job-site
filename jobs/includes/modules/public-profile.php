@@ -19,7 +19,7 @@ $profile_link = jobs_get_profile_link( $current_user_id );
     </div>
 
     <div class="profile-preview-hint">
-        <p>Tip: All updates made in the <strong>CV / Resume</strong> or <strong>Company Profile</strong> modules are immediately reflected here.</p>
+        <p>Tip: All updates made in the <strong>General Account Data Update</strong> or <strong>Company Profile</strong> modules are immediately reflected here.</p>
         <a href="<?php echo esc_url( $profile_link ); ?>" target="_blank" class="jobs-btn">View My Profile Now</a>
     </div>
 </div>

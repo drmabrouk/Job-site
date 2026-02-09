@@ -183,15 +183,20 @@ function jobs_do_automated_archiving() {
     }
     wp_reset_postdata();
 
-    // Inactive User Cleanup (10 days)
-    $inactive_days = 10;
-    $threshold = time() - ( $inactive_days * DAY_IN_SECONDS );
-    $users = get_users( array(
+    // Inactive User Cleanup (1 Year)
+    $one_year_seconds = 365 * DAY_IN_SECONDS;
+    $one_month_seconds = 30 * DAY_IN_SECONDS;
+    $one_week_seconds = 7 * DAY_IN_SECONDS;
+    $now = time();
+
+    // 1. Deletion (1 year)
+    $delete_threshold = $now - $one_year_seconds;
+    $users_to_delete = get_users( array(
         'meta_query' => array(
             'relation' => 'OR',
             array(
                 'key'     => '_last_activity',
-                'value'   => $threshold,
+                'value'   => $delete_threshold,
                 'compare' => '<'
             ),
             array(
@@ -200,20 +205,66 @@ function jobs_do_automated_archiving() {
             )
         ),
         'date_query' => array(
-            'before' => $inactive_days . ' days ago',
+            array(
+                'before' => '1 year ago',
+            ),
         ),
         'fields' => 'ID'
     ) );
 
-    if ( ! empty( $users ) ) {
+    if ( ! empty( $users_to_delete ) ) {
         require_once( ABSPATH . 'wp-admin/includes/user.php' );
-        foreach ( $users as $user_id ) {
+        foreach ( $users_to_delete as $user_id ) {
             $u = get_userdata( $user_id );
-            if ( ! $u ) continue;
-            // Prevent deleting admins
-            if ( in_array( 'administrator', $u->roles ) || in_array( 'system_admin', $u->roles ) ) continue;
+            if ( ! $u || in_array( 'administrator', $u->roles ) || in_array( 'system_admin', $u->roles ) ) continue;
             wp_delete_user( $user_id );
         }
+    }
+
+    // 2. One Week Warning (358 days)
+    $week_threshold = $now - ($one_year_seconds - $one_week_seconds);
+    $users_week_warn = get_users( array(
+        'meta_query' => array(
+            'relation' => 'AND',
+            array(
+                'key'     => '_last_activity',
+                'value'   => $week_threshold,
+                'compare' => '<'
+            ),
+            array(
+                'key'     => '_warning_1week_sent',
+                'compare' => 'NOT EXISTS'
+            )
+        ),
+        'fields' => 'ID'
+    ) );
+
+    foreach ( $users_week_warn as $user_id ) {
+        Jobs_Auth_Service::send_inactivity_warning( $user_id, 'week' );
+        update_user_meta( $user_id, '_warning_1week_sent', 1 );
+    }
+
+    // 3. One Month Warning (335 days)
+    $month_threshold = $now - ($one_year_seconds - $one_month_seconds);
+    $users_month_warn = get_users( array(
+        'meta_query' => array(
+            'relation' => 'AND',
+            array(
+                'key'     => '_last_activity',
+                'value'   => $month_threshold,
+                'compare' => '<'
+            ),
+            array(
+                'key'     => '_warning_1month_sent',
+                'compare' => 'NOT EXISTS'
+            )
+        ),
+        'fields' => 'ID'
+    ) );
+
+    foreach ( $users_month_warn as $user_id ) {
+        Jobs_Auth_Service::send_inactivity_warning( $user_id, 'month' );
+        update_user_meta( $user_id, '_warning_1month_sent', 1 );
     }
 }
 add_action( 'jobs_daily_archiving', 'jobs_do_automated_archiving' );
