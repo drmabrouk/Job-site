@@ -18,10 +18,29 @@ $user = $profile_slug ? get_user_by('slug', $profile_slug) : null;
 if (!$user) wp_die('Profile not found.');
 
 $user_id = $user->ID;
+$visibility = get_user_meta($user_id, 'profile_visibility', true) ?: 'public';
+if ( $visibility === 'private' && get_current_user_id() !== $user_id && !current_user_can('manage_options') ) {
+    wp_die('This profile is set to private.');
+}
 $role = $user->roles[0] ?? 'job_seeker';
 $display_name = $user->display_name;
 $is_verified = get_user_meta($user_id, '_is_email_verified', true);
 $last_activity = get_user_meta($user_id, '_last_activity', true);
+
+/**
+ * Helper to get flag URL from country slug
+ */
+if ( ! function_exists( 'jobs_get_flag_url' ) ) {
+    function jobs_get_flag_url($slug) {
+        $mapping = array(
+            'egypt' => 'eg', 'saudi-arabia' => 'sa', 'uae' => 'ae', 'jordan' => 'jo',
+            'qatar' => 'qa', 'kuwait' => 'kw', 'bahrain' => 'bh', 'oman' => 'om',
+            'lebanon' => 'lb', 'usa' => 'us', 'uk' => 'gb', 'canada' => 'ca', 'australia' => 'au'
+        );
+        $code = isset($mapping[$slug]) ? $mapping[$slug] : '';
+        return $code ? "https://flagcdn.com/w40/{$code}.png" : '';
+    }
+}
 
 // Pre-fetch recent messages for the logged-in user to support the slide-down notification panel
 $recent_messages_json = '[]';
@@ -69,17 +88,25 @@ get_header();
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1><?php echo esc_html($company['name'] ?? $display_name); ?></h1>
                         <div class="profile-v4-badges">
-                            <span class="status-badge-pill badge-verified">Verified Entity</span>
+                            <div class="badge-verified-circle" title="Verified Entity"><span class="dashicons dashicons-yes"></span></div>
                             <span class="status-badge-pill badge-hiring">Hiring</span>
                         </div>
                     </div>
-                    <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?> • <?php echo esc_html($company['industry'] ?? 'Corporate'); ?> • 📍 <?php echo esc_html($company['address'] ?? 'International'); ?></p>
+                    <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?> • <?php echo esc_html($company['industry'] ?? 'Corporate'); ?></p>
+                    <div class="profile-v4-location-info">
+                        <?php $c_slug = strtolower(str_replace(' ', '-', $company['address'] ?? '')); ?>
+                        <?php if($flag = jobs_get_flag_url($c_slug)): ?>
+                            <img src="<?php echo $flag; ?>" class="country-flag-icon">
+                        <?php endif; ?>
+                        <span><?php echo esc_html($company['address'] ?? 'International'); ?></span>
+                    </div>
                 </div>
                 <div style="margin-left: auto; display: flex; gap: 12px;">
                     <?php if ( get_current_user_id() === $user_id ) : ?>
                         <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
                     <?php endif; ?>
                     <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
+                    <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
                     <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Contact Platform</button>
                 </div>
             </header>
@@ -152,6 +179,46 @@ get_header();
                 </div>
 
                 <div class="profile-v4-sidebar">
+                    <section class="v4-card contact-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
+                        <div class="v4-card-body">
+                            <?php
+                            $c_email = $company['email'] ?? $user->user_email;
+                            $c_phone = $company['phone'] ?? get_user_meta($user_id, '_phone', true);
+                            ?>
+                            <div style="margin-bottom: 16px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Direct Email</small>
+                                <a href="mailto:<?php echo esc_attr($c_email); ?>" class="v4-btn-secondary" style="width: 100%; justify-content: flex-start; gap: 10px; height: 42px;">
+                                    <span class="dashicons dashicons-email" style="font-size: 16px;"></span>
+                                    <span style="overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html($c_email); ?></span>
+                                </a>
+                            </div>
+
+                            <div style="margin-bottom: 16px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Phone Number</small>
+                                <div class="reveal-phone-box" style="position: relative;">
+                                    <button class="v4-btn-secondary reveal-btn" style="width: 100%; justify-content: flex-start; gap: 10px; height: 42px;">
+                                        <span class="dashicons dashicons-phone"></span>
+                                        <span>Click to Reveal</span>
+                                    </button>
+                                    <div class="hidden-phone" style="display: none; align-items: center; gap: 10px; font-weight: 600; color: #1d3469; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                        <?php if($f = jobs_get_flag_url($c_slug)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                        <span><?php echo esc_html($c_phone ?: 'Not provided'); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php if($c_phone): ?>
+                                <div>
+                                    <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $c_phone); ?>" target="_blank" class="v4-btn-primary" style="width: 100%; gap: 10px; background: #25D366; height: 42px;">
+                                        <span class="dashicons dashicons-phone"></span>
+                                        <span>Chat on WhatsApp</span>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+
                     <section class="v4-card">
                         <h3 class="v4-card-title">Market Presence</h3>
                         <div class="v4-card-body">
@@ -255,11 +322,31 @@ get_header();
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?></h1>
                         <div class="profile-v4-badges">
-                            <span class="status-badge-pill badge-verified">Verified</span>
+                            <div class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></div>
                             <span class="status-badge-pill badge-open">Open to Work</span>
                         </div>
                     </div>
-                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html(($region ? $region.', ' : '') . $country); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.</p>
+                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.</p>
+
+                    <div class="profile-v4-location-info">
+                        <?php
+                        $nationality = get_user_meta($user_id, '_nationality', true);
+                        $residence = get_user_meta($user_id, '_country', true);
+                        ?>
+                        <?php if($nationality): ?>
+                            <div style="display: flex; align-items: center; gap: 6px;" title="Nationality">
+                                <?php if($f = jobs_get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if($residence): ?>
+                            <div style="display: flex; align-items: center; gap: 6px;" title="Country of Residence">
+                                <?php if($f = jobs_get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                <span>Resident in <?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <div style="margin-left: auto; display: flex; gap: 12px;">
                     <?php if ( get_current_user_id() === $user_id ) : ?>
@@ -383,6 +470,47 @@ get_header();
                 </div>
 
                 <div class="profile-v4-sidebar">
+                    <section class="v4-card contact-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
+                        <div class="v4-card-body">
+                            <?php
+                            $s_email = $cv['personal']['email'] ?? $user->user_email;
+                            $s_phone = $cv['personal']['phone'] ?? get_user_meta($user_id, '_phone', true);
+                            $s_country = get_user_meta($user_id, '_country', true);
+                            ?>
+                            <div style="margin-bottom: 16px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Professional Email</small>
+                                <a href="mailto:<?php echo esc_attr($s_email); ?>" class="v4-btn-secondary" style="width: 100%; justify-content: flex-start; gap: 10px; height: 42px;">
+                                    <span class="dashicons dashicons-email" style="font-size: 16px;"></span>
+                                    <span style="overflow: hidden; text-overflow: ellipsis;"><?php echo esc_html($s_email); ?></span>
+                                </a>
+                            </div>
+
+                            <div style="margin-bottom: 16px;">
+                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Phone Connection</small>
+                                <div class="reveal-phone-box" style="position: relative;">
+                                    <button class="v4-btn-secondary reveal-btn" style="width: 100%; justify-content: flex-start; gap: 10px; height: 42px;">
+                                        <span class="dashicons dashicons-phone"></span>
+                                        <span>Click to Reveal</span>
+                                    </button>
+                                    <div class="hidden-phone" style="display: none; align-items: center; gap: 10px; font-weight: 600; color: #1d3469; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                        <?php if($f = jobs_get_flag_url($s_country)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                        <span><?php echo esc_html($s_phone ?: 'Not provided'); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php if($s_phone): ?>
+                                <div>
+                                    <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $s_phone); ?>" target="_blank" class="v4-btn-primary" style="width: 100%; gap: 10px; background: #25D366; height: 42px;">
+                                        <span class="dashicons dashicons-phone"></span>
+                                        <span>Open WhatsApp Chat</span>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+
                     <section class="v4-card">
                         <h3 class="v4-card-title">Technical Proficiency</h3>
                         <div class="v4-tag-container">
@@ -585,6 +713,12 @@ jQuery(document).ready(function($) {
                 $('#message-modal').css('display', 'flex');
             }
         }, 500);
+    });
+
+    // Phone Reveal Logic
+    $('.reveal-btn').on('click', function() {
+        $(this).hide();
+        $(this).siblings('.hidden-phone').css('display', 'flex');
     });
 
     // Contact Modal Logic
