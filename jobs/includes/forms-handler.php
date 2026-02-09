@@ -647,7 +647,9 @@ function jobs_ajax_save_cv_handler_v3() {
         update_user_meta( $user_id, '_secondary_specs', array_map('sanitize_text_field', $_POST['personal']['secondary_specs']) );
     }
     update_user_meta( $user_id, '_experience', ceil($total_experience_years) );
-    update_user_meta( $user_id, '_nationality', $cv_data['personal']['country'] ?? '' );
+    update_user_meta( $user_id, '_nationality', sanitize_text_field($_POST['personal']['nationality'] ?? '') );
+    update_user_meta( $user_id, '_country', sanitize_text_field($_POST['personal']['country'] ?? '') );
+    update_user_meta( $user_id, 'profile_visibility', sanitize_text_field($_POST['personal']['visibility'] ?? 'public') );
     update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] ?? '' );
     update_user_meta( $user_id, '_qualification', $cv_data['academic'][0]['degree'] ?? '' );
     update_user_meta( $user_id, '_english_level', $cv_data['languages']['score'] ?? '' );
@@ -733,6 +735,10 @@ function jobs_ajax_save_company_handler() {
     );
 
     update_user_meta( $user_id, 'jobs_company_data', $company_data );
+
+    if ( isset( $_POST['profile_visibility'] ) ) {
+        update_user_meta( $user_id, 'profile_visibility', sanitize_text_field( $_POST['profile_visibility'] ) );
+    }
 
     // Sync to separate meta for search
     update_user_meta( $user_id, '_company_industry', $company_data['industry'] );

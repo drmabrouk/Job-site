@@ -77,8 +77,16 @@ $specializations_data = Jobs_Data_Service::get_specializations();
                     <input type="text" name="personal[address]" value="<?php echo esc_attr($cv['personal']['address'] ?? ''); ?>" placeholder="Residential Address">
                 </div>
                 <div class="form-group">
+                    <select name="personal[nationality]">
+                        <option value="">Select Nationality</option>
+                        <?php foreach(array_keys($locations) as $c): ?>
+                            <option value="<?php echo esc_attr($c); ?>" <?php selected($cv['personal']['nationality'] ?? '', $c); ?>><?php echo esc_html(ucwords(str_replace('-', ' ', $c))); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
                     <select name="personal[country]" id="cv-country">
-                        <option value="">Select Country</option>
+                        <option value="">Country of Residence</option>
                         <?php foreach(array_keys($locations) as $c): ?>
                             <option value="<?php echo esc_attr($c); ?>" <?php selected($cv['personal']['country'] ?? '', $c); ?>><?php echo esc_html(ucwords(str_replace('-', ' ', $c))); ?></option>
                         <?php endforeach; ?>
@@ -392,6 +400,13 @@ $specializations_data = Jobs_Data_Service::get_specializations();
                         <option value="">Willing to Work Overtime?</option>
                         <option value="Yes" <?php selected($cv['preferences']['overtime'] ?? '', 'Yes'); ?>>Yes</option>
                         <option value="No" <?php selected($cv['preferences']['overtime'] ?? '', 'No'); ?>>No</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.8em; color: #1d3469;">Public Profile Visibility</label>
+                    <select name="personal[visibility]">
+                        <option value="public" <?php selected($cv['personal']['visibility'] ?? 'public', 'public'); ?>>Visible to Public</option>
+                        <option value="private" <?php selected($cv['personal']['visibility'] ?? 'public', 'private'); ?>>Hidden (Private)</option>
                     </select>
                 </div>
             </div>

@@ -32,8 +32,9 @@ $current_user = wp_get_current_user();
             </div>
 
             <div class="form-group">
+                <label style="display:block; font-size: 0.8em; margin-bottom:5px; font-weight:700;">Public Profile Visibility</label>
                 <select name="profile_visibility" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
-                    <option value="public" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'public' ); ?>>Public Profile</option>
+                    <option value="public" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'public' ); ?>>Public Profile (Visible)</option>
                     <option value="private" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'private' ); ?>>Private (Hidden)</option>
                 </select>
             </div>

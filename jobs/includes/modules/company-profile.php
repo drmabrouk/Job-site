@@ -118,6 +118,15 @@ $environments = Jobs_Data_Service::get_work_environments();
                 <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #1d3469; font-size: 0.9em;">Branch Locations</label>
                 <textarea name="branches" placeholder="e.g. London, UK | Dubai, UAE" style="width: 100%; height: 60px; padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1;"><?php echo esc_textarea($company['branches'] ?? ''); ?></textarea>
             </div>
+
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #1d3469; font-size: 0.9em;">Public Portfolio Visibility</label>
+                <?php $current_visibility = get_user_meta( $current_user_id, 'profile_visibility', true ) ?: 'public'; ?>
+                <select name="profile_visibility" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1;">
+                    <option value="public" <?php selected($current_visibility, 'public'); ?>>Visible (Public)</option>
+                    <option value="private" <?php selected($current_visibility, 'private'); ?>>Hidden (Private)</option>
+                </select>
+            </div>
         </div>
 
         <button type="submit" class="jobs-btn" style="margin-top: 40px; width: 100%; padding: 20px; font-size: 1.1em;">Update Corporate Identity</button>
