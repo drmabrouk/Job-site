@@ -23,8 +23,30 @@ $display_name = $user->display_name;
 $is_verified = get_user_meta($user_id, '_is_email_verified', true);
 $last_activity = get_user_meta($user_id, '_last_activity', true);
 
+// Pre-fetch recent messages for the logged-in user to support the slide-down notification panel
+$recent_messages_json = '[]';
+if ( is_user_logged_in() ) {
+    global $wpdb;
+    $curr_id = get_current_user_id();
+    $msg_table = Jobs_DB_Service::get_table('messages');
+    if ( $wpdb->get_var("SHOW TABLES LIKE '$msg_table'") ) {
+        $recent_msgs = $wpdb->get_results($wpdb->prepare(
+            "SELECT m.*, u.display_name as sender_name FROM $msg_table m
+             JOIN {$wpdb->users} u ON m.sender_id = u.ID
+             WHERE m.receiver_id = %d ORDER BY m.timestamp DESC LIMIT 10",
+            $curr_id
+        ));
+        foreach($recent_msgs as &$rm) {
+            $rm->avatar = get_avatar_url($rm->sender_id);
+            $rm->role = get_user_meta($rm->sender_id, '_specialization', true) ?: 'Professional';
+        }
+        $recent_messages_json = json_encode($recent_msgs);
+    }
+}
+
 get_header();
 ?>
+<script>window.v4RecentMessages = <?php echo $recent_messages_json; ?>;</script>
 <div class="jobs-premium-profile-v4">
     <div class="profile-layout-container">
 
@@ -54,6 +76,9 @@ get_header();
                     <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?> • <?php echo esc_html($company['industry'] ?? 'Corporate'); ?> • 📍 <?php echo esc_html($company['address'] ?? 'International'); ?></p>
                 </div>
                 <div style="margin-left: auto; display: flex; gap: 12px;">
+                    <?php if ( get_current_user_id() === $user_id ) : ?>
+                        <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                    <?php endif; ?>
                     <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                     <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Contact Platform</button>
                 </div>
@@ -173,8 +198,8 @@ get_header();
                         </div>
                     </section>
 
-                    <section class="v4-card">
-                        <h3 class="v4-card-title">Hiring Performance</h3>
+                    <section class="v4-card performance-card" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-performance" style="color: #1d3469;"></span> Hiring Intelligence</h3>
                         <div class="v4-stats-grid">
                             <div class="v4-stat-item">
                                 <span class="v4-stat-value">98%</span>
@@ -237,6 +262,9 @@ get_header();
                     <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html(($region ? $region.', ' : '') . $country); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.</p>
                 </div>
                 <div style="margin-left: auto; display: flex; gap: 12px;">
+                    <?php if ( get_current_user_id() === $user_id ) : ?>
+                        <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                    <?php endif; ?>
                     <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                     <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
                     <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>">Career Inquiry</button>
@@ -404,14 +432,14 @@ get_header();
                     </section>
                     <?php endif; ?>
 
-                    <section class="v4-card" style="background: linear-gradient(to bottom right, #ffffff, #f8fafc);">
-                        <h3 class="v4-card-title">Profile Integrity</h3>
-                        <div style="height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 12px; border: 1px solid #f1f5f9;">
-                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #1d3469, #3b82f6); border-radius: 10px;"></div>
+                    <section class="v4-card integrity-card" style="background: linear-gradient(135deg, #1d3469 0%, #2a4a8c 100%); border: none; color: #FFFFFF;">
+                        <h3 class="v4-card-title" style="color: #FFFFFF; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;"><span class="dashicons dashicons-shield-alt" style="color: #60a5fa;"></span> Profile Strength</h3>
+                        <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 24px 0 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #60a5fa, #34d399); border-radius: 10px; box-shadow: 0 0 15px rgba(96,165,250,0.5);"></div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #64748b;">
-                            <span style="letter-spacing: 0.05em;">COMPLETENESS</span>
-                            <span style="color: #1d3469;"><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7);">
+                            <span style="letter-spacing: 0.1em;">COMPLETENESS SCORE</span>
+                            <span style="color: #34d399; font-size: 14px;"><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
                         </div>
                     </section>
 
@@ -456,6 +484,30 @@ get_header();
     </div>
 </div>
 
+<!-- Slide-down Panel Overlay -->
+<div class="panel-overlay"></div>
+
+<!-- Professional Notification Detail Panel -->
+<div id="notif-detail-panel" class="v4-slide-panel">
+    <div class="panel-sender-preview">
+        <div class="panel-sender-avatar">
+            <img src="" id="panel-avatar-img" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div>
+            <h4 id="panel-sender-name" style="margin:0; font-size:18px; font-weight:700; color:#1d3469;">Sender Name</h4>
+            <p id="panel-sender-role" style="margin:4px 0 0; font-size:13px; color:#64748b;">Professional Role</p>
+        </div>
+        <button class="v4-icon-btn close-panel" style="margin-left:auto;"><span class="dashicons dashicons-no-alt"></span></button>
+    </div>
+    <div class="panel-message-body" id="panel-message-text">
+        Message content goes here...
+    </div>
+    <div class="panel-actions">
+        <button class="v4-btn-secondary close-panel">Dismiss</button>
+        <button class="v4-btn-primary" id="panel-reply-btn">Quick Reply</button>
+    </div>
+</div>
+
 <!-- Modal: Contact/Message -->
 <div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
     <div class="modal-content" style="background:white; padding:32px; border-radius:16px; width:100%; max-width:480px; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
@@ -487,8 +539,59 @@ jQuery(document).ready(function($) {
         setTimeout(function() { $btn.html(originalHtml); }, 2000);
     });
 
+    // Notification Panel Logic
+    $(document).on('click', '.notif-item', function(e) {
+        var notifText = $(this).find('.notif-content').text();
+        var foundMsg = null;
+
+        if (window.v4RecentMessages && window.v4RecentMessages.length) {
+            for (var i = 0; i < window.v4RecentMessages.length; i++) {
+                var m = window.v4RecentMessages[i];
+                if (notifText.indexOf(m.sender_name) !== -1) {
+                    foundMsg = m;
+                    break;
+                }
+            }
+        }
+
+        if (foundMsg) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            $('#panel-avatar-img').attr('src', foundMsg.avatar);
+            $('#panel-sender-name').text(foundMsg.sender_name);
+            $('#panel-sender-role').text(foundMsg.role);
+            $('#panel-message-text').html(foundMsg.message.replace(/\n/g, '<br>'));
+            $('#panel-reply-btn').data('receiver', foundMsg.sender_id);
+
+            $('#jobs-notif-menu').removeClass('active');
+            $('.panel-overlay').addClass('active');
+            $('#notif-detail-panel').addClass('active');
+        }
+    });
+
+    $('.close-panel, .panel-overlay').on('click', function() {
+        $('.panel-overlay').removeClass('active');
+        $('#notif-detail-panel').removeClass('active');
+    });
+
+    $('#panel-reply-btn').on('click', function() {
+        var receiverId = $(this).data('receiver');
+        $('.close-panel').click();
+        setTimeout(function() {
+            $('.open-message-modal[data-receiver="' + receiverId + '"]').first().click();
+            // Fallback if no button found with that ID
+            if (!$('#message-modal').is(':visible')) {
+                $('#message-modal').css('display', 'flex');
+            }
+        }, 500);
+    });
+
     // Contact Modal Logic
-    $('.open-message-modal').on('click', function() { $('#message-modal').css('display', 'flex'); });
+    $('.open-message-modal').on('click', function() {
+        var receiver = $(this).data('receiver');
+        $('#message-modal').css('display', 'flex');
+    });
     $('.close-modal').on('click', function() { $('#message-modal').hide(); });
     $('#confirm-send-message').on('click', function() {
         var msg = $('#message-text').val();

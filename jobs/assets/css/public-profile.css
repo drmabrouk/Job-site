@@ -17,8 +17,8 @@
 .profile-v4-header {
     display: flex;
     align-items: center;
-    gap: 32px;
-    margin-bottom: 60px;
+    gap: 48px;
+    margin-bottom: 80px;
 }
 
 .profile-v4-avatar-box {
@@ -38,11 +38,12 @@
 }
 
 .profile-v4-identity-box h1 {
-    font-size: 32px;
-    font-weight: 700;
-    margin: 0 0 8px 0;
+    font-size: 36px;
+    font-weight: 800;
+    margin: 0 0 12px 0;
     color: #1d3469;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
 }
 
 .profile-v4-headline {
@@ -58,15 +59,16 @@
 }
 
 .status-badge-pill {
-    height: 22px;
-    padding: 0 12px;
+    height: 28px;
+    padding: 0 18px;
     border-radius: 50px;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .badge-verified { background: #ecfdf5; color: #059669; }
@@ -83,22 +85,29 @@
 /* Card Styling */
 .v4-card {
     background: #FFFFFF;
-    border: 1px solid #F0F0F0;
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 24px;
-    /* subtle shadow */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    border: 1px solid #f1f5f9;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 32px;
+    /* enhanced shadow */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.v4-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 45px rgba(0,0,0,0.05);
 }
 
 .v4-card-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111111;
-    margin: 0 0 20px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1d3469;
+    margin: 0 0 24px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    letter-spacing: -0.01em;
 }
 
 .v4-card-title .dashicons {
@@ -244,6 +253,19 @@
 .v4-icon-btn:hover {
     border-color: #1d3469;
     color: #1d3469;
+    background: #f8fafc;
+    transform: scale(1.1);
+}
+
+.jobs-module-link.v4-icon-btn {
+    background: #eff6ff;
+    border-color: #dbeafe;
+    color: #2563eb;
+}
+
+.jobs-module-link.v4-icon-btn:hover {
+    background: #2563eb;
+    color: #FFFFFF;
 }
 
 /* Stats Box */
@@ -318,6 +340,72 @@
 
 #copy-share-url:active {
     transform: translateY(-50%) scale(0.9);
+}
+
+/* Notification Slide-down Panel */
+.v4-slide-panel {
+    position: fixed;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 800px;
+    background: #FFFFFF;
+    z-index: 10001;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    transition: top 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    padding: 40px;
+    overflow: hidden;
+}
+
+.v4-slide-panel.active {
+    top: 0;
+}
+
+.panel-sender-preview {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.panel-sender-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.panel-message-body {
+    font-size: 15px;
+    color: #475569;
+    line-height: 1.8;
+    margin-bottom: 32px;
+}
+
+.panel-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+}
+
+.panel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.panel-overlay.active {
+    display: block;
+    opacity: 1;
 }
 
 /* Modal Overlay Animation */
