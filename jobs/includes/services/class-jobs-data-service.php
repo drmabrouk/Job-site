@@ -369,7 +369,152 @@ class Jobs_Data_Service {
                 'Package Handler', 'Loader/Unloader', 'Stockroom Assistant', 'Warehouse Supervisor', 'Logistics Analyst',
                 'Supply Chain Coordinator', 'Distribution Clerk', 'Fleet Dispatcher', 'Truck Driver', 'Delivery Driver',
                 'Courier', 'Freight Handler', 'Operations Clerk', 'Cycle Counter', 'Quality Inspector (Warehouse)'
+            ),
+            'Public Relations' => array(
+                'PR Manager', 'Media Relations Specialist', 'Communications Director', 'Press Secretary', 'Publicist',
+                'Internal Communications Manager', 'Corporate Spokesperson', 'Crisis Communications Expert', 'PR Coordinator', 'Event Publicist',
+                'Digital PR Specialist', 'Brand Ambassador Manager', 'Media Researcher', 'Speechwriter', 'Community Liaison',
+                'Public Affairs Specialist', 'Relationship Manager', 'PR Analyst', 'Newsroom Manager', 'Content Strategist (PR)'
+            ),
+            'Quality Management' => array(
+                'Quality Assurance Manager', 'Quality Control Inspector', 'ISO Consultant', 'Six Sigma Black Belt', 'Continuous Improvement Lead',
+                'Quality Systems Auditor', 'Compliance Manager', 'Quality Engineer', 'Process Excellence Specialist', 'Risk Manager (Quality)',
+                'Root Cause Analyst', 'TQM Specialist', 'Standards Coordinator', 'Product Integrity Manager', 'Quality Data Analyst'
+            ),
+            'Customer Experience' => array(
+                'CX Manager', 'Customer Journey Mapper', 'User Experience Researcher (CX)', 'Customer Insight Analyst', 'Voice of Customer Specialist',
+                'CX Strategist', 'Customer Retention Manager', 'Experience Designer', 'Service Delivery Lead', 'Client Success Director'
+            ),
+            'Environmental & Sustainability' => array(
+                'Sustainability Consultant', 'Environmental Impact Auditor', 'Renewable Energy Specialist', 'Corporate Responsibility Manager', 'Green Building Consultant',
+                'EHS Manager', 'Waste Management Coordinator', 'Conservation Scientist', 'Sustainability Analyst', 'Climate Change Advisor'
+            ),
+            'Humanitarian Aid' => array(
+                'Emergency Response Coordinator', 'Humanitarian Logistician', 'Protection Officer', 'Field Operations Manager', 'Grant Manager (Humanitarian)',
+                'Monitoring and Evaluation Specialist', 'Advocacy Officer', 'Child Protection Specialist', 'WASH Engineer', 'Relief Worker'
+            ),
+            'Marine & Maritime' => array(
+                'Marine Engineer', 'Naval Architect', 'Ship Captain', 'Marine Surveyor', 'Port Operations Manager',
+                'Maritime Lawyer', 'Oceanographer', 'Shipbroker', 'Coast Guard Officer', 'Marine Conservationist'
+            ),
+            'Pharmaceutical' => array(
+                'Pharmacist', 'Clinical Research Associate', 'Medical Science Liaison', 'Regulatory Affairs Specialist', 'Drug Safety Associate',
+                'Pharmacy Technician', 'Pharmaceutical Sales Rep', 'Formulation Scientist', 'Lab Manager (Pharma)', 'QC Chemist'
+            ),
+            'Mining & Petroleum' => array(
+                'Petroleum Engineer', 'Mining Engineer', 'Geologist', 'Drilling Supervisor', 'Reservoir Engineer',
+                'Mine Manager', 'Safety Officer (Mining)', 'Geophysicist', 'Petrophysicist', 'Production Chemist'
+            ),
+            'Arts & Culture' => array(
+                'Museum Curator', 'Art Historian', 'Gallery Manager', 'Cultural Program Director', 'Archivist',
+                'Restorer', 'Arts Administrator', 'Auctioneer', 'Conservator', 'Cultural Heritage Specialist'
+            ),
+            'Law Enforcement' => array(
+                'Police Officer', 'Detective', 'Criminologist', 'Forensic Investigator', 'Intelligence Officer',
+                'Parole Officer', 'Customs Inspector', 'Border Patrol Agent', 'Security Director', 'Crime Analyst'
+            ),
+            'Food & Beverage' => array(
+                'Executive Chef', 'Food Technologist', 'Restaurant Manager', 'Sommelier', 'Pastry Chef',
+                'Nutritionist', 'Food Safety Inspector', 'Brewmaster', 'Barista Trainer', 'Kitchen Porter'
+            ),
+            'Real Estate Appraisal' => array(
+                'Real Estate Appraiser', 'Valuation Manager', 'Residential Surveyor', 'Commercial Appraiser', 'Land Economist'
+            ),
+            'Military & Defense' => array(
+                'Military Officer', 'Defense Analyst', 'Logistics Officer (Defense)', 'Intelligence Analyst (Defense)', 'Weapon Systems Engineer'
+            ),
+            'Renewable Energy' => array(
+                'Solar Energy Engineer', 'Wind Turbine Technician', 'Energy Policy Analyst', 'Smart Grid Architect', 'Energy Auditor'
+            ),
+            'E-commerce' => array(
+                'E-commerce Manager', 'Digital Merchandiser', 'Marketplace Specialist', 'Shopify Expert', 'E-commerce Analyst'
+            ),
+            'Game Design' => array(
+                'Lead Game Designer', 'Economy Designer', 'Level Designer', 'Narrative Designer', 'Systems Designer (Games)'
+            ),
+            'Cyber Forensics' => array(
+                'Digital Forensic Investigator', 'Malware Analyst', 'Network Forensic Specialist', 'Computer Forensic Examiner', 'Incident Responder'
+            ),
+            'Content Strategy' => array(
+                'Content Strategist', 'Content Governance Manager', 'Digital Librarian', 'Editorial Director', 'Content Architect'
+            ),
+            'Data Privacy' => array(
+                'Data Protection Officer', 'Privacy Compliance Manager', 'Privacy Engineer', 'GDPR Specialist', 'Privacy Counsel'
+            ),
+            'Blockchain' => array(
+                'Smart Contract Developer', 'Blockchain Architect', 'DApp Developer', 'Crypto Analyst', 'Tokenomics Expert'
+            ),
+            'Cloud Computing' => array(
+                'Cloud Architect', 'Cloud Engineer', 'AWS Specialist', 'Azure Administrator', 'Cloud Security Architect'
+            ),
+            'Robotics' => array(
+                'Robotics Engineer', 'Computer Vision Engineer', 'Control Systems Engineer', 'Automation Architect', 'Mechatronics Specialist'
+            ),
+            'Biotechnology' => array(
+                'Biochemist', 'Bioprocess Engineer', 'Bioinformatics Scientist', 'Geneticist', 'Biotech Researcher'
+            ),
+            'Interior Design' => array(
+                'Residential Designer', 'Commercial Interior Designer', 'Set Designer', 'Exhibition Designer', 'Kitchen & Bath Designer'
+            ),
+            'Public Administration' => array(
+                'Policy Advisor', 'Grant Administrator', 'City Clerk', 'Urban Program Director', 'Public Works Manager'
+            ),
+            'Event Management' => array(
+                'Wedding Planner', 'Corporate Event Planner', 'Conference Coordinator', 'Trade Show Manager', 'Festival Organizer'
+            ),
+            'Photography' => array(
+                'Portrait Photographer', 'Commercial Photographer', 'Photojournalist', 'Fashion Photographer', 'Wildlife Photographer'
+            ),
+            'Videography' => array(
+                'Video Editor', 'Cinematographer', 'Motion Graphics Artist', 'Colorist', 'Broadcast Director'
+            ),
+            'Sports & Athletics' => array(
+                'Sports Coach', 'Athletic Trainer', 'Sports Agent', 'Referee', 'Fitness Director'
+            ),
+            'Music & Audio' => array(
+                'Sound Engineer', 'Music Producer', 'Composer', 'Audio Editor', 'Live Sound Technician'
+            ),
+            'Fashion' => array(
+                'Fashion Designer', 'Textile Designer', 'Fashion Buyer', 'Merchandiser', 'Stylist'
+            ),
+            'Animation' => array(
+                '2D Animator', '3D Modeler', 'Rigging Artist', 'Texture Artist', 'VFX Artist'
+            ),
+            'Translation' => array(
+                'Legal Translator', 'Medical Interpreter', 'Localizer', 'Subtitler', 'Simultaneous Interpreter'
+            ),
+            'Wellness & Yoga' => array(
+                'Yoga Instructor', 'Wellness Coach', 'Meditation Guide', 'Spa Therapist', 'Holistic Health Practitioner'
             )
+        );
+    }
+
+    public static function get_skills() {
+        return array(
+            'React', 'JavaScript', 'Python', 'PHP', 'Laravel', 'WordPress', 'HTML5', 'CSS3', 'Node.js', 'SQL',
+            'Project Management', 'UI/UX Design', 'Figma', 'Digital Marketing', 'SEO', 'Data Analysis', 'Machine Learning',
+            'Java', 'C#', 'Cloud Computing (AWS/Azure)', 'DevOps', 'Docker', 'Kubernetes', 'Cyber Security', 'Agile/Scrum',
+            'Business Development', 'Sales Strategy', 'Financial Accounting', 'Taxation', 'HR Management', 'Recruitment',
+            'Customer Relationship Management (CRM)', 'Public Relations', 'Content Writing', 'Copywriting', 'Graphic Design',
+            'Adobe Photoshop', 'Adobe Illustrator', 'Video Editing', 'Spanish (Fluent)', 'French (Fluent)', 'Arabic (Fluent)',
+            'Supply Chain Management', 'Logistics', 'Quality Assurance', 'Testing', 'Networking', 'Systems Administration',
+            'Strategic Planning', 'Leadership', 'Team Management'
+        );
+    }
+
+    public static function get_currencies() {
+        return array(
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'EGP' => 'EGP',
+            'SAR' => 'SAR',
+            'AED' => 'AED',
+            'JOD' => 'JOD',
+            'CAD' => 'C$',
+            'AUD' => 'A$',
+            'INR' => '₹',
+            'TRY' => '₺'
         );
     }
 

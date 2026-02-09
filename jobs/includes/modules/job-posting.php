@@ -5,6 +5,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+$locations = Jobs_Data_Service::get_countries_with_regions();
+$currencies = Jobs_Data_Service::get_currencies();
 ?>
 <div class="jobs-module-content" id="jobs-posting-module">
     <div style="margin-bottom: 25px;">
@@ -29,13 +31,9 @@ if ( ! defined( 'ABSPATH' ) ) {
             <div class="form-group">
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Currency</label>
                 <select name="job_currency" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
-                    <option value="$">USD ($)</option>
-                    <option value="€">EUR (€)</option>
-                    <option value="£">GBP (£)</option>
-                    <option value="AED">AED</option>
-                    <option value="SAR">SAR</option>
-                    <option value="QAR">QAR</option>
-                    <option value="KWD">KWD</option>
+                    <?php foreach($currencies as $code => $sym): ?>
+                        <option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($code); ?> (<?php echo esc_html($sym); ?>)</option>
+                    <?php endforeach; ?>
                 </select>
             </div>
         </div>
@@ -77,37 +75,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Country</label>
                 <select name="country" id="posting-country" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
                     <option value="">Select Country</option>
-                    <option value="algeria">Algeria</option>
-                    <option value="bahrain">Bahrain</option>
-                    <option value="egypt">Egypt</option>
-                    <option value="iran">Iran</option>
-                    <option value="iraq">Iraq</option>
-                    <option value="jordan">Jordan</option>
-                    <option value="kuwait">Kuwait</option>
-                    <option value="lebanon">Lebanon</option>
-                    <option value="libya">Libya</option>
-                    <option value="morocco">Morocco</option>
-                    <option value="oman">Oman</option>
-                    <option value="palestine">Palestine</option>
-                    <option value="qatar">Qatar</option>
-                    <option value="saudi-arabia">Saudi Arabia</option>
-                    <option value="syria">Syria</option>
-                    <option value="tunisia">Tunisia</option>
-                    <option value="uae">United Arab Emirates</option>
-                    <option value="yemen">Yemen</option>
-                    <option value="usa">USA</option>
-                    <option value="uk">UK</option>
-                    <option value="canada">Canada</option>
-                    <option value="australia">Australia</option>
-                    <option value="new-zealand">New Zealand</option>
-                    <option value="ireland">Ireland</option>
-                    <option value="south-africa">South Africa</option>
+                    <?php foreach(array_keys($locations) as $c): ?>
+                        <option value="<?php echo esc_attr($c); ?>"><?php echo esc_html(ucwords(str_replace('-', ' ', $c))); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">
-                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">City</label>
-                <select name="city" id="posting-city" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
-                    <option value="">Select City</option>
+                <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Region / State</label>
+                <select name="city" id="posting-city" disabled style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
+                    <option value="">Select Country First</option>
                 </select>
             </div>
         </div>
@@ -120,3 +96,23 @@ if ( ! defined( 'ABSPATH' ) ) {
     <div id="jobs-post-status"></div>
 </div>
 
+<script>
+jQuery(document).ready(function($) {
+    const locationData = <?php echo json_encode($locations); ?>;
+
+    $('#posting-country').on('change', function() {
+        const country = $(this).val();
+        const $citySelect = $('#posting-city');
+        $citySelect.empty().append('<option value="">Select Region / State</option>');
+
+        if (country && locationData[country]) {
+            locationData[country].forEach(region => {
+                $citySelect.append(`<option value="${region}">${region}</option>`);
+            });
+            $citySelect.prop('disabled', false);
+        } else {
+            $citySelect.prop('disabled', true);
+        }
+    });
+});
+</script>

@@ -88,7 +88,8 @@ if ( is_user_logged_in() ) {
                     </div>
                     <div class="form-row" style="display:flex; gap:10px;">
                         <div class="form-group" style="flex:1;">
-                            <input type="text" name="user_login" placeholder="Username" required>
+                            <input type="text" name="user_login" placeholder="Username (Min 4 letters)" required>
+                            <p style="font-size: 0.7em; color: #64748b; margin: 4px 0 0 5px;">Min. 4 English letters</p>
                         </div>
                         <div class="form-group" style="flex:1;">
                             <input type="email" name="user_email" placeholder="Email Address" required>
