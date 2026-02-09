@@ -15,16 +15,16 @@ $company_sizes = Jobs_Data_Service::get_company_sizes();
 $environments = Jobs_Data_Service::get_work_environments();
 ?>
 <div class="jobs-module-content" id="jobs-company-module">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
-        <h3 style="margin: 0; font-size: 1.8em; color: var(--jobs-primary-color);">Company Profile Management</h3>
-        <a href="<?php echo esc_url($profile_link); ?>" target="_blank" class="jobs-btn-small" style="background: #10b981;">View Employer Portfolio</a>
+    <div class="module-v4-header">
+        <h3 class="module-v4-title">Data Editing</h3>
+        <a href="<?php echo esc_url($profile_link); ?>" target="_blank" class="v4-btn-view-profile">View Employer Portfolio</a>
     </div>
 
-    <form id="jobs-company-form" method="POST" style="background: #f8fafc; padding: 40px; border-radius: 24px; border: 1px solid #e2e8f0;">
+    <form id="jobs-company-form" method="POST" class="v4-professional-form">
         <?php wp_nonce_field( 'jobs_save_company', 'jobs_company_nonce' ); ?>
 
-        <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 40px; background: #FFFFFF; padding: 30px; border-radius: 20px; border: 1px solid #e2e8f0;">
-            <div class="cv-photo-upload-container" style="position: relative; width: 120px; height: 120px; flex-shrink: 0;">
+        <div class="v4-identity-upload-box">
+            <div class="cv-photo-upload-container">
                 <?php
                 $logo_url = get_user_meta($current_user_id, '_jobs_profile_photo', true) ?: ($company['logo'] ?? get_avatar_url($current_user_id, array('size' => 120)));
                 ?>
@@ -155,6 +155,62 @@ $environments = Jobs_Data_Service::get_work_environments();
 </div>
 
 <style>
+.module-v4-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 20px;
+}
+.module-v4-title {
+    margin: 0;
+    font-size: 1.8em;
+    color: var(--jobs-primary-color);
+    font-weight: 800;
+}
+.v4-btn-view-profile {
+    background: #10b981;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+.v4-btn-view-profile:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.v4-professional-form {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+}
+
+.v4-identity-upload-box {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    margin-bottom: 30px;
+    background: #f8fafc;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.cv-photo-upload-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+}
+
 .v4-toggle-switch {
     position: relative;
     display: inline-block;

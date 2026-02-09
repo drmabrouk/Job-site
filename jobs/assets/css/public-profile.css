@@ -28,6 +28,13 @@
     margin-top: 8px;
     font-size: 14px;
     color: #64748b;
+    flex-wrap: wrap;
+}
+
+.location-item-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .country-flag-icon {
@@ -89,8 +96,8 @@
 }
 
 .badge-verified-circle {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     background: #1d3469;
     color: #FFFFFF;
     border-radius: 50%;
@@ -100,14 +107,15 @@
     flex-shrink: 0;
     margin-left: 10px;
     vertical-align: middle;
-    box-shadow: 0 2px 4px rgba(29, 52, 105, 0.2);
-    border: 1.5px solid #FFFFFF;
+    box-shadow: 0 2px 8px rgba(29, 52, 105, 0.3);
+    border: 2px solid #FFFFFF;
 }
 
 .badge-verified-circle .dashicons {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    display: block;
 }
 
 .badge-verified { background: #ecfdf5; color: #059669; }
@@ -264,6 +272,13 @@
     transform: translateY(-1px);
 }
 
+.v4-btn-primary .dashicons {
+    margin-right: 8px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
 .v4-btn-secondary {
     height: 46px;
     padding: 0 32px;
@@ -321,6 +336,20 @@
 .jobs-module-link.v4-icon-btn:hover {
     background: #2563eb;
     color: #FFFFFF;
+}
+
+/* Header Actions Alignment */
+.profile-v4-actions {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.v4-action-group {
+    display: flex;
+    gap: 12px;
 }
 
 /* Stats Box */
@@ -518,18 +547,23 @@
         justify-content: center;
         flex-wrap: wrap;
     }
-    .profile-v4-location-info {
+
+    .profile-v4-location-info.v4-mobile-row {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 20px;
         justify-content: center;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 16px;
+        width: 100%;
+        flex-wrap: nowrap !important;
     }
+
     .profile-v4-actions {
         margin: 0 auto !important;
         width: 100%;
+        align-items: center;
         justify-content: center;
-        flex-wrap: wrap;
     }
+
     .v4-card {
         padding: 24px;
     }
