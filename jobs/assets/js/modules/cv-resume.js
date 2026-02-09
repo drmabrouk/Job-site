@@ -136,15 +136,36 @@
             $('.employer-suggestions-cv-list').hide();
         });
 
+        // Photo Preview
+        $(document).on('change', '#cv-photo-input', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#cv-photo-preview').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
         // Form Submit
         $(document).on('submit', '#jobs-cv-form-v3', function(e) {
             e.preventDefault();
-            var data = $(this).serialize() + '&action=jobs_save_cv_handler_v3';
+            var formData = new FormData(this);
+            formData.append('action', 'jobs_save_cv_handler_v3');
+            formData.append('nonce', jobs_vars.nonce);
+
             var $status = $('#jobs-cv-status-v3');
             $status.html('<p style="color:#666; font-weight:600;">Updating your account data and profile...</p>');
 
-            $.post(jobs_vars.ajax_url, data, function(response) {
-                if(response.success) {
+            $.ajax({
+                url: jobs_vars.ajax_url,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if(response.success) {
                     $status.html('<div style="background:#dcfce7; color:#166534; padding:20px; border-radius:12px; font-weight:600;">✓ Account data updated successfully! Your public profile has been updated instantly.</div>');
                     setTimeout(function() {
                         if (typeof profileLink !== 'undefined') window.location.href = profileLink;

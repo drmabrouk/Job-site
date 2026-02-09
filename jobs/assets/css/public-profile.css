@@ -89,21 +89,25 @@
 }
 
 .badge-verified-circle {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     background: #1d3469;
     color: #FFFFFF;
     border-radius: 50%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    margin-left: 8px;
+    vertical-align: middle;
+    position: relative;
+    top: -2px;
 }
 
 .badge-verified-circle .dashicons {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
 }
 
 .badge-verified { background: #ecfdf5; color: #059669; }
@@ -281,10 +285,12 @@
 }
 
 .v4-icon-btn {
-    width: 46px;
-    height: 46px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
     border-radius: 50%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     border: 1px solid #E2E8F0;
@@ -293,6 +299,8 @@
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
+    padding: 0;
+    line-height: 1;
 }
 
 .v4-icon-btn:hover {
@@ -481,23 +489,65 @@
 @media (max-width: 960px) {
     .profile-v4-grid {
         grid-template-columns: 1fr;
+        gap: 32px;
     }
     .profile-layout-container {
         padding: 60px 24px;
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .profile-v4-header {
         flex-direction: column;
         text-align: center;
-        gap: 16px;
+        gap: 32px;
+        margin-bottom: 48px;
+    }
+    .profile-v4-identity-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .profile-v4-identity-box h1 {
+        font-size: 28px;
+        justify-content: center;
     }
     .profile-v4-badges {
         justify-content: center;
+        flex-wrap: wrap;
+    }
+    .profile-v4-location-info {
+        justify-content: center;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .profile-v4-header div[style*="margin-left: auto"] {
+        margin: 0 auto !important;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .v4-card {
+        padding: 24px;
+    }
+    .v4-timeline-header {
+        flex-direction: column;
+        gap: 8px;
     }
     .profile-v4-avatar-box {
-        width: 64px;
-        height: 64px;
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-v4-identity-box h1 {
+        font-size: 24px;
+    }
+    .profile-layout-container {
+        padding: 40px 16px;
+    }
+    .v4-btn-primary, .v4-btn-secondary {
+        width: 100%;
     }
 }

@@ -71,7 +71,7 @@ get_header();
 
         <?php if ($role === 'employer') :
             $company = get_user_meta($user_id, 'jobs_company_data', true) ?: array();
-            $logo = !empty($company['logo']) ? $company['logo'] : get_avatar_url($user_id, array('size' => 120));
+            $logo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: (!empty($company['logo']) ? $company['logo'] : get_avatar_url($user_id, array('size' => 120)));
 
             $active_jobs = new WP_Query(array(
                 'post_type' => 'job', 'post_status' => 'publish', 'author' => $user_id, 'posts_per_page' => 5
@@ -86,9 +86,8 @@ get_header();
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
-                        <h1><?php echo esc_html($company['name'] ?? $display_name); ?></h1>
+                        <h1 style="display: flex; align-items: center;"><?php echo esc_html($company['name'] ?? $display_name); ?> <div class="badge-verified-circle" title="Verified Entity"><span class="dashicons dashicons-yes"></span></div></h1>
                         <div class="profile-v4-badges">
-                            <div class="badge-verified-circle" title="Verified Entity"><span class="dashicons dashicons-yes"></span></div>
                             <span class="status-badge-pill badge-hiring">Hiring</span>
                         </div>
                     </div>
@@ -316,13 +315,13 @@ get_header();
             <!-- HEADER: SEEKER -->
             <header class="profile-v4-header">
                 <div class="profile-v4-avatar-box">
-                    <img src="<?php echo get_avatar_url($user_id, array('size' => 120)); ?>" alt="Profile Photo">
+                    <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
+                    <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
-                        <h1><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?></h1>
+                        <h1 style="display: flex; align-items: center;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <div class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></div></h1>
                         <div class="profile-v4-badges">
-                            <div class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></div>
                             <span class="status-badge-pill badge-open">Open to Work</span>
                         </div>
                     </div>
