@@ -27,20 +27,6 @@ $display_name = $user->display_name;
 $is_verified = get_user_meta($user_id, '_is_email_verified', true);
 $last_activity = get_user_meta($user_id, '_last_activity', true);
 
-/**
- * Helper to get flag URL from country slug
- */
-if ( ! function_exists( 'jobs_get_flag_url' ) ) {
-    function jobs_get_flag_url($slug) {
-        $mapping = array(
-            'egypt' => 'eg', 'saudi-arabia' => 'sa', 'uae' => 'ae', 'jordan' => 'jo',
-            'qatar' => 'qa', 'kuwait' => 'kw', 'bahrain' => 'bh', 'oman' => 'om',
-            'lebanon' => 'lb', 'usa' => 'us', 'uk' => 'gb', 'canada' => 'ca', 'australia' => 'au'
-        );
-        $code = isset($mapping[$slug]) ? $mapping[$slug] : '';
-        return $code ? "https://flagcdn.com/w40/{$code}.png" : '';
-    }
-}
 
 get_header();
 ?>
@@ -73,7 +59,7 @@ get_header();
                     <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?></p>
                     <div class="profile-v4-location-info">
                         <?php $c_slug = strtolower(str_replace(' ', '-', $company['address'] ?? '')); ?>
-                        <?php if($flag = jobs_get_flag_url($c_slug)): ?>
+                        <?php if($flag = Jobs_Data_Service::get_flag_url($c_slug)): ?>
                             <img src="<?php echo $flag; ?>" class="country-flag-icon">
                         <?php endif; ?>
                         <span><?php echo esc_html($company['address'] ?? 'International'); ?></span>
@@ -323,7 +309,7 @@ get_header();
                         ?>
                         <?php if($nationality): ?>
                             <div class="location-item-row" title="Nationality">
-                                <?php if($f = jobs_get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
                                 <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
                             </div>
                         <?php endif; ?>
@@ -331,7 +317,7 @@ get_header();
                         <?php if($residence): ?>
                             <div class="location-item-row" title="Country of Residence">
                                 <span>Resident in </span>
-                                <?php if($f = jobs_get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon" style="margin-left: 5px;"><?php endif; ?>
+                                <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon" style="margin-left: 5px;"><?php endif; ?>
                                 <span><?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
                             </div>
                         <?php endif; ?>
