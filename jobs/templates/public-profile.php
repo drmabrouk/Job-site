@@ -87,11 +87,11 @@ get_header();
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($company['name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified Entity" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
-                        <div class="profile-v4-badges">
-                            <span class="status-badge-pill badge-hiring">Hiring</span>
-                        </div>
                     </div>
-                    <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?> • <?php echo esc_html($company['industry'] ?? 'Corporate'); ?></p>
+                    <div style="margin: 10px 0;">
+                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px;"><?php echo esc_html($company['industry'] ?? 'Corporate Entity'); ?></span>
+                    </div>
+                    <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?></p>
                     <div class="profile-v4-location-info">
                         <?php $c_slug = strtolower(str_replace(' ', '-', $company['address'] ?? '')); ?>
                         <?php if($flag = jobs_get_flag_url($c_slug)): ?>
@@ -180,6 +180,7 @@ get_header();
                 </div>
 
                 <div class="profile-v4-sidebar">
+                    <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
                     <section class="v4-card contact-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
                         <div class="v4-card-body">
@@ -286,6 +287,7 @@ get_header();
                     </div>
                 </div>
             </div>
+            <?php Jobs_Ads_Service::display_ad('below_content'); ?>
 
         <?php else :
             $cv = get_user_meta($user_id, 'jobs_cv_data_v2', true) ?: array();
@@ -317,7 +319,10 @@ get_header();
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                     </div>
-                    <p class="profile-v4-headline"><?php echo esc_html($prof ?: $spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.
+                    <div style="margin: 10px 0;">
+                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px;"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+                    </div>
+                    <p class="profile-v4-headline"><?php echo esc_html($spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.
                     <?php
                     $dob = $cv['personal']['dob'] ?? '';
                     if($dob):
@@ -341,7 +346,8 @@ get_header();
 
                         <?php if($residence): ?>
                             <div class="location-item-row" title="Country of Residence">
-                                <?php if($f = jobs_get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                <span>Resident in </span>
+                                <?php if($f = jobs_get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon" style="margin-left: 5px;"><?php endif; ?>
                                 <span><?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
                             </div>
                         <?php endif; ?>
@@ -361,16 +367,21 @@ get_header();
 
             <div class="profile-v4-grid">
                 <div class="profile-v4-main">
+                    <?php Jobs_Ads_Service::display_ad('above_content'); ?>
+
                     <section class="v4-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
                         <div class="v4-card-body">
-                            <p><?php echo nl2br(esc_html(get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.')); ?></p>
+                            <?php $summary = get_user_meta($user_id, '_professional_summary', true) ?: (get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.'); ?>
+                            <p><?php echo nl2br(esc_html($summary)); ?></p>
 
+                            <?php if($philosophy = get_user_meta($user_id, '_professional_philosophy', true)): ?>
                             <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
                                 <span class="dashicons dashicons-format-quote" style="position: absolute; right: 20px; top: 20px; color: #fbcfe8; font-size: 32px; width: 32px; height: 32px;"></span>
                                 <h4 style="font-size: 14px; font-weight: 700; color: #9d174d; margin-bottom: 8px;">Professional Philosophy</h4>
-                                <p style="font-size: 13px; color: #be185d; line-height: 1.6; font-style: italic; margin: 0; max-width: 90%;">"I believe in continuous growth and the power of collaborative innovation to solve complex challenges and drive meaningful change in the industry."</p>
+                                <p style="font-size: 13px; color: #be185d; line-height: 1.6; font-style: italic; margin: 0; max-width: 90%;">"<?php echo esc_html($philosophy); ?>"</p>
                             </div>
+                            <?php endif; ?>
 
                             <?php if(!empty($sec_specs)): ?>
                                 <div style="margin-top: 16px;">
@@ -405,11 +416,22 @@ get_header();
                     <section class="v4-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-star-filled"></span> Key Accomplishments</h3>
                         <div class="v4-card-body">
-                            <ul style="margin: 0; padding-left: 18px; color: #475569; font-size: 13px; line-height: 1.8;">
-                                <li>Successfully led cross-functional teams to deliver high-impact projects ahead of schedule.</li>
-                                <li>Optimized operational workflows, resulting in a 20% increase in overall efficiency.</li>
-                                <li>Recognized for exceptional leadership and commitment to professional excellence.</li>
-                            </ul>
+                            <?php
+                            $accomplishments = get_user_meta($user_id, '_key_accomplishments', true);
+                            if($accomplishments):
+                                $acc_list = explode("\n", $accomplishments);
+                                echo '<ul style="margin: 0; padding-left: 18px; color: #475569; font-size: 13px; line-height: 1.8;">';
+                                foreach($acc_list as $acc) {
+                                    if(trim($acc)) echo '<li>' . esc_html($acc) . '</li>';
+                                }
+                                echo '</ul>';
+                            else: ?>
+                                <ul style="margin: 0; padding-left: 18px; color: #475569; font-size: 13px; line-height: 1.8;">
+                                    <li>Successfully led cross-functional teams to deliver high-impact projects ahead of schedule.</li>
+                                    <li>Optimized operational workflows, resulting in a 20% increase in overall efficiency.</li>
+                                    <li>Recognized for exceptional leadership and commitment to professional excellence.</li>
+                                </ul>
+                            <?php endif; ?>
                         </div>
                     </section>
 
@@ -471,6 +493,7 @@ get_header();
                 </div>
 
                 <div class="profile-v4-sidebar">
+                    <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
                     <section class="v4-card contact-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
                         <div class="v4-card-body">
@@ -507,25 +530,40 @@ get_header();
                     <section class="v4-card">
                         <h3 class="v4-card-title">Career Profile</h3>
                         <div class="v4-card-body">
-                            <div style="margin-bottom: 12px;">
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Experience</small>
-                                <span style="font-weight: 500;"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</span>
+                            <div class="v4-career-item">
+                                <span class="dashicons dashicons-awards"></span>
+                                <div>
+                                    <small>Professional Experience</small>
+                                    <span><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</span>
+                                </div>
                             </div>
-                            <div style="margin-bottom: 12px;">
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Availability</small>
-                                <span style="font-weight: 500;"><?php echo esc_html($cv['preferences']['availability_status'] ?? 'Immediate'); ?></span>
+                            <div class="v4-career-item">
+                                <span class="dashicons dashicons-clock"></span>
+                                <div>
+                                    <small>Availability Status</small>
+                                    <span><?php echo esc_html($cv['preferences']['availability_status'] ?? 'Immediate'); ?></span>
+                                </div>
                             </div>
-                            <div style="margin-bottom: 12px;">
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Preferred Setup</small>
-                                <span style="font-weight: 500;"><?php echo esc_html($cv['preferences']['contract'] ?? 'Full-time'); ?> • <?php echo esc_html($cv['preferences']['flexibility'] ?? 'Remote'); ?></span>
+                            <div class="v4-career-item">
+                                <span class="dashicons dashicons-admin-site"></span>
+                                <div>
+                                    <small>Preferred Employment</small>
+                                    <span><?php echo esc_html($cv['preferences']['contract'] ?? 'Full-time'); ?> • <?php echo esc_html($cv['preferences']['flexibility'] ?? 'Remote'); ?></span>
+                                </div>
                             </div>
-                            <div style="margin-bottom: 12px;">
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Salary Expectation</small>
-                                <span style="font-weight: 500; color: #10b981;"><?php echo esc_html($cv['preferences']['currency'] ?? 'USD'); ?> <?php echo esc_html($cv['preferences']['salary'] ?? 'Competitive'); ?> /mo</span>
+                            <div class="v4-career-item">
+                                <span class="dashicons dashicons-money"></span>
+                                <div>
+                                    <small>Monthly Expectation</small>
+                                    <span style="color: #10b981;"><?php echo esc_html($cv['preferences']['currency'] ?? 'USD'); ?> <?php echo esc_html($cv['preferences']['salary'] ?? 'Competitive'); ?></span>
+                                </div>
                             </div>
-                            <div>
-                                <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Languages</small>
-                                <span style="font-weight: 500;"><?php echo esc_html($cv['languages']['native'] ?? 'English'); ?><?php echo !empty($cv['languages']['other']) ? ', '.esc_html($cv['languages']['other']) : ''; ?></span>
+                            <div class="v4-career-item">
+                                <span class="dashicons dashicons-translation"></span>
+                                <div>
+                                    <small>Language Proficiency</small>
+                                    <span><?php echo esc_html($cv['languages']['native'] ?? 'English'); ?><?php echo !empty($cv['languages']['other']) ? ', '.esc_html($cv['languages']['other']) : ''; ?></span>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -560,6 +598,7 @@ get_header();
                     </div>
                 </div>
             </div>
+            <?php Jobs_Ads_Service::display_ad('below_content'); ?>
         <?php endif; ?>
 
     </div>
@@ -596,29 +635,6 @@ get_header();
     </div>
 </div>
 
-<!-- Slide-down Panel Overlay -->
-<div class="panel-overlay"></div>
-
-<!-- Professional Notification Detail Panel -->
-<div id="notif-detail-panel" class="v4-slide-panel">
-    <div class="panel-sender-preview">
-        <div class="panel-sender-avatar">
-            <img src="" id="panel-avatar-img" style="width:100%; height:100%; object-fit:cover;">
-        </div>
-        <div>
-            <h4 id="panel-sender-name" style="margin:0; font-size:18px; font-weight:700; color:#1d3469;">Sender Name</h4>
-            <p id="panel-sender-role" style="margin:4px 0 0; font-size:13px; color:#64748b;">Professional Role</p>
-        </div>
-        <button class="v4-icon-btn close-panel" style="margin-left:auto;"><span class="dashicons dashicons-no-alt"></span></button>
-    </div>
-    <div class="panel-message-body" id="panel-message-text">
-        Message content goes here...
-    </div>
-    <div class="panel-actions">
-        <button class="v4-btn-secondary close-panel">Dismiss</button>
-        <button class="v4-btn-primary" id="panel-reply-btn">Quick Reply</button>
-    </div>
-</div>
 
 <!-- Modal: Contact/Message -->
 <div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
@@ -651,53 +667,6 @@ jQuery(document).ready(function($) {
         setTimeout(function() { $btn.html(originalHtml); }, 2000);
     });
 
-    // Notification Panel Logic
-    $(document).on('click', '.notif-item', function(e) {
-        var notifText = $(this).find('.notif-content').text();
-        var foundMsg = null;
-
-        if (window.v4RecentMessages && window.v4RecentMessages.length) {
-            for (var i = 0; i < window.v4RecentMessages.length; i++) {
-                var m = window.v4RecentMessages[i];
-                if (notifText.indexOf(m.sender_name) !== -1) {
-                    foundMsg = m;
-                    break;
-                }
-            }
-        }
-
-        if (foundMsg) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            $('#panel-avatar-img').attr('src', foundMsg.avatar);
-            $('#panel-sender-name').text(foundMsg.sender_name);
-            $('#panel-sender-role').text(foundMsg.role);
-            $('#panel-message-text').html(foundMsg.message.replace(/\n/g, '<br>'));
-            $('#panel-reply-btn').data('receiver', foundMsg.sender_id);
-
-            $('#jobs-notif-menu').removeClass('active');
-            $('.panel-overlay').addClass('active');
-            $('#notif-detail-panel').addClass('active');
-        }
-    });
-
-    $('.close-panel, .panel-overlay').on('click', function() {
-        $('.panel-overlay').removeClass('active');
-        $('#notif-detail-panel').removeClass('active');
-    });
-
-    $('#panel-reply-btn').on('click', function() {
-        var receiverId = $(this).data('receiver');
-        $('.close-panel').click();
-        setTimeout(function() {
-            $('.open-message-modal[data-receiver="' + receiverId + '"]').first().click();
-            // Fallback if no button found with that ID
-            if (!$('#message-modal').is(':visible')) {
-                $('#message-modal').css('display', 'flex');
-            }
-        }, 500);
-    });
 
     // Phone Reveal Logic
     $('.reveal-btn').on('click', function() {

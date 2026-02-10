@@ -49,6 +49,10 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 
         <!-- Step 0: Personal Information -->
         <div class="cv-step-panel active" id="cv-step-0">
+            <div class="v4-section-header">
+                <span class="v4-step-badge">Section 1 of 6</span>
+                <p class="v4-section-desc">Core identity and professional presence data.</p>
+            </div>
             <div class="v4-identity-upload-box">
                 <div class="cv-photo-upload-container">
                     <?php
@@ -170,6 +174,18 @@ $specializations_data = Jobs_Data_Service::get_specializations();
                 <div class="form-group span-2">
                     <input type="url" name="personal[portfolio_url]" value="<?php echo esc_url($cv['personal']['portfolio_url'] ?? ''); ?>" placeholder="Portfolio / Personal Website URL">
                 </div>
+                <div class="form-group span-2">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.8em; color: #64748b;">Professional Summary (SEO Optimized)</label>
+                    <textarea name="personal[summary]" placeholder="Write a compelling professional summary for recruiters and search engines..." required style="height: 100px;"><?php echo esc_textarea($cv['personal']['summary'] ?? ''); ?></textarea>
+                </div>
+                <div class="form-group span-2">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.8em; color: #64748b;">Key Accomplishments (One per line)</label>
+                    <textarea name="personal[accomplishments]" placeholder="Highlight your top career achievements..." style="height: 100px;"><?php echo esc_textarea($cv['personal']['accomplishments'] ?? ''); ?></textarea>
+                </div>
+                <div class="form-group span-2">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.8em; color: #64748b;">Professional Philosophy</label>
+                    <input type="text" name="personal[philosophy]" value="<?php echo esc_attr($cv['personal']['philosophy'] ?? ''); ?>" placeholder="e.g. My mission is to drive innovation through collaborative leadership.">
+                </div>
             </div>
             <div class="step-nav">
                 <button type="button" class="jobs-btn next-cv-step" data-next="1">Academic Qualifications →</button>
@@ -178,6 +194,10 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 
         <!-- Step 1: Academic Qualifications (Multi) -->
         <div class="cv-step-panel" id="cv-step-1" style="display:none;">
+            <div class="v4-section-header">
+                <span class="v4-step-badge">Section 2 of 6</span>
+                <p class="v4-section-desc">Educational history and certifications.</p>
+            </div>
             <h4 class="step-title">Academic Qualifications</h4>
             <div id="academic-repeater">
                 <?php foreach($academic_list as $index => $item): ?>
@@ -224,6 +244,10 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 
         <!-- Step 2: Professional Experience (Multi) -->
         <div class="cv-step-panel" id="cv-step-2" style="display:none;">
+            <div class="v4-section-header">
+                <span class="v4-step-badge">Section 3 of 6</span>
+                <p class="v4-section-desc">Your professional work history.</p>
+            </div>
             <h4 class="step-title">Professional Experience</h4>
             <div id="experience-repeater">
                 <?php foreach($experience_list as $index => $item): ?>
@@ -271,6 +295,10 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 
         <!-- Step 3: Skills, Certs & Portfolio -->
         <div class="cv-step-panel" id="cv-step-3" style="display:none;">
+            <div class="v4-section-header">
+                <span class="v4-step-badge">Section 4 of 6</span>
+                <p class="v4-section-desc">Key skills, certifications, and portfolio links.</p>
+            </div>
             <h4 class="step-title">Skills & Certifications</h4>
             <div class="grid-2">
                 <div class="form-group span-2" style="position: relative;">
@@ -323,6 +351,10 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 
         <!-- Step 4: Languages -->
         <div class="cv-step-panel" id="cv-step-4" style="display:none;">
+            <div class="v4-section-header">
+                <span class="v4-step-badge">Section 5 of 6</span>
+                <p class="v4-section-desc">Language proficiency and certificates.</p>
+            </div>
             <h4 class="step-title">Languages</h4>
             <div class="grid-2">
                 <div class="form-group">
@@ -361,6 +393,10 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 
         <!-- Step 5: Preferences & References -->
         <div class="cv-step-panel" id="cv-step-5" style="display:none;">
+            <div class="v4-section-header">
+                <span class="v4-step-badge">Section 6 of 6</span>
+                <p class="v4-section-desc">Employment preferences and professional references.</p>
+            </div>
             <h4 class="step-title">Job Preferences & References</h4>
             <div class="grid-2">
                 <div class="form-group">
@@ -467,6 +503,33 @@ $specializations_data = Jobs_Data_Service::get_specializations();
     var profileLink = "<?php echo $profile_link; ?>";
 
     jQuery(document).ready(function($) {
+        // Form Submission with Feedback
+        $('#jobs-cv-form-v3').on('submit', function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            var $status = $('#jobs-cv-status-v3');
+            var formData = new FormData(this);
+            formData.append('action', 'jobs_save_cv_handler_v3');
+
+            $status.html('<div style="color: #1d3469; font-weight: 600;">Saving changes...</div>');
+
+            $.ajax({
+                url: jobs_vars.ajax_url,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    if (res.success) {
+                        $status.html('<div style="background: #ecfdf5; color: #059669; padding: 15px; border-radius: 12px; border: 1px solid #d1fae5; font-weight: 600; margin-top: 20px;">✓ All profile sections updated site-wide successfully.</div>');
+                        setTimeout(function() { $status.fadeOut(); }, 5000);
+                    } else {
+                        $status.html('<div style="background: #fef2f2; color: #dc2626; padding: 15px; border-radius: 12px; border: 1px solid #fee2e2; font-weight: 600;">Error: ' + res.data + '</div>');
+                    }
+                }
+            });
+        });
+
         // Dynamic Professions Logic (Keeping small reactive parts here for instant feedback)
         $('#cv-specialization').on('change', function() {
             const spec = $(this).val();
@@ -510,6 +573,28 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 </script>
 
 <style>
+.v4-section-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.v4-step-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-radius: 50px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+.v4-section-desc {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
 .module-v4-header {
     display: flex;
     justify-content: space-between;

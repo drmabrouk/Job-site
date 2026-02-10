@@ -233,11 +233,7 @@ function jobs_ajax_send_message() {
     ) );
 
     // Also create a notification for the receiver
-    $table_notifications = Jobs_DB_Service::get_table( 'notifications' );
-    $wpdb->insert( $table_notifications, array(
-        'user_id' => $receiver_id,
-        'content' => 'You have a new message from ' . get_userdata($sender_id)->display_name,
-    ) );
+    Jobs_Job_Service::add_notification( $receiver_id, 'You have a new message from ' . get_userdata($sender_id)->display_name, $sender_id );
 
     // Email Notification
     $recipient = get_userdata( $receiver_id );
@@ -663,6 +659,9 @@ function jobs_ajax_save_cv_handler_v3() {
     update_user_meta( $user_id, '_nationality', sanitize_text_field($_POST['personal']['nationality'] ?? '') );
     update_user_meta( $user_id, '_country', sanitize_text_field($_POST['personal']['country'] ?? '') );
     update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] ?? '' );
+    update_user_meta( $user_id, '_professional_summary', sanitize_textarea_field($_POST['personal']['summary'] ?? '') );
+    update_user_meta( $user_id, '_key_accomplishments', sanitize_textarea_field($_POST['personal']['accomplishments'] ?? '') );
+    update_user_meta( $user_id, '_professional_philosophy', sanitize_text_field($_POST['personal']['philosophy'] ?? '') );
     update_user_meta( $user_id, '_qualification', $cv_data['academic'][0]['degree'] ?? '' );
     update_user_meta( $user_id, '_english_level', $cv_data['languages']['score'] ?? '' );
 
@@ -832,7 +831,8 @@ function jobs_ajax_get_notifications() {
     if ( $notifs ) {
         foreach ( $notifs as $n ) {
             $class = $n->is_read ? '' : 'unread';
-            echo '<div class="notif-item ' . $class . '">';
+            $sender_avatar = $n->sender_id ? get_avatar_url($n->sender_id) : '';
+            echo '<div class="notif-item ' . $class . '" data-content="' . esc_attr($n->content) . '" data-time="' . esc_attr(human_time_diff(strtotime($n->timestamp), current_time('timestamp')) . ' ago') . '" data-avatar="' . esc_attr($sender_avatar) . '">';
             echo '<div class="notif-content">' . esc_html($n->content) . '</div>';
             echo '<div style="font-size: 0.7em; color: #999; margin-top: 5px;">' . human_time_diff(strtotime($n->timestamp), current_time('timestamp')) . ' ago</div>';
             echo '</div>';

@@ -372,6 +372,65 @@
     height: 20px;
 }
 
+/* Career Profile Items */
+.v4-career-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.v4-career-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.v4-career-item .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #1d3469;
+    background: #f8fafc;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+}
+
+.v4-career-item div {
+    display: flex;
+    flex-direction: column;
+}
+
+.v4-career-item small {
+    font-size: 9px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.v4-career-item span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* AdSense Presentation */
+.jobs-ad-container {
+    background: #f8fafc;
+    border: 1px dashed #e2e8f0;
+    border-radius: 12px;
+    padding: 10px;
+    min-height: 90px;
+}
+
 /* Stats Box */
 .v4-stats-grid {
     display: grid;
@@ -610,7 +669,11 @@
     .profile-layout-container {
         padding: 40px 16px;
     }
-    .v4-btn-primary, .v4-btn-secondary {
+    .v4-btn-secondary {
         width: 100%;
+    }
+    .v4-btn-primary {
+        width: auto; /* Natural width */
+        min-width: 160px;
     }
 }
