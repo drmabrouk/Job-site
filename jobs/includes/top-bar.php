@@ -34,62 +34,6 @@ function jobs_render_essential_overlays() {
         </div>
     </div>
 
-    <!-- Notification Global Overlay & Panel -->
-    <div class="panel-overlay" id="global-panel-overlay"></div>
-    <div id="global-notif-panel" class="v4-slide-panel">
-        <div class="panel-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;">
-            <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid #eff6ff;">
-                <img src="" id="global-panel-avatar-img" style="width:100%; height:100%; object-fit:cover; display: none;">
-                <div id="global-panel-avatar-placeholder" style="width:100%; height:100%; background: #eff6ff; color: #1d3469; display: flex; align-items: center; justify-content: center;">
-                    <span class="dashicons dashicons-bell" style="font-size: 24px;"></span>
-                </div>
-            </div>
-            <div>
-                <h4 style="margin:0; font-size:18px; font-weight:700; color:#1d3469;">Notification Detail</h4>
-                <p id="global-panel-time" style="margin:4px 0 0; font-size:12px; color:#94a3b8;">Recently</p>
-            </div>
-            <button class="v4-icon-btn close-panel" style="margin-left:auto;"><span class="dashicons dashicons-no-alt"></span></button>
-        </div>
-        <div class="panel-message-body" id="global-panel-content" style="font-size: 15px; color: #475569; line-height: 1.8; margin-bottom: 32px; background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0;">
-            Notification content...
-        </div>
-        <div class="panel-actions" style="display: flex; gap: 16px; justify-content: flex-end;">
-            <button class="v4-btn-secondary close-panel">Dismiss</button>
-        </div>
-    </div>
-
-    <script>
-    jQuery(document).ready(function($) {
-        $(document).on('click', '.notif-item', function(e) {
-            var content = $(this).data('content');
-            var time = $(this).data('time');
-            var avatar = $(this).data('avatar');
-            if (content) {
-                e.preventDefault();
-                e.stopPropagation();
-                $('#global-panel-content').text(content);
-                $('#global-panel-time').text(time);
-
-                if (avatar) {
-                    $('#global-panel-avatar-img').attr('src', avatar).show();
-                    $('#global-panel-avatar-placeholder').hide();
-                } else {
-                    $('#global-panel-avatar-img').hide();
-                    $('#global-panel-avatar-placeholder').show();
-                }
-
-                $('#jobs-notif-menu').removeClass('active');
-                $('#global-panel-overlay').addClass('active');
-                $('#global-notif-panel').addClass('active');
-            }
-        });
-
-        $(document).on('click', '.close-panel, #global-panel-overlay', function() {
-            $('#global-panel-overlay').removeClass('active');
-            $('#global-notif-panel').removeClass('active');
-        });
-    });
-    </script>
     <?php
 }
 add_action( 'wp_footer', 'jobs_render_essential_overlays' );
@@ -178,6 +122,20 @@ function jobs_account_icon_shortcode() {
                         </div>
                         <div id="jobs-notif-list" class="notif-list">
                             <p style="padding:20px; text-align:center; color:#999;">Loading...</p>
+                        </div>
+                        <div id="jobs-notif-detail" style="display:none; padding: 20px; border-top: 1px solid #f1f5f9;">
+                            <button id="notif-back" class="v4-btn-secondary" style="height: 30px; padding: 0 12px; margin-bottom: 20px; font-size: 11px; width: auto;"><span class="dashicons dashicons-arrow-left-alt2" style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;"></span> Back</button>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                                <div style="width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 1px solid #eff6ff; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
+                                    <img src="" id="notif-detail-avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                    <span class="dashicons dashicons-bell" id="notif-detail-icon-placeholder" style="color: #1d3469; font-size: 20px;"></span>
+                                </div>
+                                <div>
+                                    <div id="notif-detail-sender" style="font-weight: 700; color: #1d3469; font-size: 14px;"></div>
+                                    <div id="notif-detail-time" style="font-size: 11px; color: #94a3b8;"></div>
+                                </div>
+                            </div>
+                            <div id="notif-detail-content" style="font-size: 13px; color: #475569; line-height: 1.7; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;"></div>
                         </div>
                     </div>
                 </div>
