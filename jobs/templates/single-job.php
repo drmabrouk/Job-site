@@ -1,7 +1,7 @@
 <?php
 /**
- * Template: SaaS Enterprise Professional Job Details (V5)
- * Centered layout, premium typography, and responsive grid.
+ * Template: SaaS Enterprise Professional Job Details (V6)
+ * Significantly improved structure, spacing, and proportional sizing.
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -49,7 +49,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                 <?php if($company_logo): ?>
                     <img src="<?php echo esc_url($company_logo); ?>" alt="<?php echo esc_attr($company_name); ?>">
                 <?php else: ?>
-                    <div class="logo-placeholder"><span class="dashicons dashicons-businesswoman"></span></div>
+                    <div class="logo-placeholder"><span class="dashicons dashicons-businesswoman" style="font-size: 40px; width: 40px; height: 40px;"></span></div>
                 <?php endif; ?>
             </div>
 
@@ -60,7 +60,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                         <span class="v4-pastel-pill pill-purple"><?php echo esc_html($specializations[0]->name); ?></span>
                     <?php endif; ?>
                     <span style="color: #94a3b8; font-size: 13px; font-weight: 600; margin-left: auto;">
-                        <span class="dashicons dashicons-clock" style="font-size: 14px; vertical-align: middle;"></span>
+                        <span class="dashicons dashicons-calendar-alt" style="font-size: 14px; vertical-align: middle; margin-right: 5px;"></span>
                         Posted <?php echo human_time_diff(get_the_time('U'), current_time('timestamp')); ?> ago
                     </span>
                 </div>
@@ -68,7 +68,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                 <h1 class="job-title-v5"><?php the_title(); ?></h1>
                 <a href="<?php echo esc_url($company_profile_url); ?>" class="company-anchor">
                     at <?php echo esc_html($company_name); ?>
-                    <span class="badge-verified-circle" style="position: static; margin-left: 5px; width: 18px; height: 18px;"><span class="dashicons dashicons-yes" style="font-size: 12px; width: 12px; height: 12px;"></span></span>
+                    <span class="badge-verified-circle" style="position: static; margin-left: 5px; width: 20px; height: 20px; border-width: 1.5px;"><span class="dashicons dashicons-yes" style="font-size: 14px; width: 14px; height: 14px;"></span></span>
                 </a>
             </div>
 
@@ -77,7 +77,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                     <span class="dashicons dashicons-paper-plane"></span> Apply for Position
                 </button>
                 <?php if($deadline): ?>
-                    <div style="margin-top: 15px; color: #ef4444; font-weight: 700; font-size: 13px;">
+                    <div style="margin-top: 18px; color: #ef4444; font-weight: 700; font-size: 14px;">
+                        <span class="dashicons dashicons-warning" style="font-size: 16px; vertical-align: middle; margin-right: 5px;"></span>
                         Application Deadline: <?php echo date('M d, Y', strtotime($deadline)); ?>
                     </div>
                 <?php endif; ?>
@@ -91,7 +92,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                 <div class="job-content-card">
 
                     <section class="job-details-section">
-                        <h3 class="job-section-title">Role Description</h3>
+                        <h3 class="job-section-title"><span class="dashicons dashicons-text-page"></span> Role Description</h3>
                         <div class="job-text-content">
                             <?php the_content(); ?>
                         </div>
@@ -99,7 +100,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
 
                     <?php if($responsibilities): ?>
                     <section class="job-details-section">
-                        <h3 class="job-section-title">Key Responsibilities</h3>
+                        <h3 class="job-section-title"><span class="dashicons dashicons-list-view"></span> Key Responsibilities</h3>
                         <div class="job-text-content">
                             <?php echo wpautop(esc_html($responsibilities)); ?>
                         </div>
@@ -108,7 +109,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
 
                     <?php if($qualifications): ?>
                     <section class="job-details-section">
-                        <h3 class="job-section-title">Ideal Candidate Profile</h3>
+                        <h3 class="job-section-title"><span class="dashicons dashicons-id"></span> Ideal Candidate Profile</h3>
                         <div class="job-text-content">
                             <?php echo wpautop(esc_html($qualifications)); ?>
                         </div>
@@ -117,7 +118,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
 
                     <?php if($benefits): ?>
                     <section class="job-details-section">
-                        <h3 class="job-section-title">Perks & Benefits</h3>
+                        <h3 class="job-section-title"><span class="dashicons dashicons-heart"></span> Perks & Benefits</h3>
                         <div class="job-text-content">
                             <?php echo wpautop(esc_html($benefits)); ?>
                         </div>
@@ -127,11 +128,11 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                 </div>
 
                 <div class="job-share-v5">
-                    <span style="font-weight: 700; color: #1d3469; font-size: 15px;">Recommend this opportunity:</span>
+                    <span style="font-weight: 700; color: #1d3469; font-size: 16px;">Recommend this opportunity to your network:</span>
                     <div class="share-links-v5">
-                        <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . '%20' . $share_url; ?>" target="_blank" class="v5-share-btn share-wa"><span class="dashicons dashicons-whatsapp"></span></a>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" class="v5-share-btn share-fb"><span class="dashicons dashicons-facebook"></span></a>
-                        <a href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" class="v5-share-btn share-tw"><span class="dashicons dashicons-twitter"></span></a>
+                        <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . '%20' . $share_url; ?>" target="_blank" class="v5-share-btn share-wa" title="Share via WhatsApp"><span class="dashicons dashicons-whatsapp"></span></a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" class="v5-share-btn share-fb" title="Share via Facebook"><span class="dashicons dashicons-facebook"></span></a>
+                        <a href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" class="v5-share-btn share-tw" title="Share via X"><span class="dashicons dashicons-twitter"></span></a>
                     </div>
                 </div>
             </div>
@@ -140,7 +141,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
             <aside class="job-sidebar-v5">
 
                 <div class="sidebar-v5-card">
-                    <h4 class="sidebar-v5-title">Quick Overview</h4>
+                    <h4 class="sidebar-v5-title">Job Insights</h4>
                     <div class="overview-list">
                         <div class="overview-item">
                             <div class="overview-icon"><span class="dashicons dashicons-location"></span></div>
@@ -186,13 +187,14 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                 </div>
                 <?php endif; ?>
 
-                <div class="sidebar-v5-card" style="background: #1d3469; color: #FFFFFF; text-align: center; border: none;">
-                    <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.2);">
+                <div class="sidebar-v5-card" style="background: #1d3469; color: #FFFFFF; text-align: center; border: none; overflow: hidden; position: relative;">
+                    <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
+                    <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.2); position: relative; z-index: 1;">
                         <span class="dashicons dashicons-building" style="font-size: 32px; width: 32px; height: 32px;"></span>
                     </div>
-                    <h4 style="margin: 0 0 10px; font-size: 13px; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.7);">Employer Spotlight</h4>
-                    <p style="font-weight: 800; font-size: 20px; margin-bottom: 25px; line-height: 1.2;"><?php echo esc_html($company_name); ?></p>
-                    <a href="<?php echo esc_url($company_profile_url); ?>" style="display: block; background: #FFFFFF; color: #1d3469; padding: 16px; border-radius: 12px; font-weight: 700; text-decoration: none; transition: transform 0.2s;">View Organization Profile</a>
+                    <h4 style="margin: 0 0 10px; font-size: 13px; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.7); position: relative; z-index: 1;">Employer Spotlight</h4>
+                    <p style="font-weight: 800; font-size: 22px; margin-bottom: 30px; line-height: 1.2; position: relative; z-index: 1;"><?php echo esc_html($company_name); ?></p>
+                    <a href="<?php echo esc_url($company_profile_url); ?>" style="display: block; background: #FFFFFF; color: #1d3469; padding: 18px; border-radius: 16px; font-weight: 800; text-decoration: none; transition: transform 0.2s; position: relative; z-index: 1;">View Organization Profile</a>
                 </div>
 
             </aside>

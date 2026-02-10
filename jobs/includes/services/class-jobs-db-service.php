@@ -42,6 +42,15 @@ class Jobs_DB_Service {
         ) $charset_collate;";
         dbDelta( $sql_notifications );
 
+        // Robust Column Check for sender_id (Handles cases where dbDelta misses it)
+        $column = $wpdb->get_results($wpdb->prepare(
+            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = %s AND COLUMN_NAME = 'sender_id' AND TABLE_SCHEMA = %s",
+            $table_notifications, DB_NAME
+        ));
+        if (empty($column)) {
+            $wpdb->query("ALTER TABLE $table_notifications ADD COLUMN sender_id bigint(20) DEFAULT 0 NOT NULL AFTER user_id");
+        }
+
         // Activity Log
         $table_activity = $wpdb->prefix . 'jobs_activity_log';
         $sql_activity = "CREATE TABLE $table_activity (

@@ -100,10 +100,18 @@ class Jobs_Job_Service {
     public static function add_notification( $user_id, $content, $sender_id = 0 ) {
         global $wpdb;
         $table = Jobs_DB_Service::get_table( 'notifications' );
-        $wpdb->insert( $table, array(
+        $data = array(
             'user_id'   => $user_id,
             'sender_id' => intval( $sender_id ),
             'content'   => sanitize_text_field( $content ),
-        ) );
+        );
+
+        $inserted = $wpdb->insert( $table, $data );
+
+        // Fallback for missing sender_id column if insert failed
+        if ( false === $inserted ) {
+            unset($data['sender_id']);
+            $wpdb->insert( $table, $data );
+        }
     }
 }
