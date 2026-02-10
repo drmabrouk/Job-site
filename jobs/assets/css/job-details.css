@@ -1,40 +1,46 @@
 /* SaaS Enterprise Professional Job Details (Reusing V4 Profile Design) */
-.jobs-premium-profile-v4 {
+.jobs-premium-profile-v4.job-details-v7-optimized {
     font-family: 'Rubik', sans-serif;
-    background: #FFFFFF;
+    background: transparent; /* Changed to transparent as per global requirement */
     color: #1A1A1A;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    width: 100%;
+    display: block;
+    overflow: hidden;
 }
 
 .profile-layout-container {
     max-width: 1280px;
-    margin: 0 auto;
-    padding: 80px 40px;
+    margin: 0 auto !important;
+    padding: 60px 40px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Header Section */
+/* Header Section Refined for Centering & Balance */
 .profile-v4-header {
     display: flex;
     align-items: center;
-    gap: 48px;
-    margin-bottom: 60px;
+    justify-content: space-between;
+    gap: 40px;
+    margin-bottom: 50px;
+    width: 100%;
+}
+
+.profile-v4-header.no-avatar {
+    /* Balance when avatar is removed */
+    padding: 0;
 }
 
 .profile-v4-location-info {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-top: 8px;
+    margin-top: 12px;
     font-size: 14px;
     color: #64748b;
     flex-wrap: wrap;
-}
-
-.location-item-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
 }
 
 .country-flag-icon {
@@ -45,34 +51,17 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-.profile-v4-avatar-box {
-    width: 140px;
-    height: 140px;
-    border-radius: 32px; /* Square with rounded corners for logos */
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 4px solid #FFFFFF;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    background: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-}
-
-.profile-v4-avatar-box img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+.profile-v4-identity-box {
+    flex: 1;
 }
 
 .profile-v4-identity-box h1 {
-    font-size: 36px;
+    font-size: 38px;
     font-weight: 800;
-    margin: 0 0 12px 0;
+    margin: 0 0 10px 0;
     color: #1d3469;
     letter-spacing: -0.03em;
-    line-height: 1.1;
+    line-height: 1.2;
 }
 
 .profile-v4-headline {
@@ -82,39 +71,12 @@
     font-weight: 500;
 }
 
-.profile-v4-badges {
-    display: flex;
-    gap: 12px;
-}
-
-.badge-verified-circle {
-    width: 24px;
-    height: 24px;
-    background: #1d3469;
-    color: #FFFFFF;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-left: 10px;
-    vertical-align: middle;
-    box-shadow: 0 2px 8px rgba(29, 52, 105, 0.3);
-    border: 2px solid #FFFFFF;
-}
-
-.badge-verified-circle .dashicons {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    display: block;
-}
-
 /* Grid System */
 .profile-v4-grid {
     display: grid;
     grid-template-columns: 1fr 380px;
     gap: 40px;
+    align-items: start;
 }
 
 /* Card Styling */
@@ -125,12 +87,6 @@
     padding: 40px;
     margin-bottom: 32px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.03);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.v4-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 45px rgba(0,0,0,0.05);
 }
 
 .v4-card-title {
@@ -177,16 +133,9 @@
     background: #f8fafc;
     color: #475569;
     border: 1px solid #e2e8f0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.pill-dev { background: #eff6ff; color: #1d4ed8; border-color: #dbeafe; }
-.pill-design { background: #faf5ff; color: #7e22ce; border-color: #f3e8ff; }
-.pill-marketing { background: #ecfdf5; color: #047857; border-color: #d1fae5; }
-.pill-mgmt { background: #fff7ed; color: #c2410c; border-color: #ffedd5; }
-.pill-yellow { background: #fefce8; color: #a16207; border-color: #fef08a; }
 .pill-blue { background: #eff6ff; color: #1d4ed8; border-color: #dbeafe; }
-.pill-green { background: #ecfdf5; color: #047857; border-color: #d1fae5; }
 .pill-purple { background: #faf5ff; color: #7e22ce; border-color: #f3e8ff; }
 
 /* Buttons */
@@ -200,24 +149,17 @@
     font-weight: 700;
     border: none;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 15px 35px rgba(29, 52, 105, 0.2);
+    box-shadow: 0 10px 25px rgba(29, 52, 105, 0.2);
 }
 
 .v4-btn-primary:hover {
     background: #2a4a8c;
     transform: translateY(-2px);
-    box-shadow: 0 20px 45px rgba(29, 52, 105, 0.3);
-}
-
-.v4-btn-primary .dashicons {
-    margin-right: 10px;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    box-shadow: 0 15px 35px rgba(29, 52, 105, 0.3);
 }
 
 .v4-btn-secondary {
@@ -230,10 +172,7 @@
     font-weight: 600;
     border: 1px solid #E2E8F0;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .v4-icon-btn {
@@ -249,8 +188,7 @@
     background: #FFFFFF;
     color: #475569;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    flex-shrink: 0;
+    transition: all 0.3s ease;
 }
 
 .v4-icon-btn:hover {
@@ -262,14 +200,13 @@
 
 /* Header Actions Alignment */
 .profile-v4-actions {
-    margin-left: auto;
     display: flex;
     align-items: center;
 }
 
 .v4-action-group {
     display: flex;
-    gap: 12px;
+    gap: 15px;
     align-items: center;
 }
 
@@ -323,7 +260,7 @@
     color: #1e293b;
 }
 
-/* Share Modal & Social Icons */
+/* Share Icon Styling */
 .share-icon-btn {
     width: 48px;
     height: 48px;
@@ -337,12 +274,6 @@
     transition: all 0.2s ease;
 }
 
-.share-icon-btn .dashicons {
-    font-size: 22px;
-    width: 22px;
-    height: 22px;
-}
-
 .share-icon-btn:hover {
     transform: translateY(-3px);
     background: #1d3469;
@@ -354,8 +285,8 @@
     .profile-v4-grid {
         grid-template-columns: 1fr;
     }
-    .profile-v4-sidebar {
-        order: -1;
+    .profile-layout-container {
+        padding: 40px 24px;
     }
 }
 
@@ -363,28 +294,21 @@
     .profile-v4-header {
         flex-direction: column;
         text-align: center;
-        gap: 32px;
-        margin-bottom: 48px;
-    }
-    .profile-v4-identity-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        gap: 25px;
+        margin-bottom: 40px;
     }
     .profile-v4-identity-box h1 {
-        font-size: 28px;
+        font-size: 30px;
+        justify-content: center;
+    }
+    .profile-v4-location-info {
         justify-content: center;
     }
     .profile-v4-actions {
-        margin: 0 auto;
-        width: 100%;
-        justify-content: center;
-    }
-    .v4-action-group {
         width: 100%;
         justify-content: center;
     }
     .v4-card {
-        padding: 30px;
+        padding: 30px 20px;
     }
 }
