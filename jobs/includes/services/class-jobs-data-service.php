@@ -573,4 +573,17 @@ class Jobs_Data_Service {
             'australia' => array('New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Northern Territory', 'Australian Capital Territory')
         );
     }
+
+    /**
+     * Get flag URL from country slug
+     */
+    public static function get_flag_url($slug) {
+        $mapping = array(
+            'egypt' => 'eg', 'saudi-arabia' => 'sa', 'uae' => 'ae', 'jordan' => 'jo',
+            'qatar' => 'qa', 'kuwait' => 'kw', 'bahrain' => 'bh', 'oman' => 'om',
+            'lebanon' => 'lb', 'usa' => 'us', 'uk' => 'gb', 'canada' => 'ca', 'australia' => 'au'
+        );
+        $code = isset($mapping[$slug]) ? $mapping[$slug] : '';
+        return $code ? "https://flagcdn.com/w40/{$code}.png" : '';
+    }
 }

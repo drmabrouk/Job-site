@@ -234,7 +234,12 @@ function jobs_ajax_send_message() {
 
     // Also create a notification for the receiver
     $sender_name = get_userdata($sender_id)->display_name;
-    Jobs_Job_Service::add_notification( $receiver_id, "Career Inquiry: {$sender_name} has sent you a professional message via Jobedia.", $sender_id );
+    $notification_content = sprintf(
+        "Career Inquiry: %s has initiated a professional connection. Message excerpt: \"%s\"",
+        $sender_name,
+        wp_trim_words($message, 15)
+    );
+    Jobs_Job_Service::add_notification( $receiver_id, $notification_content, $sender_id );
 
     // Email Notification
     $recipient = get_userdata( $receiver_id );
