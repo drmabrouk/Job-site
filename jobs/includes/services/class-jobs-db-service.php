@@ -33,6 +33,7 @@ class Jobs_DB_Service {
         $sql_notifications = "CREATE TABLE $table_notifications (
             id bigint(20) NOT NULL AUTO_INCREMENT,
             user_id bigint(20) NOT NULL,
+            sender_id bigint(20) DEFAULT 0 NOT NULL,
             content text NOT NULL,
             timestamp datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             is_read tinyint(1) DEFAULT 0 NOT NULL,

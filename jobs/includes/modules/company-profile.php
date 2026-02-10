@@ -23,6 +23,11 @@ $environments = Jobs_Data_Service::get_work_environments();
     <form id="jobs-company-form" method="POST" class="v4-professional-form">
         <?php wp_nonce_field( 'jobs_save_company', 'jobs_company_nonce' ); ?>
 
+        <div class="v4-section-header">
+            <span class="v4-step-badge">Corporate Identity</span>
+            <p class="v4-section-desc">Manage your brand presence and employer data.</p>
+        </div>
+
         <div class="v4-identity-upload-box">
             <div class="cv-photo-upload-container">
                 <?php
@@ -155,6 +160,28 @@ $environments = Jobs_Data_Service::get_work_environments();
 </div>
 
 <style>
+.v4-section-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.v4-step-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-radius: 50px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+.v4-section-desc {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
 .module-v4-header {
     display: flex;
     justify-content: space-between;
