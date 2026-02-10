@@ -42,30 +42,8 @@ if ( ! function_exists( 'jobs_get_flag_url' ) ) {
     }
 }
 
-// Pre-fetch recent messages for the logged-in user to support the slide-down notification panel
-$recent_messages_json = '[]';
-if ( is_user_logged_in() ) {
-    global $wpdb;
-    $curr_id = get_current_user_id();
-    $msg_table = Jobs_DB_Service::get_table('messages');
-    if ( $wpdb->get_var("SHOW TABLES LIKE '$msg_table'") ) {
-        $recent_msgs = $wpdb->get_results($wpdb->prepare(
-            "SELECT m.*, u.display_name as sender_name FROM $msg_table m
-             JOIN {$wpdb->users} u ON m.sender_id = u.ID
-             WHERE m.receiver_id = %d ORDER BY m.timestamp DESC LIMIT 10",
-            $curr_id
-        ));
-        foreach($recent_msgs as &$rm) {
-            $rm->avatar = get_avatar_url($rm->sender_id);
-            $rm->role = get_user_meta($rm->sender_id, '_specialization', true) ?: 'Professional';
-        }
-        $recent_messages_json = json_encode($recent_msgs);
-    }
-}
-
 get_header();
 ?>
-<script>window.v4RecentMessages = <?php echo $recent_messages_json; ?>;</script>
 <div class="jobs-premium-profile-v4">
     <div class="profile-layout-container">
 
