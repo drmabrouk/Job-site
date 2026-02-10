@@ -50,7 +50,7 @@ function jobs_custom_avatar_url( $url, $id_or_email, $args ) {
         $custom_photo = get_user_meta( $user_id, '_jobs_profile_photo', true );
         if ( $custom_photo ) {
             // Force immediate propagation with high-resolution timestamp
-            return add_query_arg( 'v', time(), $custom_photo );
+            return add_query_arg( 'v', str_replace('.', '', microtime(true)), $custom_photo );
         }
     }
 
@@ -74,7 +74,7 @@ function jobs_custom_avatar_data( $args, $id_or_email ) {
     if ( $user_id ) {
         $custom_photo = get_user_meta( $user_id, '_jobs_profile_photo', true );
         if ( $custom_photo ) {
-            $args['url'] = add_query_arg( 'v', time(), $custom_photo );
+            $args['url'] = add_query_arg( 'v', str_replace('.', '', microtime(true)), $custom_photo );
         }
     }
     return $args;
@@ -97,7 +97,7 @@ function jobs_custom_avatar_html( $avatar, $id_or_email, $size, $default, $alt, 
     if ( $user_id ) {
         $custom_photo = get_user_meta( $user_id, '_jobs_profile_photo', true );
         if ( $custom_photo ) {
-            $url = add_query_arg( 'v', time(), $custom_photo );
+            $url = add_query_arg( 'v', str_replace('.', '', microtime(true)), $custom_photo );
             $class = isset($args['class']) ? (is_array($args['class']) ? implode(' ', $args['class']) : $args['class']) : '';
             $avatar = sprintf(
                 "<img alt='%s' src='%s' class='%s' height='%d' width='%d' />",

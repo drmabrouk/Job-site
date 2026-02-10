@@ -66,8 +66,9 @@ get_header();
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($company['name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified Entity" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                     </div>
-                    <div style="margin: 10px 0;">
-                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px;"><?php echo esc_html($company['industry'] ?? 'Corporate Entity'); ?></span>
+                    <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($company['industry'] ?? 'Corporate Entity'); ?></span>
+                        <span class="v4-pastel-pill pill-green" style="height: 24px; font-size: 11px; width: auto;">Verified Entity</span>
                     </div>
                     <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?></p>
                     <div class="profile-v4-location-info">
@@ -297,8 +298,13 @@ get_header();
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                     </div>
-                    <div style="margin: 10px 0;">
-                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px;"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+                    <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+                        <?php
+                        $status = $cv['preferences']['availability_status'] ?? 'Immediate';
+                        $status_pill = ($status === 'Immediate') ? 'pill-green' : 'pill-yellow';
+                        ?>
+                        <span class="v4-pastel-pill <?php echo $status_pill; ?>" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($status); ?></span>
                     </div>
                     <p class="profile-v4-headline"><?php echo esc_html($spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.
                     <?php
@@ -569,6 +575,28 @@ get_header();
                             <span style="letter-spacing: 0.1em;">COMPLETENESS SCORE</span>
                             <span style="color: #34d399; font-size: 14px;"><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
                         </div>
+
+                        <?php
+                        $tips = array();
+                        if(empty($cv['personal']['summary'])) $tips[] = "Add a professional summary";
+                        if(empty($cv['experience'])) $tips[] = "List your work experience";
+                        if(empty($cv['academic'])) $tips[] = "Add your academic history";
+                        if(empty($skills)) $tips[] = "Highlight your key skills";
+                        if(empty($portfolio)) $tips[] = "Showcase your work samples";
+
+                        if(!empty($tips)): ?>
+                            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                <div style="font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">Improve Your Presence</div>
+                                <ul style="margin: 0; padding: 0; list-style: none;">
+                                    <?php foreach(array_slice($tips, 0, 3) as $tip): ?>
+                                        <li style="font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.9);">
+                                            <span class="dashicons dashicons-plus-alt" style="font-size: 14px; width: 14px; height: 14px; color: #34d399;"></span>
+                                            <?php echo esc_html($tip); ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
                     </section>
 
                     <div style="text-align: center; color: #999; font-size: 11px; font-weight: 500;">
