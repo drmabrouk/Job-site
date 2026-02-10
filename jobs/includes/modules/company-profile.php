@@ -159,6 +159,10 @@ $environments = Jobs_Data_Service::get_work_environments();
     <div id="jobs-company-status" style="margin-top: 20px; text-align: center;"></div>
 </div>
 
+<script>
+    window.profileLink = "<?php echo $profile_link; ?>";
+</script>
+
 <style>
 .v4-section-header {
     margin-bottom: 25px;

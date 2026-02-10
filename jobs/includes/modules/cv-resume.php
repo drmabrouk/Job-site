@@ -496,80 +496,10 @@ $specializations_data = Jobs_Data_Service::get_specializations();
 </div>
 
 <script>
-    // Module Data for JS
-    var skillsList = <?php echo json_encode($skills_list); ?>;
-    var specializationsData = <?php echo json_encode($specializations_data); ?>;
-    var locationData = <?php echo json_encode($locations); ?>;
-    var profileLink = "<?php echo $profile_link; ?>";
-
-    jQuery(document).ready(function($) {
-        // Form Submission with Feedback
-        $('#jobs-cv-form-v3').on('submit', function(e) {
-            e.preventDefault();
-            var $form = $(this);
-            var $status = $('#jobs-cv-status-v3');
-            var formData = new FormData(this);
-            formData.append('action', 'jobs_save_cv_handler_v3');
-
-            $status.html('<div style="color: #1d3469; font-weight: 600;">Saving changes...</div>');
-
-            $.ajax({
-                url: jobs_vars.ajax_url,
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(res) {
-                    if (res.success) {
-                        $status.html('<div style="background: #ecfdf5; color: #059669; padding: 15px; border-radius: 12px; border: 1px solid #d1fae5; font-weight: 600; margin-top: 20px;">✓ All profile sections updated site-wide successfully.</div>');
-                        setTimeout(function() { $status.fadeOut(); }, 5000);
-                    } else {
-                        $status.html('<div style="background: #fef2f2; color: #dc2626; padding: 15px; border-radius: 12px; border: 1px solid #fee2e2; font-weight: 600;">Error: ' + res.data + '</div>');
-                    }
-                }
-            });
-        });
-
-        // Dynamic Professions Logic (Keeping small reactive parts here for instant feedback)
-        $('#cv-specialization').on('change', function() {
-            const spec = $(this).val();
-            const $profSelect = $('#cv-profession');
-            $profSelect.empty().append('<option value="">Select Profession</option>');
-            if (spec && specializationsData[spec]) {
-                specializationsData[spec].forEach(prof => {
-                    $profSelect.append(`<option value="${prof}">${prof}</option>`);
-                });
-                $profSelect.prop('disabled', false);
-            } else {
-                $profSelect.prop('disabled', true);
-            }
-        });
-
-        $('#cv-country').on('change', function() {
-            const country = $(this).val();
-            const $regionSelect = $('#cv-region');
-            $regionSelect.empty().append('<option value="">Select Region / State</option>');
-            if (country && locationData[country]) {
-                locationData[country].forEach(region => {
-                    $regionSelect.append(`<option value="${region}">${region}</option>`);
-                });
-                $regionSelect.prop('disabled', false);
-            } else {
-                $regionSelect.prop('disabled', true);
-            }
-        });
-
-        // Phone Initialization
-        $('.jobs-intl-phone').each(function() {
-            if (window.intlTelInput) {
-                window.intlTelInput(this, {
-                    preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
-                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-                    separateDialCode: true,
-                });
-            }
-        });
-    });
+    window.skillsList = <?php echo json_encode($skills_list); ?>;
+    window.specializationsData = <?php echo json_encode($specializations_data); ?>;
+    window.locationData = <?php echo json_encode($locations); ?>;
+    window.profileLink = "<?php echo $profile_link; ?>";
 </script>
 
 <style>

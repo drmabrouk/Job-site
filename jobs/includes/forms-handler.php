@@ -233,7 +233,8 @@ function jobs_ajax_send_message() {
     ) );
 
     // Also create a notification for the receiver
-    Jobs_Job_Service::add_notification( $receiver_id, 'You have a new message from ' . get_userdata($sender_id)->display_name, $sender_id );
+    $sender_name = get_userdata($sender_id)->display_name;
+    Jobs_Job_Service::add_notification( $receiver_id, "Career Inquiry: {$sender_name} has sent you a professional message via Jobedia.", $sender_id );
 
     // Email Notification
     $recipient = get_userdata( $receiver_id );
@@ -525,7 +526,7 @@ function jobs_ajax_save_cv_handler_v3() {
     }
 
     $user_id = get_current_user_id();
-    $cv_data = array();
+    $cv_data = get_user_meta( $user_id, 'jobs_cv_data_v2', true ) ?: array();
 
     // Personal
     if(isset($_POST['personal'])) {

@@ -147,7 +147,7 @@
 }
 
 .v4-card-title {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 700;
     color: #1d3469;
     margin: 0 0 24px 0;
@@ -221,6 +221,8 @@
     padding: 0 18px;
     border-radius: 50px;
     font-size: 12px;
+    width: auto;
+    white-space: nowrap;
     font-weight: 600;
     display: flex;
     align-items: center;

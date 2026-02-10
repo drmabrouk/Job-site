@@ -138,7 +138,36 @@
             $('.employer-suggestions-cv-list').hide();
         });
 
-        // Photo Preview
+        // Professions/Regions Dynamic Update
+        $(document).on('change', '#cv-specialization', function() {
+            const spec = $(this).val();
+            const $profSelect = $('#cv-profession');
+            $profSelect.empty().append('<option value="">Select Profession</option>');
+            if (spec && window.specializationsData[spec]) {
+                window.specializationsData[spec].forEach(prof => {
+                    $profSelect.append(`<option value="${prof}">${prof}</option>`);
+                });
+                $profSelect.prop('disabled', false);
+            } else {
+                $profSelect.prop('disabled', true);
+            }
+        });
+
+        $(document).on('change', '#cv-country', function() {
+            const country = $(this).val();
+            const $regionSelect = $('#cv-region');
+            $regionSelect.empty().append('<option value="">Select Region / State</option>');
+            if (country && window.locationData[country]) {
+                window.locationData[country].forEach(region => {
+                    $regionSelect.append(`<option value="${region}">${region}</option>`);
+                });
+                $regionSelect.prop('disabled', false);
+            } else {
+                $regionSelect.prop('disabled', true);
+            }
+        });
+
+        // Immediate Photo Upload & Preview
         $(document).on('change', '#cv-photo-input', function() {
             const file = this.files[0];
             if (file) {
@@ -147,6 +176,40 @@
                     $('#cv-photo-preview').attr('src', e.target.result);
                 }
                 reader.readAsDataURL(file);
+
+                // Immediate AJAX persistence
+                var formData = new FormData();
+                formData.append('action', 'jobs_save_cv_handler_v3');
+                formData.append('profile_photo', file);
+                formData.append('jobs_cv_nonce', $('input[name="jobs_cv_nonce"]').val());
+
+                var $status = $('#jobs-cv-status-v3');
+                $status.html('<p style="color: #1d3469; font-weight: 600;">Syncing identity...</p>').show();
+
+                $.ajax({
+                    url: jobs_vars.ajax_url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.success) {
+                            $status.html('<p style="color: #059669; font-weight: 700;">✓ Identity synchronized globally.</p>');
+                            setTimeout(function() { $status.fadeOut(); }, 3000);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Phone Initialization
+        $('.jobs-intl-phone').each(function() {
+            if (window.intlTelInput) {
+                window.intlTelInput(this, {
+                    preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+                    separateDialCode: true,
+                });
             }
         });
 
@@ -155,10 +218,11 @@
             e.preventDefault();
             var formData = new FormData(this);
             formData.append('action', 'jobs_save_cv_handler_v3');
-            formData.append('nonce', jobs_vars.nonce);
+            // Use specific nonce
+            formData.append('jobs_cv_nonce', $('input[name="jobs_cv_nonce"]').val());
 
             var $status = $('#jobs-cv-status-v3');
-            $status.html('<p style="color:#666; font-weight:600;">Updating your account data and profile...</p>');
+            $status.html('<p style="color:#666; font-weight:600;">Updating your account data and profile...</p>').show();
 
             $.ajax({
                 url: jobs_vars.ajax_url,
@@ -168,12 +232,13 @@
                 contentType: false,
                 success: function(response) {
                     if(response.success) {
-                    $status.html('<div style="background:#dcfce7; color:#166534; padding:20px; border-radius:12px; font-weight:600;">✓ Account data updated successfully! Your public profile has been updated instantly.</div>');
-                    setTimeout(function() {
-                        if (typeof profileLink !== 'undefined') window.location.href = profileLink;
-                    }, 2500);
-                } else {
-                    $status.html('<p style="color:#ef4444; font-weight:600;">Error: ' + response.data + '</p>');
+                        $status.html('<div style="background:#dcfce7; color:#166534; padding:20px; border-radius:12px; font-weight:600;">✓ Account data updated successfully! Your public profile has been updated instantly.</div>');
+                        setTimeout(function() {
+                            if (typeof window.profileLink !== 'undefined') window.location.href = window.profileLink;
+                        }, 2000);
+                    } else {
+                        $status.html('<p style="color:#ef4444; font-weight:600;">Error: ' + response.data + '</p>');
+                    }
                 }
             });
         });
