@@ -71,7 +71,7 @@ get_header();
                         <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
                         <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                         <?php if ( get_current_user_id() === $user_id ) : ?>
-                            <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                            <button class="v4-icon-btn jobs-module-link" data-module="company-profile" title="Update Company Profile"><span class="dashicons dashicons-admin-generic"></span></button>
                         <?php endif; ?>
                     </div>
                 </div>

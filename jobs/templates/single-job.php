@@ -1,7 +1,7 @@
 <?php
 /**
- * Template: SaaS Enterprise Professional Job Details (V6)
- * Significantly improved structure, spacing, and proportional sizing.
+ * Template: SaaS Enterprise Professional Job Details (V7)
+ * Strictly reusing the visual structure and design philosophy of the public profile page.
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -26,7 +26,6 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
     $qualifications = get_post_meta($post_id, '_job_qualifications', true);
     $responsibilities = get_post_meta($post_id, '_job_responsibilities', true);
     $deadline = get_post_meta($post_id, '_job_deadline', true);
-    $vacancies = get_post_meta($post_id, '_job_vacancies', true);
     $benefits = get_post_meta($post_id, '_job_benefits', true);
     $work_setting = get_post_meta($post_id, '_job_work_setting', true);
     $exp_level = get_post_meta($post_id, '_job_experience_level', true);
@@ -40,143 +39,146 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
     $share_title = urlencode(get_the_title());
 ?>
 
-<div class="jobs-premium-job-page">
-    <div class="job-page-container">
+<div class="jobs-premium-profile-v4">
+    <div class="profile-layout-container">
 
-        <!-- HERO HEADER -->
-        <header class="job-header-premium">
-            <div class="job-logo-box">
+        <!-- HEADER: MIRRORING PUBLIC PROFILE -->
+        <header class="profile-v4-header">
+            <div class="profile-v4-avatar-box">
                 <?php if($company_logo): ?>
                     <img src="<?php echo esc_url($company_logo); ?>" alt="<?php echo esc_attr($company_name); ?>">
                 <?php else: ?>
-                    <div class="logo-placeholder"><span class="dashicons dashicons-businesswoman" style="font-size: 40px; width: 40px; height: 40px;"></span></div>
-                <?php endif; ?>
-            </div>
-
-            <div class="job-header-main">
-                <div class="job-header-meta">
-                    <span class="v4-pastel-pill pill-blue"><?php echo esc_html($emp_type ?: 'Full Time'); ?></span>
-                    <?php if(!empty($specializations)): ?>
-                        <span class="v4-pastel-pill pill-purple"><?php echo esc_html($specializations[0]->name); ?></span>
-                    <?php endif; ?>
-                    <span style="color: #94a3b8; font-size: 13px; font-weight: 600; margin-left: auto;">
-                        <span class="dashicons dashicons-calendar-alt" style="font-size: 14px; vertical-align: middle; margin-right: 5px;"></span>
-                        Posted <?php echo human_time_diff(get_the_time('U'), current_time('timestamp')); ?> ago
-                    </span>
-                </div>
-
-                <h1 class="job-title-v5"><?php the_title(); ?></h1>
-                <a href="<?php echo esc_url($company_profile_url); ?>" class="company-anchor">
-                    at <?php echo esc_html($company_name); ?>
-                    <span class="badge-verified-circle" style="position: static; margin-left: 5px; width: 20px; height: 20px; border-width: 1.5px;"><span class="dashicons dashicons-yes" style="font-size: 14px; width: 14px; height: 14px;"></span></span>
-                </a>
-            </div>
-
-            <div class="job-header-actions">
-                <button class="apply-button-hero quick-apply-toggle" data-job-id="<?php echo $post_id; ?>">
-                    <span class="dashicons dashicons-paper-plane"></span> Apply for Position
-                </button>
-                <?php if($deadline): ?>
-                    <div style="margin-top: 18px; color: #ef4444; font-weight: 700; font-size: 14px;">
-                        <span class="dashicons dashicons-warning" style="font-size: 16px; vertical-align: middle; margin-right: 5px;"></span>
-                        Application Deadline: <?php echo date('M d, Y', strtotime($deadline)); ?>
+                    <div style="width:100%; height:100%; background:#f8fafc; display:flex; align-items:center; justify-content:center; color:#cbd5e1;">
+                        <span class="dashicons dashicons-businesswoman" style="font-size: 48px; width:48px; height:48px;"></span>
                     </div>
                 <?php endif; ?>
+            </div>
+
+            <div class="profile-v4-identity-box">
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php the_title(); ?> <span class="badge-verified-circle" title="Verified Posting" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
+                </div>
+                <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($emp_type ?: 'Full Time'); ?></span>
+                    <?php if(!empty($specializations)): ?>
+                        <span class="v4-pastel-pill pill-purple" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($specializations[0]->name); ?></span>
+                    <?php endif; ?>
+                </div>
+                <p class="profile-v4-headline">at <a href="<?php echo esc_url($company_profile_url); ?>" style="color: inherit; text-decoration: underline;"><?php echo esc_html($company_name); ?></a> • Posted <?php echo human_time_diff(get_the_time('U'), current_time('timestamp')); ?> ago</p>
+
+                <div class="profile-v4-location-info">
+                    <?php
+                    $country_name = $countries ? $countries[0]->name : '';
+                    $country_slug = $countries ? $countries[0]->slug : '';
+                    if($flag = Jobs_Data_Service::get_flag_url($country_slug)): ?>
+                        <img src="<?php echo $flag; ?>" class="country-flag-icon">
+                    <?php endif; ?>
+                    <span><?php echo $countries ? esc_html($countries[0]->name) : 'International'; ?><?php echo $cities ? ', '.esc_html($cities[0]->name) : ''; ?></span>
+                </div>
+            </div>
+
+            <div class="profile-v4-actions">
+                <div class="v4-action-group">
+                    <button class="v4-btn-primary quick-apply-toggle" data-job-id="<?php echo $post_id; ?>"><span class="dashicons dashicons-paper-plane"></span> Apply Now</button>
+                    <button class="v4-icon-btn open-message-modal" data-receiver="<?php echo $author_id; ?>" title="Career Inquiry"><span class="dashicons dashicons-email-alt"></span></button>
+                    <button class="v4-icon-btn" onclick="window.print()" title="Print Job Detail"><span class="dashicons dashicons-media-document"></span></button>
+                    <button class="v4-icon-btn open-share-modal" title="Share Job"><span class="dashicons dashicons-share"></span></button>
+                </div>
             </div>
         </header>
 
-        <div class="job-body-grid">
+        <div class="profile-v4-grid">
 
-            <!-- MAIN CONTENT -->
-            <div class="job-main-column">
-                <div class="job-content-card">
+            <!-- MAIN COLUMN: JOB CONTENT -->
+            <div class="profile-v4-main">
 
-                    <section class="job-details-section">
-                        <h3 class="job-section-title"><span class="dashicons dashicons-text-page"></span> Role Description</h3>
-                        <div class="job-text-content">
-                            <?php the_content(); ?>
-                        </div>
-                    </section>
+                <section class="v4-card">
+                    <h3 class="v4-card-title"><span class="dashicons dashicons-text-page"></span> Role Description</h3>
+                    <div class="v4-card-body" style="font-size: 15px; line-height: 1.8;">
+                        <?php the_content(); ?>
+                    </div>
+                </section>
 
-                    <?php if($responsibilities): ?>
-                    <section class="job-details-section">
-                        <h3 class="job-section-title"><span class="dashicons dashicons-list-view"></span> Key Responsibilities</h3>
-                        <div class="job-text-content">
-                            <?php echo wpautop(esc_html($responsibilities)); ?>
-                        </div>
-                    </section>
-                    <?php endif; ?>
+                <?php if($responsibilities): ?>
+                <section class="v4-card">
+                    <h3 class="v4-card-title"><span class="dashicons dashicons-list-view"></span> Key Responsibilities</h3>
+                    <div class="v4-card-body" style="font-size: 15px; line-height: 1.8;">
+                        <?php echo wpautop(esc_html($responsibilities)); ?>
+                    </div>
+                </section>
+                <?php endif; ?>
 
-                    <?php if($qualifications): ?>
-                    <section class="job-details-section">
-                        <h3 class="job-section-title"><span class="dashicons dashicons-id"></span> Ideal Candidate Profile</h3>
-                        <div class="job-text-content">
-                            <?php echo wpautop(esc_html($qualifications)); ?>
-                        </div>
-                    </section>
-                    <?php endif; ?>
+                <?php if($qualifications): ?>
+                <section class="v4-card">
+                    <h3 class="v4-card-title"><span class="dashicons dashicons-id"></span> Ideal Candidate Profile</h3>
+                    <div class="v4-card-body" style="font-size: 15px; line-height: 1.8;">
+                        <?php echo wpautop(esc_html($qualifications)); ?>
+                    </div>
+                </section>
+                <?php endif; ?>
 
-                    <?php if($benefits): ?>
-                    <section class="job-details-section">
-                        <h3 class="job-section-title"><span class="dashicons dashicons-heart"></span> Perks & Benefits</h3>
-                        <div class="job-text-content">
-                            <?php echo wpautop(esc_html($benefits)); ?>
-                        </div>
-                    </section>
-                    <?php endif; ?>
+                <?php if($benefits): ?>
+                <section class="v4-card">
+                    <h3 class="v4-card-title"><span class="dashicons dashicons-heart"></span> Perks & Benefits</h3>
+                    <div class="v4-card-body" style="font-size: 15px; line-height: 1.8;">
+                        <?php echo wpautop(esc_html($benefits)); ?>
+                    </div>
+                </section>
+                <?php endif; ?>
 
-                </div>
-
-                <div class="job-share-v5">
-                    <span style="font-weight: 700; color: #1d3469; font-size: 16px;">Recommend this opportunity to your network:</span>
-                    <div class="share-links-v5">
-                        <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . '%20' . $share_url; ?>" target="_blank" class="v5-share-btn share-wa" title="Share via WhatsApp"><span class="dashicons dashicons-whatsapp"></span></a>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" class="v5-share-btn share-fb" title="Share via Facebook"><span class="dashicons dashicons-facebook"></span></a>
-                        <a href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" class="v5-share-btn share-tw" title="Share via X"><span class="dashicons dashicons-twitter"></span></a>
+                <div class="v4-card" style="display: flex; align-items: center; justify-content: space-between; padding: 25px 40px; background: #f8fafc;">
+                    <span style="font-weight: 700; color: #1d3469; font-size: 14px;">Share this opportunity:</span>
+                    <div style="display: flex; gap: 12px;">
+                        <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . '%20' . $share_url; ?>" target="_blank" class="share-icon-btn share-whatsapp" title="Share via WhatsApp"><span class="dashicons dashicons-whatsapp"></span></a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>" target="_blank" class="share-icon-btn share-facebook" title="Share via Facebook" style="background:#1877F2; color:white;"><span class="dashicons dashicons-facebook"></span></a>
+                        <a href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" class="share-icon-btn share-twitter" title="Share via X" style="background:#000; color:white;"><span class="dashicons dashicons-twitter"></span></a>
                     </div>
                 </div>
+
             </div>
 
-            <!-- SIDEBAR -->
-            <aside class="job-sidebar-v5">
+            <!-- SIDEBAR: JOB INSIGHTS -->
+            <div class="profile-v4-sidebar">
 
-                <div class="sidebar-v5-card">
-                    <h4 class="sidebar-v5-title">Job Insights</h4>
-                    <div class="overview-list">
-                        <div class="overview-item">
-                            <div class="overview-icon"><span class="dashicons dashicons-location"></span></div>
+                <section class="v4-card">
+                    <h3 class="v4-card-title">Job Insights</h3>
+                    <div class="v4-card-body">
+                        <div class="v4-career-item">
+                            <span class="dashicons dashicons-money"></span>
                             <div>
-                                <small class="overview-label">Location</small>
-                                <span class="overview-value"><?php echo $countries ? esc_html($countries[0]->name) : 'International'; ?><?php echo $cities ? ', '.esc_html($cities[0]->name) : ''; ?></span>
+                                <small>Offered Salary</small>
+                                <span style="color: #10b981;"><?php echo $salary ? $currency_sym . ' ' . $salary : 'Competitive Package'; ?></span>
                             </div>
                         </div>
-                        <div class="overview-item">
-                            <div class="overview-icon"><span class="dashicons dashicons-money"></span></div>
+                        <div class="v4-career-item">
+                            <span class="dashicons dashicons-awards"></span>
                             <div>
-                                <small class="overview-label">Monthly Salary</small>
-                                <span class="overview-value salary-value"><?php echo $salary ? $currency_sym . ' ' . $salary : 'Competitive Package'; ?></span>
+                                <small>Experience Level</small>
+                                <span><?php echo esc_html($exp_level ?: 'Open to all levels'); ?></span>
                             </div>
                         </div>
-                        <div class="overview-item">
-                            <div class="overview-icon"><span class="dashicons dashicons-awards"></span></div>
+                        <div class="v4-career-item">
+                            <span class="dashicons dashicons-admin-site"></span>
                             <div>
-                                <small class="overview-label">Experience</small>
-                                <span class="overview-value"><?php echo esc_html($exp_level ?: 'Open to all levels'); ?></span>
+                                <small>Work Environment</small>
+                                <span><?php echo esc_html($work_setting ?: 'On-site'); ?></span>
                             </div>
                         </div>
-                        <div class="overview-item">
-                            <div class="overview-icon"><span class="dashicons dashicons-admin-site"></span></div>
+                        <?php if($deadline): ?>
+                        <div class="v4-career-item">
+                            <span class="dashicons dashicons-calendar-alt" style="color:#ef4444;"></span>
                             <div>
-                                <small class="overview-label">Work Setting</small>
-                                <span class="overview-value"><?php echo esc_html($work_setting ?: 'On-site'); ?></span>
+                                <small>Application Deadline</small>
+                                <span style="color:#ef4444;"><?php echo date('M d, Y', strtotime($deadline)); ?></span>
                             </div>
                         </div>
+                        <?php endif; ?>
                     </div>
-                </div>
+                </section>
 
                 <?php if($skills): ?>
-                <div class="sidebar-v5-card">
-                    <h4 class="sidebar-v5-title">Required Competencies</h4>
+                <section class="v4-card">
+                    <h3 class="v4-card-title">Required Skills</h3>
                     <div class="v4-tag-container">
                         <?php
                         $s_arr = explode(',', $skills);
@@ -184,24 +186,118 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                             <span class="v4-pastel-pill"><?php echo trim($s); ?></span>
                         <?php endif; endforeach; ?>
                     </div>
-                </div>
+                </section>
                 <?php endif; ?>
 
-                <div class="sidebar-v5-card" style="background: #1d3469; color: #FFFFFF; text-align: center; border: none; overflow: hidden; position: relative;">
-                    <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
-                    <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.2); position: relative; z-index: 1;">
-                        <span class="dashicons dashicons-building" style="font-size: 32px; width: 32px; height: 32px;"></span>
+                <section class="v4-card" style="background: linear-gradient(135deg, #1d3469 0%, #2a4a8c 100%); border: none; color: #FFFFFF; text-align: center;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.2);">
+                        <span class="dashicons dashicons-building" style="font-size: 28px; width: 28px; height: 28px; color: #60a5fa;"></span>
                     </div>
-                    <h4 style="margin: 0 0 10px; font-size: 13px; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.7); position: relative; z-index: 1;">Employer Spotlight</h4>
-                    <p style="font-weight: 800; font-size: 22px; margin-bottom: 30px; line-height: 1.2; position: relative; z-index: 1;"><?php echo esc_html($company_name); ?></p>
-                    <a href="<?php echo esc_url($company_profile_url); ?>" style="display: block; background: #FFFFFF; color: #1d3469; padding: 18px; border-radius: 16px; font-weight: 800; text-decoration: none; transition: transform 0.2s; position: relative; z-index: 1;">View Organization Profile</a>
-                </div>
+                    <h4 style="margin: 0 0 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.7); letter-spacing: 0.1em;">Employer Spotlight</h4>
+                    <p style="font-weight: 800; font-size: 20px; margin-bottom: 25px; line-height: 1.2;"><?php echo esc_html($company_name); ?></p>
+                    <a href="<?php echo esc_url($company_profile_url); ?>" style="display: block; background: #FFFFFF; color: #1d3469; padding: 14px; border-radius: 12px; font-weight: 700; text-decoration: none; transition: transform 0.2s; font-size: 14px;">View Organization Profile</a>
+                </section>
 
-            </aside>
+            </div>
 
         </div>
     </div>
 </div>
+
+<!-- Modal: Share Job (Mirrored from Profile) -->
+<div id="share-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:white; padding:40px; border-radius:24px; width:100%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.15); text-align: center;">
+        <div style="width: 64px; height: 64px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #1d3469;">
+            <span class="dashicons dashicons-share" style="font-size: 32px; width: 32px; height: 32px;"></span>
+        </div>
+        <h3 style="margin-top:0; font-size: 22px; font-weight: 700; color: #1d3469;">Share Opportunity</h3>
+        <p style="color: #64748b; font-size: 14px; margin: 8px 0 32px; line-height: 1.5;">Help others discover this professional role by sharing it across your network.</p>
+
+        <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 32px;">
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url=<?php echo $share_url; ?>" target="_blank" class="share-icon-btn share-linkedin" title="Share on LinkedIn"><span class="dashicons dashicons-networking"></span></a>
+            <a href="https://twitter.com/intent/tweet?url=<?php echo $share_url; ?>&text=<?php echo $share_title; ?>" target="_blank" class="share-icon-btn share-twitter" title="Share on Twitter"><span class="dashicons dashicons-twitter"></span></a>
+            <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . ' ' . $share_url; ?>" target="_blank" class="share-icon-btn share-whatsapp" title="Share on WhatsApp"><span class="dashicons dashicons-phone"></span></a>
+            <a href="mailto:?subject=Job Opportunity: <?php echo get_the_title(); ?>&body=Check this out: <?php echo get_permalink(); ?>" class="share-icon-btn share-email" title="Share via Email"><span class="dashicons dashicons-email"></span></a>
+        </div>
+
+        <div style="position: relative; margin-bottom: 32px;">
+            <input type="text" id="share-url-input" readonly value="<?php echo get_permalink(); ?>" style="width:100%; padding:14px 48px 14px 16px; border-radius:12px; border:1px solid #e2e8f0; font-size: 13px; color: #475569; background: #f8fafc; font-family: 'Rubik', sans-serif;">
+            <button id="copy-share-url" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #1d3469; cursor: pointer; padding: 4px;" title="Copy Link">
+                <span class="dashicons dashicons-admin-links"></span>
+            </button>
+        </div>
+
+        <button class="v4-btn-secondary close-share-modal" style="width: 100%; height: 46px; border-radius: 23px;">Dismiss</button>
+    </div>
+</div>
+
+<!-- Modal: Contact/Message (Mirrored from Profile) -->
+<div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:white; padding:32px; border-radius:16px; width:100%; max-width:480px; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
+        <h3 style="margin-top:0; font-size: 18px; font-weight: 600; color: #111;">Contact Employer</h3>
+        <p style="color: #666; font-size: 13px; margin: 8px 0 24px;">Initiate a professional inquiry regarding this position.</p>
+        <textarea id="message-text" placeholder="Write your professional message here..." style="width:100%; height:160px; padding:12px; border-radius:8px; border:1px solid #E0E0E0; margin-bottom: 24px; font-family: inherit; font-size: 13px;"></textarea>
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+            <button class="v4-btn-secondary close-modal">Discard</button>
+            <button class="v4-btn-primary" id="confirm-send-message">Deliver Message</button>
+        </div>
+    </div>
+</div>
+
+<script>
+jQuery(document).ready(function($) {
+    // Share Modal Logic
+    $('.open-share-modal').on('click', function() { $('#share-modal').css('display', 'flex'); });
+    $('.close-share-modal').on('click', function() { $('#share-modal').hide(); });
+
+    $('#copy-share-url').on('click', function() {
+        var copyText = document.getElementById("share-url-input");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+
+        var $btn = $(this);
+        var originalHtml = $btn.html();
+        $btn.html('<span class="dashicons dashicons-yes" style="color: #10b981;"></span>');
+        setTimeout(function() { $btn.html(originalHtml); }, 2000);
+    });
+
+    // Contact Modal Logic
+    $('.open-message-modal').on('click', function() {
+        $('#message-modal').css('display', 'flex');
+    });
+    $('.close-modal').on('click', function() {
+        $('#message-modal').hide();
+        $('#message-modal .modal-content').html('<h3 style="margin-top:0; font-size: 18px; font-weight: 600; color: #111;">Contact Employer</h3><p style="color: #666; font-size: 13px; margin: 8px 0 24px;">Initiate a professional inquiry regarding this position.</p><textarea id="message-text" placeholder="Write your professional message here..." style="width:100%; height:160px; padding:12px; border-radius:8px; border:1px solid #E0E0E0; margin-bottom: 24px; font-family: inherit; font-size: 13px;"></textarea><div style="display:flex; justify-content:flex-end; gap:12px;"><button class="v4-btn-secondary close-modal">Discard</button><button class="v4-btn-primary" id="confirm-send-message">Deliver Message</button></div>');
+        bindMessageEvents();
+    });
+
+    function bindMessageEvents() {
+        $('.close-modal').off('click').on('click', function() { $('#message-modal').hide(); });
+        $('#confirm-send-message').off('click').on('click', function() {
+            var msg = $('#message-text').val();
+            if(!msg) return;
+            var btn = $(this);
+            btn.prop('disabled', true).text('Sending...');
+            $.post(jobs_vars.ajax_url, {
+                action: 'jobs_send_message',
+                receiver_id: <?php echo $author_id; ?>,
+                message: msg,
+                nonce: '<?php echo wp_create_nonce("jobs_messaging_nonce"); ?>'
+            }, function(res) {
+                if(res.success) {
+                    $('#message-modal .modal-content').html('<div style="text-align:center; padding: 24px;"><h3>Message Delivered</h3><p style="font-size:13px; color:#666;">Your inquiry has been sent successfully.</p><button class="v4-btn-primary close-modal" style="margin-top:16px;">Close</button></div>');
+                    $('.close-modal').on('click', function() { $('#message-modal').hide(); });
+                } else {
+                    alert('Failed to send message.');
+                    btn.prop('disabled', false).text('Deliver Message');
+                }
+            });
+        });
+    }
+    bindMessageEvents();
+});
+</script>
 
 <?php endwhile; endif;
 
