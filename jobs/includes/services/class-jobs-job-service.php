@@ -97,12 +97,13 @@ class Jobs_Job_Service {
         return $app_id;
     }
 
-    public static function add_notification( $user_id, $content ) {
+    public static function add_notification( $user_id, $content, $sender_id = 0 ) {
         global $wpdb;
         $table = Jobs_DB_Service::get_table( 'notifications' );
         $wpdb->insert( $table, array(
-            'user_id' => $user_id,
-            'content' => sanitize_text_field( $content ),
+            'user_id'   => $user_id,
+            'sender_id' => intval( $sender_id ),
+            'content'   => sanitize_text_field( $content ),
         ) );
     }
 }

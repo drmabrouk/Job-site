@@ -118,8 +118,13 @@ class Jobs_SEO_Service {
         $profile_slug = get_query_var('profile_user');
         if ( $profile_slug ) {
             $user = get_user_by('slug', $profile_slug);
-            $name = $user ? $user->display_name : ucwords(str_replace('-', ' ', $profile_slug));
-            return $name . ' Professional Profile | ' . get_bloginfo('name');
+            if ( $user ) {
+                $prof = get_user_meta($user->ID, '_profession', true);
+                $spec = get_user_meta($user->ID, '_specialization', true);
+                $job_title = $prof ?: ($spec ?: 'Professional');
+                return "{$user->display_name} | {$job_title} | " . get_bloginfo('name');
+            }
+            return ucwords(str_replace('-', ' ', $profile_slug)) . ' Profile | ' . get_bloginfo('name');
         }
 
         if ( is_tax() ) return single_term_title('', false) . ' Jobs | ' . get_bloginfo('name');
@@ -128,6 +133,17 @@ class Jobs_SEO_Service {
 
     public static function get_seo_description() {
         if ( is_singular('job') ) return wp_trim_words(get_the_excerpt(), 25);
+
+        $profile_slug = get_query_var('profile_user');
+        if ( $profile_slug ) {
+            $user = get_user_by('slug', $profile_slug);
+            if ( $user ) {
+                $cv = get_user_meta($user->ID, 'jobs_cv_data_v2', true);
+                $summary = $cv['personal']['summary'] ?? (get_user_meta($user->ID, '_bio', true) ?: '');
+                if ( $summary ) return wp_trim_words($summary, 30);
+            }
+        }
+
         return get_option('jobs_seo_description', get_bloginfo('description'));
     }
 
