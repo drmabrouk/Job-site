@@ -63,7 +63,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                     if($flag = Jobs_Data_Service::get_flag_url($country_slug)): ?>
                         <img src="<?php echo $flag; ?>" class="country-flag-icon">
                     <?php endif; ?>
-                    <span><?php echo $countries ? esc_html($countries[0]->name) : 'International'; ?><?php echo $cities ? ', '.esc_html($cities[0]->name) : ''; ?></span>
+                    <span><?php echo $countries ? esc_html($countries[0]->name) : 'International'; ?><?php echo ($cities && !empty($cities[0]->name)) ? ', '.esc_html($cities[0]->name) : ''; ?></span>
                 </div>
             </div>
 

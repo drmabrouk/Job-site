@@ -63,6 +63,12 @@ function jobs_enqueue_assets() {
         wp_enqueue_style( 'jobs-search-page', JOBS_PLUGIN_URL . 'assets/css/search-page.css', array(), JOBS_VERSION );
         wp_enqueue_style( 'jobs-job-card', JOBS_PLUGIN_URL . 'assets/css/job-card.css', array(), JOBS_VERSION );
         wp_enqueue_script( 'jobs-search-engine', JOBS_PLUGIN_URL . 'assets/js/search.js', array('jquery', 'jobs-base-script'), JOBS_VERSION, true );
+
+        // Standardize City/State data for search
+        $loc_data = Jobs_Data_Service::get_countries_with_regions();
+        wp_localize_script( 'jobs-search-engine', 'jobs_search_data', array(
+            'locations' => $loc_data
+        ) );
     }
 
     // Single Job specific
@@ -94,8 +100,11 @@ function jobs_enqueue_assets() {
         wp_enqueue_script( 'jobs-seekers-script', JOBS_PLUGIN_URL . 'assets/js/job-seekers.js', array('jquery', 'jobs-base-script'), JOBS_VERSION, true );
     }
 
-    // Account Setup specific
-    if ( is_page('account-setup') ) {
+    // Enqueue International Phone Input for all plugin pages where it might be used
+    $plugin_pages = array( 'job-search', 'profile', 'job-posting', 'cv-resume', 'company-profile', 'account-setup', 'site-settings' );
+    $is_plugin_page = false;
+    foreach ( $plugin_pages as $slug ) { if ( is_page( $slug ) ) { $is_plugin_page = true; break; } }
+    if ( $is_plugin_page || is_singular('job') || get_query_var('profile_user') ) {
         wp_enqueue_style('intl-tel-input', 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css');
         wp_enqueue_script('intl-tel-input', 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js', array('jquery'), '17.0.19', true);
     }

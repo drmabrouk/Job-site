@@ -1086,6 +1086,29 @@ add_action( 'wp_ajax_jobs_import_settings', function() {
     }
 });
 
+/**
+ * AJAX Handler: Save Location Data
+ */
+add_action( 'wp_ajax_jobs_save_locations', function() {
+    check_ajax_referer( 'jobs_admin_settings_nonce', 'nonce' );
+    if ( ! Jobs_Permission_Service::is_system_admin() ) wp_send_json_error('Unauthorized');
+
+    $data = $_POST['location_data'];
+    // We expect a serialized or structured array
+    // Sanitize recursively
+    $sanitized = jobs_sanitize_array_recursive($data);
+    update_option('jobs_location_data', $sanitized);
+    wp_send_json_success('Location data saved successfully.');
+});
+
+function jobs_sanitize_array_recursive($array) {
+    if (!is_array($array)) return sanitize_text_field($array);
+    foreach ($array as $key => $value) {
+        $array[$key] = jobs_sanitize_array_recursive($value);
+    }
+    return $array;
+}
+
 add_action( 'wp_ajax_jobs_complete_setup_v2', 'jobs_ajax_complete_setup_v2_handler' );
 function jobs_ajax_complete_setup_v2_handler() {
     check_ajax_referer( 'jobs_setup_account', 'jobs_setup_nonce' );

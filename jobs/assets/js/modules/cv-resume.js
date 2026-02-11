@@ -202,17 +202,6 @@
             }
         });
 
-        // Phone Initialization
-        $('.jobs-intl-phone').each(function() {
-            if (window.intlTelInput) {
-                window.intlTelInput(this, {
-                    preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
-                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-                    separateDialCode: true,
-                });
-            }
-        });
-
         // Form Submit
         $(document).on('submit', '#jobs-cv-form-v3', function(e) {
             e.preventDefault();

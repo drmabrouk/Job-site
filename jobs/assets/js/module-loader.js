@@ -58,6 +58,7 @@ jQuery(document).ready(function($) {
             if(response.success) {
                 $('#jobs-module-container').html(response.data);
                 window.JobsState.ui.activeModule = module;
+                $(document).trigger('jobs_module_loaded');
             } else {
                 $('#jobs-module-container').html('<p style="color:red; padding:20px;">Error: ' + response.data + '</p>');
             }

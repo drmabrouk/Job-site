@@ -412,15 +412,6 @@ jQuery(document).ready(function($) {
     let currentStep = 1;
     const totalSteps = <?php echo count($steps); ?>;
 
-    // Initialize Phone Input for all unified phone fields
-    $('.jobs-intl-phone').each(function() {
-        window.intlTelInput(this, {
-            preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-            separateDialCode: true,
-        });
-    });
-
     // Dynamic Professions Logic
     $('#setup-specialization').on('change', function() {
         const spec = $(this).val();
