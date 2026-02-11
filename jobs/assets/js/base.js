@@ -38,9 +38,9 @@ jQuery(document).ready(function($) {
     });
 
     // Global Phone Initialization
-    function initPhoneFields() {
+    window.initJobsPhoneFields = function() {
         if (window.intlTelInput) {
-            $('.jobs-intl-phone:not(.iti-initialized)').each(function() {
+            $('.jobs-intl-phone, .v2-phone-input').not('.iti-initialized').each(function() {
                 var $this = $(this);
                 $this.addClass('iti-initialized');
                 window.intlTelInput(this, {
@@ -50,7 +50,7 @@ jQuery(document).ready(function($) {
                 });
             });
         }
-    }
-    initPhoneFields();
-    $(document).on('jobs_module_loaded', initPhoneFields); // Custom event when module loads
+    };
+    window.initJobsPhoneFields();
+    $(document).on('jobs_module_loaded', window.initJobsPhoneFields); // Custom event when module loads
 });
