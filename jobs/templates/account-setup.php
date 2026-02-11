@@ -63,8 +63,8 @@ $active_steps = ($role === 'employer') ? $steps_employer : $steps_seeker;
 $total_steps = count($active_steps);
 ?>
 
-<div class="jobs-premium-setup-v2" style="background: white;">
-    <div class="setup-container" style="box-shadow: none; border: 1px solid #f1f5f9;">
+<div class="jobs-premium-setup-v2">
+    <div class="setup-container">
 
         <!-- Welcome Header -->
         <header class="setup-v2-header">
@@ -638,8 +638,8 @@ $total_steps = count($active_steps);
 </div>
 
 <style>
-.jobs-premium-setup-v2 { background: #ffffff; min-height: 100vh; padding: 60px 20px; font-family: 'Rubik', sans-serif; color: #1e293b; }
-.setup-container { max-width: 720px; margin: 0 auto; background: white; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08); overflow: hidden; }
+.jobs-premium-setup-v2 { background: transparent; min-height: auto; padding: 0; font-family: 'Rubik', sans-serif; color: #1e293b; width: 100%; }
+.setup-container { max-width: 860px; margin: 0 auto; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #eef2f6; }
 .setup-v2-header { padding: 48px; border-bottom: 1px solid #f1f5f9; background: #ffffff; }
 .setup-welcome h1 { font-size: 2.4em; font-weight: 800; margin: 24px 0 8px; color: #0f172a; }
 .setup-welcome p { color: #64748b; font-size: 1.1em; margin: 0; }
@@ -655,8 +655,8 @@ $total_steps = count($active_steps);
 .panel-header p { color: #64748b; margin-bottom: 40px; line-height: 1.6; }
 .form-group-v2 { margin-bottom: 24px; }
 .form-group-v2 label { display: block; font-size: 0.9em; font-weight: 700; color: #1d3469; margin-bottom: 10px; }
-.form-row-v2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.form-grid-v2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.form-row-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+.form-grid-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
 .span-2 { grid-column: span 2; }
 input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
     width: 100%; padding: 14px 18px; border-radius: 14px; border: 2px solid #e2e8f0; background: #f8fafc; font-size: 1em; color: #1e293b; transition: all 0.3s ease; outline: none;
