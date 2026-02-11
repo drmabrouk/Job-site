@@ -1,0 +1,41 @@
+<?php
+/**
+ * Template: Stable Standalone Page for Account Setup
+ * Ensures the onboarding flow is not compressed or misaligned by theme styles.
+ */
+?>
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+    <meta charset="<?php bloginfo( 'charset' ); ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php wp_head(); ?>
+    <style>
+        body.jobs-setup-standalone {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+        }
+        .jobs-setup-root-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    </style>
+</head>
+<body <?php body_class('jobs-setup-standalone'); ?>>
+
+<div class="jobs-setup-root-container">
+    <?php
+    // Output the setup template directly to ensure no theme filters interfere
+    include JOBS_PLUGIN_DIR . 'templates/account-setup.php';
+    ?>
+</div>
+
+<?php wp_footer(); ?>
+</body>
+</html>
