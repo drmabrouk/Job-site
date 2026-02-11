@@ -49,7 +49,8 @@ function jobs_enqueue_assets() {
                     'js' => 'assets/js/modules/support.js'
                 ),
                 'job-requests' => array(
-                    'js' => 'assets/js/modules/job-requests.js'
+                    'js' => 'assets/js/modules/job-requests.js',
+                    'css' => 'assets/css/modules/job-requests.css'
                 ),
                 'settings' => array(
                     'js' => 'assets/js/modules/settings.js'

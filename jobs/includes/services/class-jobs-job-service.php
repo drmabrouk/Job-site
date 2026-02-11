@@ -88,10 +88,22 @@ class Jobs_Job_Service {
 
         if ( ! is_wp_error( $app_id ) ) {
             update_post_meta( $app_id, '_job_id', $job_id );
+            update_post_meta( $app_id, '_application_status', 'Under Review' );
 
             // Notify employer
             $employer_id = get_post_field( 'post_author', $job_id );
             self::add_notification( $employer_id, 'New application for: ' . get_the_title($job_id) );
+
+            // Email confirmation to seeker
+            $seeker = get_userdata( $user_id );
+            $job_title = get_the_title( $job_id );
+            $company_name = get_post_meta( $job_id, '_company_name', true );
+
+            Jobs_Email_Service::send( $seeker->user_email, 'application_confirmation', array(
+                'seeker_name'  => $seeker->display_name,
+                'job_title'    => $job_title,
+                'company_name' => $company_name
+            ) );
         }
 
         return $app_id;

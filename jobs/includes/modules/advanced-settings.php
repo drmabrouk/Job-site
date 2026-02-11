@@ -23,7 +23,8 @@ $current_user = wp_get_current_user();
         <button class="jobs-btn-small tab-link active" onclick="openSettingsTab(event, 'branding')">Branding</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'appearance')">Appearance</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'users')">User Management</button>
-        <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'system')">System & Email</button>
+        <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'emails')">Email Templates</button>
+        <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'system')">System Settings</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'permissions')">Permissions</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'seo')">SEO Management</button>
         <button class="jobs-btn-small tab-link" onclick="openSettingsTab(event, 'backups')">Backups & System</button>
@@ -78,10 +79,32 @@ $current_user = wp_get_current_user();
             </div>
         </div>
 
+        <!-- Emails Tab -->
+        <div id="emails" class="tab-panel" style="display:none;">
+            <p style="font-size: 0.9em; color: #64748b; margin-bottom: 20px;">Manage professional email communications and branding. Use placeholders like {seeker_name}, {job_title}, {company_name}, {status}.</p>
+
+            <?php
+            $templates = get_option( 'jobs_email_templates', Jobs_Email_Service::get_default_templates() );
+            foreach ( $templates as $key => $tpl ) : ?>
+                <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                    <h4 style="margin-top: 0; color: var(--jobs-primary-color);"><?php echo esc_html($tpl['label']); ?></h4>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-size: 0.85em; font-weight: 700; color: #64748b;">Subject Line</label>
+                        <input type="text" name="email_templates[<?php echo $key; ?>][subject]" value="<?php echo esc_attr($tpl['subject']); ?>" style="width:100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size: 0.85em; font-weight: 700; color: #64748b;">Email Body (HTML supported)</label>
+                        <textarea name="email_templates[<?php echo $key; ?>][body]" style="width:100%; height: 120px; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;"><?php echo esc_textarea($tpl['body']); ?></textarea>
+                    </div>
+                    <input type="hidden" name="email_templates[<?php echo $key; ?>][label]" value="<?php echo esc_attr($tpl['label']); ?>">
+                </div>
+            <?php endforeach; ?>
+        </div>
+
         <!-- System Tab -->
         <div id="system" class="tab-panel" style="display:none;">
             <div class="form-group" style="margin-bottom: 20px;">
-                <label style="font-weight: 600; display: block; margin-bottom: 8px;">Admin Email Address</label>
+                <label style="font-weight: 600; display: block; margin-bottom: 8px;">Official Support / Admin Email</label>
                 <input type="email" name="admin_email" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" style="width:100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
             </div>
             <div class="form-group">

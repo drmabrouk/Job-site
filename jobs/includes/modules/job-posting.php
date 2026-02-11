@@ -73,18 +73,7 @@ $currencies = Jobs_Data_Service::get_currencies();
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
             <div class="form-group">
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Country</label>
-                <select name="country" id="posting-country" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
-                    <option value="">Select Country</option>
-                    <?php
-                    $location_groups = Jobs_Data_Service::get_location_data();
-                    foreach ($location_groups as $group) : ?>
-                        <optgroup label="<?php echo esc_attr($group['label']); ?>">
-                            <?php foreach ($group['countries'] as $slug => $c) : ?>
-                                <option value="<?php echo esc_attr($slug); ?>"><?php echo esc_html($c['name']); ?></option>
-                            <?php endforeach; ?>
-                        </optgroup>
-                    <?php endforeach; ?>
-                </select>
+                <?php echo Jobs_Data_Service::render_country_picker('country', '', 'posting-country'); ?>
             </div>
             <div class="form-group">
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Region / State</label>
@@ -106,7 +95,7 @@ $currencies = Jobs_Data_Service::get_currencies();
 jQuery(document).ready(function($) {
     const locationData = <?php echo json_encode($locations); ?>;
 
-    $('#posting-country').on('change', function() {
+    $(document).on('change', '#posting-country', function() {
         const country = $(this).val();
         const $citySelect = $('#posting-city');
         $citySelect.empty().append('<option value="">Select Region / State</option>');

@@ -15,6 +15,8 @@ $user_id = get_current_user_id();
 $user = get_userdata( $user_id );
 $role = $user->roles[0] ?? 'job_seeker';
 $first_name = get_user_meta($user_id, 'first_name', true) ?: $user->display_name;
+$is_revisit = get_user_meta($user_id, '_setup_complete', true);
+$cv_data = get_user_meta($user_id, 'jobs_cv_data_v2', true) ?: array();
 
 $specializations = Jobs_Data_Service::get_specializations();
 $locations_raw = Jobs_Data_Service::get_location_data();
@@ -61,8 +63,8 @@ $active_steps = ($role === 'employer') ? $steps_employer : $steps_seeker;
 $total_steps = count($active_steps);
 ?>
 
-<div class="jobs-premium-setup-v2">
-    <div class="setup-container">
+<div class="jobs-premium-setup-v2" style="background: white;">
+    <div class="setup-container" style="box-shadow: none; border: 1px solid #f1f5f9;">
 
         <!-- Welcome Header -->
         <header class="setup-v2-header">
@@ -130,15 +132,7 @@ $total_steps = count($active_steps);
                         <div class="form-row-v2">
                             <div class="form-group-v2">
                                 <label>Nationality Country</label>
-                                <div class="country-select-with-flag" style="display: flex; align-items: center; gap: 12px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 14px; padding: 4px 18px;">
-                                    <img src="https://flagcdn.com/w40/un.png" class="selected-flag-preview" id="nat-flag-preview" style="width: 24px; height: auto; border-radius: 2px;">
-                                    <select name="nationality" id="nat-country-select" class="country-picker" style="border: none; background: transparent; padding: 10px 0; flex: 1;">
-                                        <option value="" data-flag="https://flagcdn.com/w40/un.png">Select Country</option>
-                                        <?php foreach($countries_with_flags as $slug => $data): ?>
-                                            <option value="<?php echo $slug; ?>" data-flag="<?php echo $data['flag']; ?>"><?php echo $data['name']; ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
+                                <?php echo Jobs_Data_Service::render_country_picker('nationality', '', 'nat-country-select', 'country-picker'); ?>
                             </div>
                             <div class="form-group-v2">
                                 <label>City / State</label>
@@ -162,15 +156,7 @@ $total_steps = count($active_steps);
                         <div class="form-row-v2">
                             <div class="form-group-v2">
                                 <label>Current Country</label>
-                                <div class="country-select-with-flag" style="display: flex; align-items: center; gap: 12px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 14px; padding: 4px 18px;">
-                                    <img src="https://flagcdn.com/w40/un.png" class="selected-flag-preview" id="res-flag-preview" style="width: 24px; height: auto; border-radius: 2px;">
-                                    <select name="residence" id="res-country-select" class="country-picker" style="border: none; background: transparent; padding: 10px 0; flex: 1;">
-                                        <option value="" data-flag="https://flagcdn.com/w40/un.png">Select Country</option>
-                                        <?php foreach($countries_with_flags as $slug => $data): ?>
-                                            <option value="<?php echo $slug; ?>" data-flag="<?php echo $data['flag']; ?>"><?php echo $data['name']; ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
+                                <?php echo Jobs_Data_Service::render_country_picker('residence', '', 'res-country-select', 'country-picker'); ?>
                             </div>
                             <div class="form-group-v2">
                                 <label>City / State</label>
@@ -258,62 +244,77 @@ $total_steps = count($active_steps);
                     <!-- Step 7: Academic -->
                     <div class="setup-v2-panel" data-step="7">
                         <div class="panel-header">
-                            <h2>Academic Qualification</h2>
-                            <p>Your latest verified educational milestone.</p>
+                            <h2>Academic History</h2>
+                            <p><?php echo $is_revisit ? 'Manage your academic qualifications. Newest entries appear first.' : 'Your latest verified educational milestone.'; ?></p>
                         </div>
-                        <div class="form-grid-v2">
-                            <div class="form-group-v2">
-                                <label>Highest Degree</label>
-                                <input type="text" name="academic[0][degree]" placeholder="e.g. Master of Computer Science">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>University / Institution</label>
-                                <input type="text" name="academic[0][uni]" placeholder="e.g. Stanford University">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Faculty / Department</label>
-                                <input type="text" name="academic[0][faculty]" placeholder="e.g. School of Engineering">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Major Specialization</label>
-                                <input type="text" name="academic[0][spec]" placeholder="e.g. Artificial Intelligence">
-                            </div>
-                            <div class="form-group-v2 span-2">
-                                <label>Graduation Project Summary</label>
-                                <input type="text" name="academic[0][project]" placeholder="Brief title or description">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Enrollment Year</label>
-                                <input type="number" name="academic[0][enroll_year]" placeholder="YYYY">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Graduation Year</label>
-                                <input type="number" name="academic[0][grad_year]" placeholder="YYYY">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Country of Study</label>
-                                <select name="academic[0][country]">
-                                    <?php foreach($countries_with_flags as $slug => $data): ?>
-                                        <option value="<?php echo $slug; ?>"><?php echo $data['name']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Type of Study</label>
-                                <select name="academic[0][type]">
-                                    <option value="On-campus">On-campus</option>
-                                    <option value="Online">Online</option>
-                                    <option value="Hybrid">Hybrid</option>
-                                </select>
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Qualification Type</label>
-                                <select name="academic[0][qual_type]">
-                                    <option value="Academic">Academic</option>
-                                    <option value="Professional">Professional</option>
-                                </select>
-                            </div>
+
+                        <div id="academic-entries-container">
+                            <?php
+                            $academic_data = !empty($cv_data['academic']) ? $cv_data['academic'] : array(array());
+                            // Sort by grad_year descending
+                            usort($academic_data, function($a, $b) {
+                                return ($b['grad_year'] ?? 0) - ($a['grad_year'] ?? 0);
+                            });
+
+                            foreach($academic_data as $index => $edu): ?>
+                                <div class="academic-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
+                                    <?php if ($is_revisit && $index > 0): ?><button type="button" class="remove-repeat-item">&times;</button><?php endif; ?>
+                                    <div class="form-grid-v2">
+                                        <div class="form-group-v2">
+                                            <label>Degree / Qualification</label>
+                                            <select name="academic[<?php echo $index; ?>][degree]">
+                                                <option value="">Select Degree</option>
+                                                <?php foreach(Jobs_Data_Service::get_academic_degrees() as $deg): ?>
+                                                    <option value="<?php echo esc_attr($deg); ?>" <?php selected($edu['degree'] ?? '', $deg); ?>><?php echo esc_html($deg); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>University / Institution</label>
+                                            <input type="text" name="academic[<?php echo $index; ?>][uni]" value="<?php echo esc_attr($edu['uni'] ?? ''); ?>" placeholder="e.g. Stanford University">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Faculty / Department</label>
+                                            <input type="text" name="academic[<?php echo $index; ?>][faculty]" value="<?php echo esc_attr($edu['faculty'] ?? ''); ?>" placeholder="e.g. School of Engineering">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Major Specialization</label>
+                                            <input type="text" name="academic[<?php echo $index; ?>][spec]" value="<?php echo esc_attr($edu['spec'] ?? ''); ?>" placeholder="e.g. Artificial Intelligence">
+                                        </div>
+                                        <div class="form-group-v2 span-2">
+                                            <label>Graduation Project Summary</label>
+                                            <input type="text" name="academic[<?php echo $index; ?>][project]" value="<?php echo esc_attr($edu['project'] ?? ''); ?>" placeholder="Brief title or description">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Enrollment Year</label>
+                                            <input type="number" name="academic[<?php echo $index; ?>][enroll_year]" value="<?php echo esc_attr($edu['enroll_year'] ?? ''); ?>" placeholder="YYYY">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Graduation Year</label>
+                                            <input type="number" name="academic[<?php echo $index; ?>][grad_year]" value="<?php echo esc_attr($edu['grad_year'] ?? ''); ?>" placeholder="YYYY">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Country of Study</label>
+                                            <?php echo Jobs_Data_Service::render_country_picker("academic[{$index}][country]", $edu['country'] ?? '', "edu-country-{$index}"); ?>
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Qualification Type</label>
+                                            <?php $q_type = $edu['qual_type'] ?? 'Academic'; ?>
+                                            <div class="v2-button-toggle-group">
+                                                <button type="button" class="v2-toggle-btn <?php echo $q_type === 'Academic' ? 'active' : ''; ?>" data-value="Academic" data-target="qual-type-<?php echo $index; ?>">Academic</button>
+                                                <button type="button" class="v2-toggle-btn <?php echo $q_type === 'Professional' ? 'active' : ''; ?>" data-value="Professional" data-target="qual-type-<?php echo $index; ?>">Professional</button>
+                                                <input type="hidden" name="academic[<?php echo $index; ?>][qual_type]" id="qual-type-<?php echo $index; ?>" value="<?php echo $q_type; ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
+
+                        <?php if ($is_revisit): ?>
+                            <button type="button" id="add-academic-btn" class="v2-btn-minimal" style="margin-bottom: 30px; font-size: 1.1em; color: #10b981;">+ Add Another Qualification</button>
+                        <?php endif; ?>
+
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="6">Back</button>
                             <button type="button" class="v2-next-btn" data-next="8">Continue</button>
@@ -323,52 +324,76 @@ $total_steps = count($active_steps);
                     <!-- Step 8: Experience -->
                     <div class="setup-v2-panel" data-step="8">
                         <div class="panel-header">
-                            <h2>Professional Experience</h2>
-                            <p>Details of your most recent or current professional engagement.</p>
+                            <h2>Career History</h2>
+                            <p><?php echo $is_revisit ? 'Manage your professional experiences. Newest entries appear first.' : 'Details of your most recent or current professional engagement.'; ?></p>
                         </div>
-                        <div class="form-grid-v2">
-                            <div class="form-group-v2">
-                                <label>Field of Work</label>
-                                <input type="text" name="experience[0][field]" placeholder="e.g. Technology">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Job Title</label>
-                                <input type="text" name="experience[0][title]" placeholder="e.g. Senior Project Manager">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Employment Type</label>
-                                <select name="experience[0][type]">
-                                    <?php foreach(Jobs_Data_Service::get_employment_types() as $t): ?>
-                                        <option value="<?php echo $t; ?>"><?php echo $t; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Country of Employment</label>
-                                <select name="experience[0][country]">
-                                    <?php foreach($countries_with_flags as $slug => $data): ?>
-                                        <option value="<?php echo $slug; ?>"><?php echo $data['name']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Contract Start Date</label>
-                                <input type="date" name="experience[0][start]">
-                            </div>
-                            <div class="form-group-v2">
-                                <label>Contract End Date</label>
-                                <input type="date" name="experience[0][end]" id="exp-end-date">
-                            </div>
-                            <div class="form-group-v2 span-2">
-                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600;">
-                                    <input type="checkbox" name="experience[0][is_current]" value="1" id="is-current-work" style="width: auto;"> I am currently working in this role
-                                </label>
-                            </div>
-                            <div class="form-group-v2" id="availability-wrap">
-                                <label>Confirmation of Availability Date</label>
-                                <input type="date" name="availability_date">
-                            </div>
+
+                        <div id="experience-entries-container">
+                            <?php
+                            $experience_data = !empty($cv_data['experience']) ? $cv_data['experience'] : array(array());
+                            // Sort by start date descending
+                            usort($experience_data, function($a, $b) {
+                                return strtotime($b['start'] ?? '') - strtotime($a['start'] ?? '');
+                            });
+
+                            foreach($experience_data as $index => $exp): ?>
+                                <div class="experience-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
+                                    <?php if ($is_revisit && $index > 0): ?><button type="button" class="remove-repeat-item">&times;</button><?php endif; ?>
+                                    <div class="form-grid-v2">
+                                        <div class="form-group-v2">
+                                            <label>Field of Work / Industry</label>
+                                            <select name="experience[<?php echo $index; ?>][field]">
+                                                <option value="">Select Industry</option>
+                                                <?php foreach(array_keys($specializations) as $s): ?>
+                                                    <option value="<?php echo esc_attr($s); ?>" <?php selected($exp['field'] ?? '', $s); ?>><?php echo esc_html($s); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Job Title</label>
+                                            <input type="text" name="experience[<?php echo $index; ?>][title]" value="<?php echo esc_attr($exp['title'] ?? ''); ?>" placeholder="e.g. Senior Project Manager">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Employment Type</label>
+                                            <select name="experience[<?php echo $index; ?>][type]">
+                                                <?php foreach(Jobs_Data_Service::get_employment_types() as $t): ?>
+                                                    <option value="<?php echo $t; ?>" <?php selected($exp['type'] ?? '', $t); ?>><?php echo $t; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Country of Employment</label>
+                                            <?php echo Jobs_Data_Service::render_country_picker("experience[{$index}][country]", $exp['country'] ?? '', "exp-country-{$index}"); ?>
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Contract Start Date</label>
+                                            <input type="date" name="experience[<?php echo $index; ?>][start]" value="<?php echo esc_attr($exp['start'] ?? ''); ?>">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Contract End Date</label>
+                                            <?php $is_curr = !empty($exp['is_current']); ?>
+                                            <input type="date" name="experience[<?php echo $index; ?>][end]" class="exp-end-date-field" value="<?php echo esc_attr($exp['end'] ?? ''); ?>" <?php echo $is_curr ? 'disabled style="opacity:0.5;"' : ''; ?>>
+                                        </div>
+                                        <div class="form-group-v2 span-2">
+                                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600;">
+                                                <input type="checkbox" name="experience[<?php echo $index; ?>][is_current]" value="1" class="is-current-work-check" <?php checked($is_curr); ?> style="width: auto;"> I am currently working in this role
+                                            </label>
+                                        </div>
+                                        <?php if ($index === 0): ?>
+                                            <div class="form-group-v2 availability-panel" style="<?php echo $is_curr ? '' : 'display:none;'; ?>">
+                                                <label>Confirmation of Availability Date</label>
+                                                <input type="date" name="availability_date" value="<?php echo esc_attr(get_user_meta($user_id, '_availability_date', true)); ?>">
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
+
+                        <?php if ($is_revisit): ?>
+                            <button type="button" id="add-experience-btn" class="v2-btn-minimal" style="margin-bottom: 30px; font-size: 1.1em; color: #10b981;">+ Add Previous Experience</button>
+                        <?php endif; ?>
+
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="7">Back</button>
                             <button type="button" class="v2-next-btn" data-next="9">Continue</button>
@@ -531,15 +556,7 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Headquarters Country</label>
-                            <div class="country-select-with-flag" style="display: flex; align-items: center; gap: 12px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 14px; padding: 4px 18px;">
-                                <img src="https://flagcdn.com/w40/un.png" class="selected-flag-preview" id="hq-flag-preview" style="width: 24px; height: auto; border-radius: 2px;">
-                                <select name="company_address" id="hq-country-select" class="country-picker" style="border: none; background: transparent; padding: 10px 0; flex: 1;">
-                                    <option value="" data-flag="https://flagcdn.com/w40/un.png">Select Country</option>
-                                    <?php foreach($countries_with_flags as $slug => $data): ?>
-                                        <option value="<?php echo $data['name']; ?>" data-flag="<?php echo $data['flag']; ?>"><?php echo $data['name']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                            <?php echo Jobs_Data_Service::render_country_picker('company_address', '', 'hq-country-select'); ?>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="3">Back</button>
@@ -621,7 +638,7 @@ $total_steps = count($active_steps);
 </div>
 
 <style>
-.jobs-premium-setup-v2 { background: #f8fafc; min-height: 100vh; padding: 60px 20px; font-family: 'Rubik', sans-serif; color: #1e293b; }
+.jobs-premium-setup-v2 { background: #ffffff; min-height: 100vh; padding: 60px 20px; font-family: 'Rubik', sans-serif; color: #1e293b; }
 .setup-container { max-width: 720px; margin: 0 auto; background: white; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08); overflow: hidden; }
 .setup-v2-header { padding: 48px; border-bottom: 1px solid #f1f5f9; background: #ffffff; }
 .setup-welcome h1 { font-size: 2.4em; font-weight: 800; margin: 24px 0 8px; color: #0f172a; }
@@ -673,6 +690,11 @@ input:focus, select:focus, textarea:focus { border-color: #1d3469; background: w
 .suggestion-item:hover { background: #f8fafc; color: #1d3469; }
 .language-entry { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
 .v2-btn-minimal { background: none; border: none; color: #1d3469; font-weight: 700; font-size: 0.9em; cursor: pointer; padding: 0; margin-top: 10px; }
+
+/* Toggle Buttons */
+.v2-button-toggle-group { display: flex; gap: 10px; }
+.v2-toggle-btn { flex: 1; padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0; background: #f8fafc; color: #64748b; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.v2-toggle-btn.active { background: #1d3469; color: white; border-color: #1d3469; }
 </style>
 
 <script>
@@ -682,6 +704,15 @@ jQuery(document).ready(function($) {
     const specializations = <?php echo json_encode($specializations); ?>;
     const totalSteps = <?php echo $total_steps; ?>;
     let selectedSkills = [];
+
+    // Toggle Button Logic
+    $(document).on('click', '.v2-toggle-btn', function() {
+        const val = $(this).data('value');
+        const target = $(this).data('target');
+        $(this).siblings('.v2-toggle-btn').removeClass('active');
+        $(this).addClass('active');
+        $('#' + target).val(val);
+    });
 
     // Photo Upload Handler
     $('#photo-input').on('change', function() {
@@ -708,34 +739,38 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // Dynamic Regions & Flag Updates
-    $('.country-picker').on('change', function() {
+    // Centralized Flag update for any country picker
+    $(document).on('change', '.country-picker, .country-picker-simple', function() {
+        const flagUrl = $(this).find(':selected').data('flag');
+        const flagId = $(this).data('flag-id');
+        if (flagUrl && flagId) {
+            $('#' + flagId).attr('src', flagUrl);
+        } else if (flagUrl) {
+            $(this).siblings('.selected-flag-preview').attr('src', flagUrl);
+        }
+    });
+
+    // Dynamic Regions logic for main setup
+    $(document).on('change', '.country-picker', function() {
         const country = $(this).val();
         const id = $(this).attr('id');
-        let flagId = '';
         let targetId = '';
 
         if (id.includes('nat')) {
-            flagId = '#nat-flag-preview';
             targetId = '#nat-city-select';
         } else if (id.includes('res')) {
-            flagId = '#res-flag-preview';
             targetId = '#res-city-select';
-        } else if (id.includes('hq')) {
-            flagId = '#hq-flag-preview';
         }
-        const $citySelect = $(targetId);
 
-        // Update Flag
-        const flagUrl = $(this).find(':selected').data('flag');
-        if (flagUrl) $(flagId).attr('src', flagUrl);
-
-        $citySelect.empty().append('<option value="">Select City / State</option>');
-        if (country && locations[country]) {
-            locations[country].forEach(city => { $citySelect.append(`<option value="${city}">${city}</option>`); });
-            $citySelect.prop('disabled', false);
-        } else {
-            $citySelect.prop('disabled', true);
+        if (targetId) {
+            const $citySelect = $(targetId);
+            $citySelect.empty().append('<option value="">Select City / State</option>');
+            if (country && locations[country]) {
+                locations[country].forEach(city => { $citySelect.append(`<option value="${city}">${city}</option>`); });
+                $citySelect.prop('disabled', false);
+            } else {
+                $citySelect.prop('disabled', true);
+            }
         }
     });
 
@@ -767,13 +802,14 @@ jQuery(document).ready(function($) {
     // Trigger initially
     $('#v2-summary').trigger('input');
 
-    // Current Work Logic
-    $('#is-current-work').on('change', function() {
+    // Current Work Logic for Repeatable Items
+    $(document).on('change', '.is-current-work-check', function() {
         const isCurrent = $(this).is(':checked');
-        $('#exp-end-date').prop('disabled', isCurrent).parent().css('opacity', isCurrent ? 0.5 : 1);
-        if (isCurrent) $('#exp-end-date').val('');
+        const $panel = $(this).closest('.experience-entry-card');
+        $panel.find('.exp-end-date-field').prop('disabled', isCurrent).css('opacity', isCurrent ? 0.5 : 1);
+        if (isCurrent) $panel.find('.exp-end-date-field').val('');
+        $panel.find('.availability-panel').toggle(isCurrent);
     });
-    $('#is-current-work').trigger('change');
 
     // Skills Logic
     $('#v2-skills-input').on('input', function() {
@@ -811,6 +847,137 @@ jQuery(document).ready(function($) {
         $('#selected-skills-container').html(html);
         $('#final-skills-val').val(selectedSkills.join(', '));
     }
+
+    // Multiple Entries Logic
+    let academicIndex = <?php echo count($academic_data); ?>;
+    let experienceIndex = <?php echo count($experience_data); ?>;
+
+    $('#add-academic-btn').on('click', function() {
+        const index = academicIndex++;
+        const html = `
+            <div class="academic-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
+                <button type="button" class="remove-repeat-item">&times;</button>
+                <div class="form-grid-v2">
+                    <div class="form-group-v2">
+                        <label>Degree / Qualification</label>
+                        <select name="academic[${index}][degree]">
+                            <option value="">Select Degree</option>
+                            <?php foreach(Jobs_Data_Service::get_academic_degrees() as $deg): ?>
+                                <option value="<?php echo esc_attr($deg); ?>"><?php echo esc_html($deg); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group-v2">
+                        <label>University / Institution</label>
+                        <input type="text" name="academic[${index}][uni]" placeholder="University Name">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Faculty / Department</label>
+                        <input type="text" name="academic[${index}][faculty]" placeholder="e.g. School of Engineering">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Major Specialization</label>
+                        <input type="text" name="academic[${index}][spec]" placeholder="e.g. AI">
+                    </div>
+                    <div class="form-group-v2 span-2">
+                        <label>Graduation Project Summary</label>
+                        <input type="text" name="academic[${index}][project]" placeholder="Brief title">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Enrollment Year</label>
+                        <input type="number" name="academic[${index}][enroll_year]" placeholder="YYYY">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Graduation Year</label>
+                        <input type="number" name="academic[${index}][grad_year]" placeholder="YYYY">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Country of Study</label>
+                        <div class="country-select-with-flag-unified" style="display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #e2e8f0; border-radius: 14px; padding: 4px 18px; width: 100%;">
+                            <img src="https://flagcdn.com/w40/un.png" class="selected-flag-preview" id="edu-flag-${index}" style="width: 24px; height: auto; border-radius: 2px; flex-shrink: 0;">
+                            <select name="academic[${index}][country]" class="country-picker-unified" data-flag-id="edu-flag-${index}" style="border: none; background: transparent; padding: 10px 0; flex: 1; outline: none; font-size: 1em; width: 100%;">
+                                <option value="" data-flag="https://flagcdn.com/w40/un.png">Select Country</option>
+                                <?php foreach($countries_with_flags as $slug => $data): ?>
+                                    <option value="<?php echo $slug; ?>" data-flag="<?php echo $data['flag']; ?>"><?php echo $data['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Qualification Type</label>
+                        <div class="v2-button-toggle-group">
+                            <button type="button" class="v2-toggle-btn active" data-value="Academic" data-target="qual-type-${index}">Academic</button>
+                            <button type="button" class="v2-toggle-btn" data-value="Professional" data-target="qual-type-${index}">Professional</button>
+                            <input type="hidden" name="academic[${index}][qual_type]" id="qual-type-${index}" value="Academic">
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        $('#academic-entries-container').prepend(html);
+    });
+
+    $('#add-experience-btn').on('click', function() {
+        const index = experienceIndex++;
+        const html = `
+            <div class="experience-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
+                <button type="button" class="remove-repeat-item">&times;</button>
+                <div class="form-grid-v2">
+                    <div class="form-group-v2">
+                        <label>Field of Work / Industry</label>
+                        <select name="experience[${index}][field]">
+                            <option value="">Select Industry</option>
+                            <?php foreach(array_keys($specializations) as $s): ?>
+                                <option value="<?php echo esc_attr($s); ?>"><?php echo esc_html($s); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Job Title</label>
+                        <input type="text" name="experience[${index}][title]" placeholder="Job Title">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Employment Type</label>
+                        <select name="experience[${index}][type]">
+                            <?php foreach(Jobs_Data_Service::get_employment_types() as $t): ?>
+                                <option value="<?php echo $t; ?>"><?php echo $t; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Country of Employment</label>
+                        <div class="country-select-with-flag-unified" style="display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #e2e8f0; border-radius: 14px; padding: 4px 18px; width: 100%;">
+                            <img src="https://flagcdn.com/w40/un.png" class="selected-flag-preview" id="exp-flag-${index}" style="width: 24px; height: auto; border-radius: 2px; flex-shrink: 0;">
+                            <select name="experience[${index}][country]" class="country-picker-unified" data-flag-id="exp-flag-${index}" style="border: none; background: transparent; padding: 10px 0; flex: 1; outline: none; font-size: 1em; width: 100%;">
+                                <option value="" data-flag="https://flagcdn.com/w40/un.png">Select Country</option>
+                                <?php foreach($countries_with_flags as $slug => $data): ?>
+                                    <option value="<?php echo $slug; ?>" data-flag="<?php echo $data['flag']; ?>"><?php echo $data['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Contract Start Date</label>
+                        <input type="date" name="experience[${index}][start]">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Contract End Date</label>
+                        <input type="date" name="experience[${index}][end]" class="exp-end-date-field">
+                    </div>
+                    <div class="form-group-v2 span-2">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600;">
+                            <input type="checkbox" name="experience[${index}][is_current]" value="1" class="is-current-work-check" style="width: auto;"> I am currently working in this role
+                        </label>
+                    </div>
+                </div>
+            </div>`;
+        $('#experience-entries-container').prepend(html);
+    });
+
+    $(document).on('click', '.remove-repeat-item', function() {
+        if (confirm('Are you sure you want to remove this entry?')) {
+            $(this).closest('.v2-repeat-item').fadeOut(300, function() { $(this).remove(); });
+        }
+    });
 
     // Languages Logic
     let langIndex = 1;

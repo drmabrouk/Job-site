@@ -538,6 +538,18 @@ class Jobs_Data_Service {
         return array('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+');
     }
 
+    public static function get_academic_degrees() {
+        return array(
+            'High School',
+            'Diploma',
+            'Bachelor\'s Degree',
+            'Higher Diploma',
+            'Master\'s Degree',
+            'PhD (Doctorate)',
+            'Professional Certification'
+        );
+    }
+
     public static function get_location_data() {
         $default = array(
             'middle-east' => array(
@@ -630,5 +642,37 @@ class Jobs_Data_Service {
             }
         }
         return $output;
+    }
+
+    public static function render_country_picker($name, $selected = '', $id = '', $class = '') {
+        $locations_raw = self::get_location_data();
+        $id_attr = $id ? 'id="'.esc_attr($id).'"' : '';
+        $flag_id = $id ? $id . '-flag-preview' : 'flag-' . uniqid();
+
+        $current_flag = 'https://flagcdn.com/w40/un.png';
+        foreach($locations_raw as $group) {
+            if (isset($group['countries'][$selected])) {
+                $current_flag = "https://flagcdn.com/w40/{$group['countries'][$selected]['code']}.png";
+                break;
+            }
+        }
+
+        ob_start();
+        ?>
+        <div class="country-select-with-flag-unified" style="display: flex; align-items: center; gap: 12px; background: white; border: 2px solid #e2e8f0; border-radius: 14px; padding: 4px 18px; width: 100%;">
+            <img src="<?php echo $current_flag; ?>" class="selected-flag-preview" id="<?php echo $flag_id; ?>" style="width: 24px; height: auto; border-radius: 2px; flex-shrink: 0;">
+            <select name="<?php echo esc_attr($name); ?>" <?php echo $id_attr; ?> class="country-picker-unified <?php echo esc_attr($class); ?>" data-flag-id="<?php echo $flag_id; ?>" style="border: none; background: transparent; padding: 10px 0; flex: 1; outline: none; font-size: 1em; width: 100%;">
+                <option value="" data-flag="https://flagcdn.com/w40/un.png">Select Country</option>
+                <?php foreach($locations_raw as $group): ?>
+                    <optgroup label="<?php echo esc_attr($group['label']); ?>">
+                        <?php foreach($group['countries'] as $slug => $c): ?>
+                            <option value="<?php echo $slug; ?>" data-flag="https://flagcdn.com/w40/<?php echo $c['code']; ?>.png" <?php selected($selected, $slug); ?>><?php echo $c['name']; ?></option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <?php
+        return ob_get_clean();
     }
 }

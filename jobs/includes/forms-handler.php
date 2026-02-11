@@ -125,6 +125,10 @@ function jobs_handle_forms() {
                 update_option( 'jobs_adsense_code', wp_unslash( $adsense_code ) );
             }
 
+            if ( isset( $_POST['email_templates'] ) ) {
+                update_option( 'jobs_email_templates', $_POST['email_templates'] );
+            }
+
             Jobs_Activity_Service::log( get_current_user_id(), 'system_update', 'Updated site settings' );
         }
     }
@@ -764,6 +768,48 @@ function jobs_ajax_delete_job() {
     wp_send_json_success( 'Job deleted successfully.' );
 }
 add_action( 'wp_ajax_jobs_delete_job', 'jobs_ajax_delete_job' );
+
+/**
+ * AJAX Handler: Update Application Status (By Employer)
+ */
+add_action( 'wp_ajax_jobs_update_app_status', 'jobs_ajax_update_app_status_handler' );
+function jobs_ajax_update_app_status_handler() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+
+    $app_id = intval( $_POST['app_id'] );
+    $status = sanitize_text_field( $_POST['status'] );
+
+    if ( ! $app_id || ! $status ) wp_send_json_error( 'Invalid data' );
+
+    $app = get_post( $app_id );
+    $job_id = get_post_meta( $app_id, '_job_id', true );
+    $job = get_post( $job_id );
+
+    // Permission check: must be the job author or admin
+    if ( ! Jobs_Permission_Service::is_admin() && $job->post_author != get_current_user_id() ) {
+        wp_send_json_error( 'Unauthorized' );
+    }
+
+    update_post_meta( $app_id, '_application_status', $status );
+
+    // Notify Seeker via Email
+    $seeker_id = $app->post_author;
+    $seeker = get_userdata( $seeker_id );
+    $job_title = get_the_title( $job_id );
+    $company_name = get_post_meta( $job_id, '_company_name', true );
+
+    Jobs_Email_Service::send( $seeker->user_email, 'employer_response', array(
+        'seeker_name'  => $seeker->display_name,
+        'job_title'    => $job_title,
+        'company_name' => $company_name,
+        'status'       => $status
+    ) );
+
+    // Internal Notification
+    Jobs_Job_Service::add_notification( $seeker_id, "Status updated for {$job_title}: {$status}" );
+
+    wp_send_json_success( 'Status updated and seeker notified.' );
+}
 
 /**
  * AJAX Handler: Get Draft Data
