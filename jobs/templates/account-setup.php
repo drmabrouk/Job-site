@@ -45,7 +45,8 @@ $steps_seeker = array(
     8 => 'Recent Career',
     9 => 'Skill Set',
     10 => 'Language Assets',
-    11 => 'Final Protocols'
+    11 => 'Professional Certifications',
+    12 => 'Final Protocols'
 );
 
 $steps_employer = array(
@@ -218,6 +219,20 @@ $total_steps = count($active_steps);
                                     <option value="">Select Field First</option>
                                 </select>
                             </div>
+                            <?php if ($is_revisit) : ?>
+                                <div class="form-group-v2 span-2">
+                                    <label>Secondary Specializations (Optional)</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                        <?php
+                                        $current_sec = $cv_data['personal']['secondary_specs'] ?? array();
+                                        foreach(array_slice(array_keys($specializations), 0, 9) as $s): ?>
+                                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85em; cursor: pointer;">
+                                                <input type="checkbox" name="secondary_specs[]" value="<?php echo esc_attr($s); ?>" <?php checked(in_array($s, $current_sec)); ?> style="width: auto;"> <?php echo esc_html($s); ?>
+                                            </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="4">Back</button>
@@ -453,8 +468,49 @@ $total_steps = count($active_steps);
                         </div>
                     </div>
 
-                    <!-- Step 11: Privacy -->
+                    <!-- Step 11: Certifications -->
                     <div class="setup-v2-panel" data-step="11">
+                        <div class="panel-header">
+                            <h2>Professional Certifications</h2>
+                            <p><?php echo $is_revisit ? 'Manage your professional certifications and licenses.' : 'List any relevant professional certifications or licenses.'; ?></p>
+                        </div>
+
+                        <div id="certifications-entries-container">
+                            <?php
+                            $certs_data = !empty($cv_data['certs']) ? $cv_data['certs'] : array(array());
+                            foreach($certs_data as $index => $cert): ?>
+                                <div class="cert-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
+                                    <?php if ($is_revisit && $index > 0): ?><button type="button" class="remove-repeat-item">&times;</button><?php endif; ?>
+                                    <div class="form-grid-v2">
+                                        <div class="form-group-v2 span-2">
+                                            <label>Certification Name</label>
+                                            <input type="text" name="certs[<?php echo $index; ?>][name]" value="<?php echo esc_attr($cert['name'] ?? ''); ?>" placeholder="e.g. AWS Certified Solutions Architect">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Issuing Authority</label>
+                                            <input type="text" name="certs[<?php echo $index; ?>][auth]" value="<?php echo esc_attr($cert['auth'] ?? ''); ?>" placeholder="e.g. Amazon Web Services">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Issue Date / Year</label>
+                                            <input type="text" name="certs[<?php echo $index; ?>][date]" value="<?php echo esc_attr($cert['date'] ?? ''); ?>" placeholder="e.g. 2023 or Jan 2023">
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <?php if ($is_revisit): ?>
+                            <button type="button" id="add-cert-btn" class="v2-btn-minimal" style="margin-bottom: 30px; font-size: 1.1em; color: #10b981;">+ Add Another Certification</button>
+                        <?php endif; ?>
+
+                        <div class="panel-footer">
+                            <button type="button" class="v2-prev-btn" data-prev="10">Back</button>
+                            <button type="button" class="v2-next-btn" data-next="12">Continue</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 12: Privacy -->
+                    <div class="setup-v2-panel" data-step="12">
                         <div class="panel-header">
                             <h2>Privacy & Final Protocols</h2>
                             <p>Finalize your professional profile and data accuracy confirmation.</p>
@@ -465,7 +521,7 @@ $total_steps = count($active_steps);
                             <label><input type="checkbox" checked disabled> I understand that I can add more details to my public profile later.</label>
                         </div>
                         <div class="panel-footer">
-                            <button type="button" class="v2-prev-btn" data-prev="10">Back</button>
+                            <button type="button" class="v2-prev-btn" data-prev="11">Back</button>
                             <button type="submit" class="v2-finish-btn">Finish Account Setup</button>
                         </div>
                     </div>
@@ -639,7 +695,7 @@ $total_steps = count($active_steps);
 
 <style>
 .jobs-premium-setup-v2 { background: transparent; min-height: auto; padding: 0; font-family: 'Rubik', sans-serif; color: #1e293b; width: 100%; }
-.setup-container { max-width: 860px; margin: 0 auto; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #eef2f6; }
+.setup-container { max-width: 860px; margin: 0 auto; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: visible; border: 1px solid #eef2f6; }
 .setup-v2-header { padding: 48px; border-bottom: 1px solid #f1f5f9; background: #ffffff; }
 .setup-welcome h1 { font-size: 2.4em; font-weight: 800; margin: 24px 0 8px; color: #0f172a; }
 .setup-welcome p { color: #64748b; font-size: 1.1em; margin: 0; }
@@ -653,11 +709,11 @@ $total_steps = count($active_steps);
 @keyframes panelFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .panel-header h2 { font-size: 1.8em; font-weight: 700; color: #1d3469; margin: 0 0 10px; }
 .panel-header p { color: #64748b; margin-bottom: 40px; line-height: 1.6; }
-.form-group-v2 { margin-bottom: 24px; }
+.form-group-v2 { margin-bottom: 24px; min-width: 0; width: 100%; }
 .form-group-v2 label { display: block; font-size: 0.9em; font-weight: 700; color: #1d3469; margin-bottom: 10px; }
-.form-row-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
-.form-grid-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
-.span-2 { grid-column: span 2; }
+.form-row-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; width: 100% !important; }
+.form-grid-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; width: 100% !important; }
+.span-2 { grid-column: span 2 !important; }
 input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
     width: 100%; padding: 14px 18px; border-radius: 14px; border: 2px solid #e2e8f0; background: #f8fafc; font-size: 1em; color: #1e293b; transition: all 0.3s ease; outline: none;
 }
@@ -851,6 +907,30 @@ jQuery(document).ready(function($) {
     // Multiple Entries Logic
     let academicIndex = <?php echo count($academic_data); ?>;
     let experienceIndex = <?php echo count($experience_data); ?>;
+    let certIndex = <?php echo count($certs_data ?? array()); ?>;
+
+    $('#add-cert-btn').on('click', function() {
+        const index = certIndex++;
+        const html = `
+            <div class="cert-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
+                <button type="button" class="remove-repeat-item">&times;</button>
+                <div class="form-grid-v2">
+                    <div class="form-group-v2 span-2">
+                        <label>Certification Name</label>
+                        <input type="text" name="certs[${index}][name]" placeholder="Certification Name">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Issuing Authority</label>
+                        <input type="text" name="certs[${index}][auth]" placeholder="e.g. Microsoft">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Issue Date / Year</label>
+                        <input type="text" name="certs[${index}][date]" placeholder="e.g. 2023">
+                    </div>
+                </div>
+            </div>`;
+        $('#certifications-entries-container').prepend(html);
+    });
 
     $('#add-academic-btn').on('click', function() {
         const index = academicIndex++;

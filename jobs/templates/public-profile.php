@@ -336,29 +336,29 @@ get_header();
                         $residence = get_user_meta($user_id, '_country', true);
                         $region = get_user_meta($user_id, '_region', true);
                         ?>
-                        <?php if($residence): ?>
-                            <div class="location-item-row" title="Country of Residence">
-                                <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
-                            </div>
-                        <?php endif; ?>
-
                         <?php if($nationality): ?>
                             <div class="location-item-row" title="Nationality">
                                 <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
                                 <span>Nationality: <?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
                             </div>
                         <?php endif; ?>
+
+                        <?php if($residence): ?>
+                            <div class="location-item-row" title="Country of Residence">
+                                <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="profile-v4-actions">
                     <div class="v4-action-group">
-                        <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Career Inquiry</button>
-                        <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
-                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                         <?php if ( get_current_user_id() === $user_id ) : ?>
                             <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></a>
                         <?php endif; ?>
+                        <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
+                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
+                        <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Offer a Job</button>
                     </div>
                 </div>
             </header>
@@ -384,28 +384,9 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-portfolio"></span> Professional Experience</h3>
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Key Professional Achievements & Milestones</h3>
                         <div class="v4-card-body">
-                            <?php if(!empty($experience)): foreach($experience as $exp): ?>
-                                <div class="v4-timeline-item">
-                                    <div class="v4-timeline-header">
-                                        <div class="v4-timeline-title"><?php echo esc_html($exp['title']); ?></div>
-                                        <span style="font-size: 11px; color: #999; font-weight: 600;"><?php echo esc_html($exp['type'] ?? 'Full-time'); ?></span>
-                                    </div>
-                                    <div class="v4-timeline-org"><?php echo esc_html($exp['company']); ?></div>
-                                    <div class="v4-timeline-meta"><?php echo date('M Y', strtotime($exp['start'])); ?> — <?php echo !empty($exp['end']) ? date('M Y', strtotime($exp['end'])) : 'Present'; ?></div>
-                                    <p style="font-size: 13px; color: #666; margin-top: 8px; line-height: 1.5;"><?php echo nl2br(esc_html($exp['tasks'] ?? '')); ?></p>
-                                </div>
-                            <?php endforeach; else: ?>
-                                <p style="color: #999; font-size: 13px;">Experience data pending verification.</p>
-                            <?php endif; ?>
-                        </div>
-                    </section>
-
-                    <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Career Highlights / Milestones</h3>
-                        <div class="v4-card-body">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 30px;">
                                 <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
                                     <div style="font-size: 24px; font-weight: 800; color: #1d3469; margin-bottom: 5px;"><?php echo esc_html($exp_years ?: '0'); ?>+</div>
                                     <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Years Experience</div>
@@ -419,12 +400,7 @@ get_header();
                                     <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Key Competencies</div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
 
-                    <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-star-filled"></span> Key Accomplishments</h3>
-                        <div class="v4-card-body">
                             <?php
                             $accomplishments = get_user_meta($user_id, '_key_accomplishments', true);
                             if($accomplishments):
@@ -462,23 +438,27 @@ get_header();
                         </div>
                     </section>
 
-                    <?php if(!empty($refs)): ?>
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Professional References</h3>
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-portfolio"></span> Professional Experience</h3>
                         <div class="v4-card-body">
-                            <?php foreach($refs as $r): ?>
-                                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
-                                    <div style="font-weight: 700; color: #1d3469; font-size: 14px;"><?php echo esc_html($r['name']); ?></div>
-                                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;"><?php echo esc_html($r['title']); ?> • <?php echo esc_html($r['company']); ?></div>
+                            <?php if(!empty($experience)): foreach($experience as $exp): ?>
+                                <div class="v4-timeline-item">
+                                    <div class="v4-timeline-header">
+                                        <div class="v4-timeline-title"><?php echo esc_html($exp['title']); ?></div>
+                                        <span style="font-size: 11px; color: #999; font-weight: 600;"><?php echo esc_html($exp['type'] ?? 'Full-time'); ?></span>
+                                    </div>
+                                    <div class="v4-timeline-org"><?php echo esc_html($exp['company']); ?></div>
+                                    <div class="v4-timeline-meta"><?php echo date('M Y', strtotime($exp['start'])); ?> — <?php echo !empty($exp['end']) ? date('M Y', strtotime($exp['end'])) : 'Present'; ?></div>
+                                    <p style="font-size: 13px; color: #666; margin-top: 8px; line-height: 1.5;"><?php echo nl2br(esc_html($exp['tasks'] ?? '')); ?></p>
                                 </div>
-                            <?php endforeach; ?>
+                            <?php endforeach; else: ?>
+                                <p style="color: #999; font-size: 13px;">Experience data pending verification.</p>
+                            <?php endif; ?>
                         </div>
                     </section>
-                    <?php endif; ?>
-
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-settings"></span> Strategic Core Competencies</h3>
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-settings"></span> Core & Strategic Competencies</h3>
                         <div class="v4-card-body">
                             <p style="color: #64748b; margin-bottom: 20px;">Validated skills and operational capabilities acquired through professional engagement.</p>
                             <div class="v4-tag-container">
@@ -492,40 +472,43 @@ get_header();
                         </div>
                     </section>
 
-                    <?php if(!empty($portfolio)): ?>
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-visibility"></span> Case Studies & Work Samples</h3>
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-visibility"></span> References</h3>
                         <div class="v4-card-body">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <?php foreach($portfolio as $port): ?>
-                                    <div style="padding: 16px; background: #FAFAFA; border-radius: 12px; border: 1px solid #F0F0F0;">
-                                        <div style="font-weight: 600; color: #111;"><?php echo esc_html($port['title']); ?></div>
-                                        <p style="font-size: 12px; color: #666; margin: 8px 0;"><?php echo esc_html($port['desc']); ?></p>
-                                        <a href="<?php echo esc_url($port['url']); ?>" target="_blank" style="font-size: 11px; font-weight: 700; color: #1d3469; text-decoration: none;">View Sample ↗</a>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
+                            <?php if(!empty($refs)): ?>
+                                <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;">
+                                    <h4 style="font-size: 14px; color: #1d3469; margin-bottom: 16px;">Professional Verification</h4>
+                                    <?php foreach($refs as $r): ?>
+                                        <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f8fafc;">
+                                            <div style="font-weight: 700; color: #1d3469; font-size: 14px;"><?php echo esc_html($r['name']); ?></div>
+                                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;"><?php echo esc_html($r['title']); ?> • <?php echo esc_html($r['company']); ?></div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if(!empty($portfolio)): ?>
+                                <h4 style="font-size: 14px; color: #1d3469; margin-bottom: 16px;">Case Studies & Work Samples</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                    <?php foreach($portfolio as $port): ?>
+                                        <div style="padding: 16px; background: #FAFAFA; border-radius: 12px; border: 1px solid #F0F0F0;">
+                                            <div style="font-weight: 600; color: #111;"><?php echo esc_html($port['title']); ?></div>
+                                            <p style="font-size: 12px; color: #666; margin: 8px 0;"><?php echo esc_html($port['desc']); ?></p>
+                                            <a href="<?php echo esc_url($port['url']); ?>" target="_blank" style="font-size: 11px; font-weight: 700; color: #1d3469; text-decoration: none;">View Sample ↗</a>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if(empty($refs) && empty($portfolio)): ?>
+                                <p style="color: #999; font-size: 13px;">No reference or portfolio data available.</p>
+                            <?php endif; ?>
                         </div>
                     </section>
-                    <?php endif; ?>
                 </div>
 
                 <div class="profile-v4-sidebar">
                     <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
-                    <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-hammer"></span> Strategic Domain Knowledge</h3>
-                        <div class="v4-card-body">
-                            <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Comprehensive expertise across core technical and professional domains, developed through years of practical application.</p>
-                            <div class="v4-tag-container">
-                                <?php foreach($skills as $s): ?>
-                                    <span class="v4-pastel-pill pill-blue"><?php echo trim($s); ?></span>
-                                <?php endforeach; ?>
-                                <?php foreach($sec_specs as $ss): ?>
-                                    <span class="v4-pastel-pill pill-purple"><?php echo esc_html($ss); ?></span>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </section>
 
                     <section class="v4-card contact-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
@@ -551,9 +534,8 @@ get_header();
                         </div>
                     </section>
 
-
                     <section class="v4-card">
-                        <h3 class="v4-card-title">Career Profile</h3>
+                        <h3 class="v4-card-title">Career Summary</h3>
                         <div class="v4-card-body">
                             <div class="v4-career-item">
                                 <span class="dashicons dashicons-awards"></span>
@@ -589,6 +571,21 @@ get_header();
                                     <small>Language Proficiency</small>
                                     <span><?php echo esc_html($cv['languages']['native'] ?? 'English'); ?><?php echo !empty($cv['languages']['other']) ? ', '.esc_html($cv['languages']['other']) : ''; ?></span>
                                 </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">Strategic Domain Knowledge</h3>
+                        <div class="v4-card-body">
+                            <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Comprehensive expertise across core technical and professional domains, developed through years of practical application.</p>
+                            <div class="v4-tag-container">
+                                <?php foreach($skills as $s): ?>
+                                    <span class="v4-pastel-pill pill-blue"><?php echo trim($s); ?></span>
+                                <?php endforeach; ?>
+                                <?php foreach($sec_specs as $ss): ?>
+                                    <span class="v4-pastel-pill pill-purple"><?php echo esc_html($ss); ?></span>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </section>

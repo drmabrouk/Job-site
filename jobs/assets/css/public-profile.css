@@ -27,10 +27,10 @@
 .seeker-header-v2 {
     flex-direction: row !important;
     text-align: left !important;
-    align-items: center !important;
+    align-items: flex-end !important; /* Bottom-align everything */
     justify-content: flex-start !important;
     gap: 32px !important;
-    margin-bottom: 48px !important;
+    margin-bottom: 40px !important;
     padding: 0 40px;
 }
 
@@ -39,7 +39,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start !important;
-    gap: 8px;
+    gap: 4px; /* Reduced vertical spacing */
 }
 
 .seeker-name-v2 {
@@ -52,27 +52,27 @@
 .seeker-header-capsules {
     display: flex;
     gap: 8px;
-    margin: 4px 0;
+    margin: 2px 0;
 }
 
 .seeker-meta-v2 {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin: 2px 0;
+    margin: 0;
 }
 
 .experience-line-v2 {
     margin: 0;
-    font-size: 15px;
+    font-size: 13px; /* Slightly reduced for better balance */
     font-weight: 500;
     color: #475569;
 }
 
 .seeker-location-v2 {
-    margin-top: 8px !important;
+    margin-top: 4px !important; /* Reduced vertical spacing */
     justify-content: flex-start !important;
-    gap: 20px !important;
+    gap: 16px !important; /* Reduced gap */
 }
 
 .seeker-actions-v2 {
@@ -108,8 +108,8 @@
 }
 
 .profile-v4-avatar-box {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
@@ -608,11 +608,12 @@
 }
 
 @media (max-width: 768px) {
-    .profile-v4-header {
-        flex-direction: column;
-        text-align: center;
-        gap: 32px;
-        margin-bottom: 48px;
+    .profile-v4-header, .seeker-header-v2 {
+        flex-direction: column !important;
+        text-align: center !important;
+        align-items: center !important;
+        gap: 32px !important;
+        margin-bottom: 48px !important;
     }
     .profile-v4-identity-box {
         display: flex;
@@ -677,4 +678,33 @@
         width: auto; /* Natural width */
         min-width: 160px;
     }
+}
+
+/* Professional ATS-ready PDF Print Styles */
+@media print {
+    body { background: white !important; color: black !important; font-size: 12pt !important; }
+    .profile-layout-container { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
+    .profile-v4-header, .seeker-header-v2 {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-end !important;
+        border-bottom: 2px solid #1d3469;
+        padding-bottom: 20px !important;
+        margin-bottom: 30px !important;
+    }
+    .profile-v4-actions, .jobs-ad-container, .jobs-global-footer, .profile-v4-sidebar section:not(.contact-card), .integrity-card, .performance-card, #share-modal, #message-modal { display: none !important; }
+    .profile-v4-grid { display: block !important; }
+    .profile-v4-main { width: 100% !important; float: none !important; }
+    .v4-card {
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 1px solid #eee !important;
+        padding: 10px 0 !important;
+        margin-bottom: 15px !important;
+        page-break-inside: avoid;
+    }
+    .v4-card-title { color: #1d3469 !important; border-bottom: 1px solid #1d3469; padding-bottom: 5px; margin-bottom: 15px !important; }
+    .v4-pastel-pill { border: 1px solid #ccc !important; background: none !important; color: black !important; }
+    .seeker-name-v2 { font-size: 24pt !important; }
+    .experience-line-v2 { font-size: 12pt !important; }
 }

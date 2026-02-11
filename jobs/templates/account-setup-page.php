@@ -22,7 +22,7 @@
             width: 100% !important;
             max-width: 1200px !important;
             margin: 0 auto !important;
-            padding: 60px 20px !important;
+            padding: 40px 20px !important;
             box-sizing: border-box !important;
         }
     </style>
