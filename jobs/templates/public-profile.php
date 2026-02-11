@@ -18,14 +18,17 @@ $user = $profile_slug ? get_user_by('slug', $profile_slug) : null;
 if (!$user) wp_die('Profile not found.');
 
 $user_id = $user->ID;
-$visibility = get_user_meta($user_id, 'profile_visibility', true) ?: 'public';
+// Optimize meta fetching
+$all_meta = get_user_meta($user_id);
+$visibility = (isset($all_meta['profile_visibility'][0])) ? $all_meta['profile_visibility'][0] : 'public';
+
 if ( $visibility === 'private' && get_current_user_id() !== $user_id && !current_user_can('manage_options') ) {
     wp_die('This profile is set to private.');
 }
 $role = $user->roles[0] ?? 'job_seeker';
 $display_name = $user->display_name;
-$is_verified = get_user_meta($user_id, '_is_email_verified', true);
-$last_activity = get_user_meta($user_id, '_last_activity', true);
+$is_verified = isset($all_meta['_is_email_verified'][0]) ? $all_meta['_is_email_verified'][0] : false;
+$last_activity = isset($all_meta['_last_activity'][0]) ? $all_meta['_last_activity'][0] : false;
 
 
 get_header();
@@ -34,8 +37,8 @@ get_header();
     <div class="profile-layout-container">
 
         <?php if ($role === 'employer') :
-            $company = get_user_meta($user_id, 'jobs_company_data', true) ?: array();
-            $logo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: (!empty($company['logo']) ? $company['logo'] : get_avatar_url($user_id, array('size' => 120)));
+            $company = isset($all_meta['jobs_company_data'][0]) ? maybe_unserialize($all_meta['jobs_company_data'][0]) : array();
+            $logo = isset($all_meta['_jobs_profile_photo'][0]) ? $all_meta['_jobs_profile_photo'][0] : (!empty($company['logo']) ? $company['logo'] : get_avatar_url($user_id, array('size' => 120)));
 
             $active_jobs = new WP_Query(array(
                 'post_type' => 'job', 'post_status' => 'publish', 'author' => $user_id, 'posts_per_page' => 5
@@ -290,11 +293,11 @@ get_header();
             <?php Jobs_Ads_Service::display_ad('below_content'); ?>
 
         <?php else :
-            $cv = get_user_meta($user_id, 'jobs_cv_data_v2', true) ?: array();
-            $spec = get_user_meta($user_id, '_specialization', true) ?: 'Professional';
-            $sec_specs = get_user_meta($user_id, '_secondary_specs', true) ?: array();
-            $prof = get_user_meta($user_id, '_profession', true);
-            $exp_years = get_user_meta($user_id, '_experience', true);
+            $cv = isset($all_meta['jobs_cv_data_v2'][0]) ? maybe_unserialize($all_meta['jobs_cv_data_v2'][0]) : array();
+            $spec = isset($all_meta['_specialization'][0]) ? $all_meta['_specialization'][0] : 'Professional';
+            $sec_specs = isset($all_meta['_secondary_specs'][0]) ? maybe_unserialize($all_meta['_secondary_specs'][0]) : array();
+            $prof = isset($all_meta['_profession'][0]) ? $all_meta['_profession'][0] : '';
+            $exp_years = isset($all_meta['_experience'][0]) ? $all_meta['_experience'][0] : '';
 
             $academic = !empty($cv['academic']) ? $cv['academic'] : array();
             $experience = !empty($cv['experience']) ? $cv['experience'] : array();
@@ -303,13 +306,13 @@ get_header();
             $refs = !empty($cv['references']) ? $cv['references'] : array();
             $skills = array_filter(explode(',', $cv['skills']['core'] ?? ''));
 
-            $country = get_user_meta($user_id, '_country', true);
-            $region = get_user_meta($user_id, '_region', true);
+            $country = isset($all_meta['_country'][0]) ? $all_meta['_country'][0] : '';
+            $region = isset($all_meta['_region'][0]) ? $all_meta['_region'][0] : '';
             ?>
             <!-- HEADER: SEEKER -->
             <header class="profile-v4-header seeker-header-v2">
                 <div class="profile-v4-avatar-box" style="position: relative;">
-                    <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 180)); ?>
+                    <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
                     <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
                     <?php if(($cv['preferences']['availability_status'] ?? '') === 'Immediate'): ?>
                         <div class="v4-open-to-work-overlay" title="Open to Work"></div>
@@ -318,12 +321,12 @@ get_header();
                 <div class="profile-v4-identity-box seeker-identity-v2">
                     <h1 class="seeker-name-v2"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></span></h1>
 
-                    <div class="email-capsule-wrap">
-                         <span class="v4-pastel-pill pill-email"><?php echo esc_html($cv['personal']['email'] ?? $user->user_email); ?></span>
+                    <div class="seeker-header-capsules">
+                        <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
+                        <span class="v4-pastel-pill pill-blue"><?php echo esc_html($prof ?: 'Professional'); ?></span>
                     </div>
 
                     <div class="seeker-meta-v2">
-                        <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
                         <p class="experience-line-v2"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</p>
                     </div>
 
@@ -363,6 +366,22 @@ get_header();
             <div class="profile-v4-grid">
                 <div class="profile-v4-main">
                     <?php Jobs_Ads_Service::display_ad('above_content'); ?>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
+                        <div class="v4-card-body">
+                            <?php $summary = get_user_meta($user_id, '_professional_summary', true) ?: (get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.'); ?>
+                            <p><?php echo nl2br(esc_html($summary)); ?></p>
+
+                            <?php if($philosophy = get_user_meta($user_id, '_professional_philosophy', true)): ?>
+                            <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
+                                <span class="dashicons dashicons-format-quote" style="position: absolute; right: 20px; top: 20px; color: #fbcfe8; font-size: 32px; width: 32px; height: 32px;"></span>
+                                <h4 style="font-size: 14px; font-weight: 700; color: #9d174d; margin-bottom: 8px;">Professional Philosophy</h4>
+                                <p style="font-size: 13px; color: #be185d; line-height: 1.6; font-style: italic; margin: 0; max-width: 90%;">"<?php echo esc_html($philosophy); ?>"</p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </section>
 
                     <section class="v4-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-portfolio"></span> Professional Experience</h3>
@@ -457,21 +476,6 @@ get_header();
                     </section>
                     <?php endif; ?>
 
-                    <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
-                        <div class="v4-card-body">
-                            <?php $summary = get_user_meta($user_id, '_professional_summary', true) ?: (get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.'); ?>
-                            <p><?php echo nl2br(esc_html($summary)); ?></p>
-
-                            <?php if($philosophy = get_user_meta($user_id, '_professional_philosophy', true)): ?>
-                            <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
-                                <span class="dashicons dashicons-format-quote" style="position: absolute; right: 20px; top: 20px; color: #fbcfe8; font-size: 32px; width: 32px; height: 32px;"></span>
-                                <h4 style="font-size: 14px; font-weight: 700; color: #9d174d; margin-bottom: 8px;">Professional Philosophy</h4>
-                                <p style="font-size: 13px; color: #be185d; line-height: 1.6; font-style: italic; margin: 0; max-width: 90%;">"<?php echo esc_html($philosophy); ?>"</p>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </section>
 
                     <section class="v4-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-admin-settings"></span> Strategic Core Competencies</h3>

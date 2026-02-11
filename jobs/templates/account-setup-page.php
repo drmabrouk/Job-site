@@ -12,18 +12,18 @@
     <?php wp_head(); ?>
     <style>
         body.jobs-setup-standalone {
-            background: #ffffff !important;
+            background: #f8fafc !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
             min-height: 100vh !important;
-            overflow-x: hidden !important;
         }
         .jobs-setup-root-container {
             width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 60px 20px !important;
+            box-sizing: border-box !important;
         }
     </style>
 </head>
@@ -31,7 +31,7 @@
 
 <div class="jobs-setup-root-container">
     <?php
-    // Output the setup template directly to ensure no theme filters interfere
+    // Output the setup template directly
     include JOBS_PLUGIN_DIR . 'templates/account-setup.php';
     ?>
 </div>
