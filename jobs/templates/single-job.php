@@ -2,6 +2,7 @@
 /**
  * Template: SaaS Enterprise Professional Job Details (V7)
  * Strictly reusing the visual structure and design philosophy of the public profile page.
+ * Optimized for centering, SEO, and AdSense.
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -10,7 +11,6 @@ get_header();
 if ( have_posts() ) : while ( have_posts() ) : the_post();
     $post_id = get_the_ID();
     $company_name = get_post_meta( $post_id, '_company_name', true );
-    $company_logo = get_post_meta( $post_id, '_company_logo', true );
 
     // Taxonomies
     $countries = get_the_terms( $post_id, 'country' );
@@ -39,24 +39,14 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
     $share_title = urlencode(get_the_title());
 ?>
 
-<div class="jobs-premium-profile-v4">
+<div class="jobs-premium-profile-v4 job-details-v7-optimized">
     <div class="profile-layout-container">
 
-        <!-- HEADER: MIRRORING PUBLIC PROFILE -->
-        <header class="profile-v4-header">
-            <div class="profile-v4-avatar-box">
-                <?php if($company_logo): ?>
-                    <img src="<?php echo esc_url($company_logo); ?>" alt="<?php echo esc_attr($company_name); ?>">
-                <?php else: ?>
-                    <div style="width:100%; height:100%; background:#f8fafc; display:flex; align-items:center; justify-content:center; color:#cbd5e1;">
-                        <span class="dashicons dashicons-businesswoman" style="font-size: 48px; width:48px; height:48px;"></span>
-                    </div>
-                <?php endif; ?>
-            </div>
-
+        <!-- HEADER: CENTERED AND BALANCED -->
+        <header class="profile-v4-header no-avatar">
             <div class="profile-v4-identity-box">
                 <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
-                    <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php the_title(); ?> <span class="badge-verified-circle" title="Verified Posting" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
+                    <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php the_title(); ?></h1>
                 </div>
                 <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($emp_type ?: 'Full Time'); ?></span>
@@ -80,12 +70,12 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
             <div class="profile-v4-actions">
                 <div class="v4-action-group">
                     <button class="v4-btn-primary quick-apply-toggle" data-job-id="<?php echo $post_id; ?>"><span class="dashicons dashicons-paper-plane"></span> Apply Now</button>
-                    <button class="v4-icon-btn open-message-modal" data-receiver="<?php echo $author_id; ?>" title="Career Inquiry"><span class="dashicons dashicons-email-alt"></span></button>
-                    <button class="v4-icon-btn" onclick="window.print()" title="Print Job Detail"><span class="dashicons dashicons-media-document"></span></button>
                     <button class="v4-icon-btn open-share-modal" title="Share Job"><span class="dashicons dashicons-share"></span></button>
                 </div>
             </div>
         </header>
+
+        <?php Jobs_Ads_Service::display_ad('above_content'); ?>
 
         <div class="profile-v4-grid">
 
@@ -134,6 +124,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                         <a href="https://twitter.com/intent/tweet?text=<?php echo $share_title; ?>&url=<?php echo $share_url; ?>" target="_blank" class="share-icon-btn share-twitter" title="Share via X" style="background:#000; color:white;"><span class="dashicons dashicons-twitter"></span></a>
                     </div>
                 </div>
+
+                <?php Jobs_Ads_Service::display_ad('below_content'); ?>
 
             </div>
 
@@ -189,6 +181,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
                 </section>
                 <?php endif; ?>
 
+                <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
+
                 <section class="v4-card" style="background: linear-gradient(135deg, #1d3469 0%, #2a4a8c 100%); border: none; color: #FFFFFF; text-align: center;">
                     <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(255,255,255,0.2);">
                         <span class="dashicons dashicons-building" style="font-size: 28px; width: 28px; height: 28px; color: #60a5fa;"></span>
@@ -204,7 +198,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
     </div>
 </div>
 
-<!-- Modal: Share Job (Mirrored from Profile) -->
+<!-- Modal: Share Job -->
 <div id="share-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
     <div class="modal-content" style="background:white; padding:40px; border-radius:24px; width:100%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.15); text-align: center;">
         <div style="width: 64px; height: 64px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #1d3469;">
@@ -231,19 +225,6 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
     </div>
 </div>
 
-<!-- Modal: Contact/Message (Mirrored from Profile) -->
-<div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
-    <div class="modal-content" style="background:white; padding:32px; border-radius:16px; width:100%; max-width:480px; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
-        <h3 style="margin-top:0; font-size: 18px; font-weight: 600; color: #111;">Contact Employer</h3>
-        <p style="color: #666; font-size: 13px; margin: 8px 0 24px;">Initiate a professional inquiry regarding this position.</p>
-        <textarea id="message-text" placeholder="Write your professional message here..." style="width:100%; height:160px; padding:12px; border-radius:8px; border:1px solid #E0E0E0; margin-bottom: 24px; font-family: inherit; font-size: 13px;"></textarea>
-        <div style="display:flex; justify-content:flex-end; gap:12px;">
-            <button class="v4-btn-secondary close-modal">Discard</button>
-            <button class="v4-btn-primary" id="confirm-send-message">Deliver Message</button>
-        </div>
-    </div>
-</div>
-
 <script>
 jQuery(document).ready(function($) {
     // Share Modal Logic
@@ -261,41 +242,6 @@ jQuery(document).ready(function($) {
         $btn.html('<span class="dashicons dashicons-yes" style="color: #10b981;"></span>');
         setTimeout(function() { $btn.html(originalHtml); }, 2000);
     });
-
-    // Contact Modal Logic
-    $('.open-message-modal').on('click', function() {
-        $('#message-modal').css('display', 'flex');
-    });
-    $('.close-modal').on('click', function() {
-        $('#message-modal').hide();
-        $('#message-modal .modal-content').html('<h3 style="margin-top:0; font-size: 18px; font-weight: 600; color: #111;">Contact Employer</h3><p style="color: #666; font-size: 13px; margin: 8px 0 24px;">Initiate a professional inquiry regarding this position.</p><textarea id="message-text" placeholder="Write your professional message here..." style="width:100%; height:160px; padding:12px; border-radius:8px; border:1px solid #E0E0E0; margin-bottom: 24px; font-family: inherit; font-size: 13px;"></textarea><div style="display:flex; justify-content:flex-end; gap:12px;"><button class="v4-btn-secondary close-modal">Discard</button><button class="v4-btn-primary" id="confirm-send-message">Deliver Message</button></div>');
-        bindMessageEvents();
-    });
-
-    function bindMessageEvents() {
-        $('.close-modal').off('click').on('click', function() { $('#message-modal').hide(); });
-        $('#confirm-send-message').off('click').on('click', function() {
-            var msg = $('#message-text').val();
-            if(!msg) return;
-            var btn = $(this);
-            btn.prop('disabled', true).text('Sending...');
-            $.post(jobs_vars.ajax_url, {
-                action: 'jobs_send_message',
-                receiver_id: <?php echo $author_id; ?>,
-                message: msg,
-                nonce: '<?php echo wp_create_nonce("jobs_messaging_nonce"); ?>'
-            }, function(res) {
-                if(res.success) {
-                    $('#message-modal .modal-content').html('<div style="text-align:center; padding: 24px;"><h3>Message Delivered</h3><p style="font-size:13px; color:#666;">Your inquiry has been sent successfully.</p><button class="v4-btn-primary close-modal" style="margin-top:16px;">Close</button></div>');
-                    $('.close-modal').on('click', function() { $('#message-modal').hide(); });
-                } else {
-                    alert('Failed to send message.');
-                    btn.prop('disabled', false).text('Deliver Message');
-                }
-            });
-        });
-    }
-    bindMessageEvents();
 });
 </script>
 
