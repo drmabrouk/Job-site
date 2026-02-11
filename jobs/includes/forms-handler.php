@@ -600,24 +600,36 @@ function jobs_ajax_save_cv_handler_v3() {
     // Critical: Update meta and confirm propagation
     update_user_meta( $user_id, 'jobs_cv_data_v2', $cv_data );
 
-    // Sync to individual meta for seeker filtering/directory
-    $visibility = (isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public') ? 'public' : 'private';
-    update_user_meta( $user_id, 'profile_visibility', $visibility );
-
-    $primary_spec = sanitize_text_field($_POST['personal']['specialization'] ?? '');
-    update_user_meta( $user_id, '_specialization', $primary_spec );
-    if (isset($_POST['personal']['secondary_specs'])) {
-        update_user_meta( $user_id, '_secondary_specs', array_map('sanitize_text_field', $_POST['personal']['secondary_specs']) );
+    // Sync to individual meta for seeker filtering/directory - Only if data is present
+    if (isset($_POST['profile_visibility'])) {
+        $visibility = $_POST['profile_visibility'] === 'public' ? 'public' : 'private';
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
     }
-    update_user_meta( $user_id, '_experience', ceil($total_experience_years) );
-    update_user_meta( $user_id, '_nationality', sanitize_text_field($_POST['personal']['nationality'] ?? '') );
-    update_user_meta( $user_id, '_country', sanitize_text_field($_POST['personal']['country'] ?? '') );
-    update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] ?? '' );
-    update_user_meta( $user_id, '_professional_summary', sanitize_textarea_field($_POST['personal']['summary'] ?? '') );
-    update_user_meta( $user_id, '_key_accomplishments', sanitize_textarea_field($_POST['personal']['accomplishments'] ?? '') );
-    update_user_meta( $user_id, '_professional_philosophy', sanitize_text_field($_POST['personal']['philosophy'] ?? '') );
-    update_user_meta( $user_id, '_qualification', $cv_data['academic'][0]['degree'] ?? '' );
-    update_user_meta( $user_id, '_english_level', $cv_data['languages']['score'] ?? '' );
+
+    if (isset($_POST['personal'])) {
+        $primary_spec = sanitize_text_field($_POST['personal']['specialization'] ?? '');
+        if ($primary_spec) update_user_meta( $user_id, '_specialization', $primary_spec );
+
+        if (isset($_POST['personal']['secondary_specs'])) {
+            update_user_meta( $user_id, '_secondary_specs', array_map('sanitize_text_field', $_POST['personal']['secondary_specs']) );
+        }
+
+        if ($total_experience_years > 0) update_user_meta( $user_id, '_experience', ceil($total_experience_years) );
+
+        $nationality = sanitize_text_field($_POST['personal']['nationality'] ?? '');
+        if ($nationality) update_user_meta( $user_id, '_nationality', $nationality );
+
+        $country = sanitize_text_field($_POST['personal']['country'] ?? '');
+        if ($country) update_user_meta( $user_id, '_country', $country );
+
+        if (isset($cv_data['personal']['gender'])) update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] );
+        if (isset($_POST['personal']['summary'])) update_user_meta( $user_id, '_professional_summary', sanitize_textarea_field($_POST['personal']['summary']) );
+        if (isset($_POST['personal']['accomplishments'])) update_user_meta( $user_id, '_key_accomplishments', sanitize_textarea_field($_POST['personal']['accomplishments']) );
+        if (isset($_POST['personal']['philosophy'])) update_user_meta( $user_id, '_professional_philosophy', sanitize_text_field($_POST['personal']['philosophy']) );
+    }
+
+    if (isset($cv_data['academic'][0]['degree'])) update_user_meta( $user_id, '_qualification', $cv_data['academic'][0]['degree'] );
+    if (isset($cv_data['languages']['score'])) update_user_meta( $user_id, '_english_level', $cv_data['languages']['score'] );
 
     // Compatibility update for legacy searches
     $legacy_cv = array(
@@ -711,14 +723,20 @@ function jobs_ajax_save_company_handler() {
         'last_update'      => current_time('mysql')
     );
 
+    // Merge with existing company data to prevent overwriting during photo-only uploads
+    $existing_company = get_user_meta( $user_id, 'jobs_company_data', true ) ?: array();
+    $company_data = array_merge($existing_company, $company_data);
+
     update_user_meta( $user_id, 'jobs_company_data', $company_data );
 
-    $visibility = (isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public') ? 'public' : 'private';
-    update_user_meta( $user_id, 'profile_visibility', $visibility );
+    if (isset($_POST['profile_visibility'])) {
+        $visibility = $_POST['profile_visibility'] === 'public' ? 'public' : 'private';
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
+    }
 
     // Sync to separate meta for search
-    update_user_meta( $user_id, '_company_industry', $company_data['industry'] );
-    update_user_meta( $user_id, '_company_type', $company_data['company_type'] );
+    if (!empty($company_data['industry'])) update_user_meta( $user_id, '_company_industry', $company_data['industry'] );
+    if (!empty($company_data['company_type'])) update_user_meta( $user_id, '_company_type', $company_data['company_type'] );
 
     wp_send_json_success( 'Company profile updated successfully.' );
 }

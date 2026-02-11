@@ -210,6 +210,38 @@
     align-items: center;
 }
 
+.v4-app-count-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    border-right: 1px solid #e2e8f0;
+    margin-right: 5px;
+    color: #1d3469;
+}
+
+.v4-app-count-indicator .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+
+.v4-app-count-indicator strong {
+    font-size: 16px;
+    line-height: 1.1;
+}
+
+.v4-app-count-indicator small {
+    font-size: 9px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+}
+
 /* Career Profile Items */
 .v4-career-item {
     display: flex;
@@ -293,20 +325,20 @@
 @media (max-width: 768px) {
     .profile-v4-header {
         flex-direction: column;
-        text-align: center;
+        text-align: left;
         gap: 25px;
         margin-bottom: 40px;
     }
     .profile-v4-identity-box h1 {
         font-size: 30px;
-        justify-content: center;
+        justify-content: flex-start;
     }
     .profile-v4-location-info {
-        justify-content: center;
+        justify-content: flex-start;
     }
     .profile-v4-actions {
         width: 100%;
-        justify-content: center;
+        justify-content: flex-start;
     }
     .v4-card {
         padding: 30px 20px;
