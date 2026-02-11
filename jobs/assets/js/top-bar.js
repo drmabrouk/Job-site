@@ -27,12 +27,45 @@ jQuery(document).ready(function($) {
         $('#jobs-apps-menu').removeClass('active');
 
         if ($('#jobs-notif-menu').hasClass('active')) {
+            $('#jobs-notif-detail').hide();
+            $('#jobs-notif-list').show();
+            $('.dropdown-header strong').text('Notifications');
             loadNotifications();
         }
     });
 
     $('#jobs-notif-menu').on('click', function(e) {
         e.stopPropagation();
+    });
+
+    $(document).on('click', '.notif-item', function() {
+        var $this = $(this);
+        var content = $this.data('content');
+        var time = $this.data('time');
+        var avatar = $this.data('avatar');
+        var sender = $this.data('sender');
+
+        $('#notif-detail-content').text(content);
+        $('#notif-detail-time').text(time);
+        $('#notif-detail-sender').text(sender);
+
+        if (avatar) {
+            $('#notif-detail-avatar').attr('src', avatar).show();
+            $('#notif-detail-icon-placeholder').hide();
+        } else {
+            $('#notif-detail-avatar').hide();
+            $('#notif-detail-icon-placeholder').show();
+        }
+
+        $('#jobs-notif-list').hide();
+        $('#jobs-notif-detail').show();
+        $('.dropdown-header strong').text('Notification Detail');
+    });
+
+    $(document).on('click', '#notif-back', function() {
+        $('#jobs-notif-detail').hide();
+        $('#jobs-notif-list').show();
+        $('.dropdown-header strong').text('Notifications');
     });
 
     function loadNotifications() {

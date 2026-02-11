@@ -28,9 +28,13 @@ require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-sample-data-service
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-auth-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-backup-service.php';
 require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-data-service.php';
+require_once JOBS_PLUGIN_DIR . 'includes/services/class-jobs-ads-service.php';
 
 // Initialize Services
 Jobs_SEO_Service::init();
+
+// Ensure DB schema is up to date (handles sender_id column addition)
+add_action( 'init', array( 'Jobs_DB_Service', 'setup_tables' ), 5 );
 
 // Include components
 require_once JOBS_PLUGIN_DIR . 'includes/roles.php';

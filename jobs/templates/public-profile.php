@@ -27,45 +27,9 @@ $display_name = $user->display_name;
 $is_verified = get_user_meta($user_id, '_is_email_verified', true);
 $last_activity = get_user_meta($user_id, '_last_activity', true);
 
-/**
- * Helper to get flag URL from country slug
- */
-if ( ! function_exists( 'jobs_get_flag_url' ) ) {
-    function jobs_get_flag_url($slug) {
-        $mapping = array(
-            'egypt' => 'eg', 'saudi-arabia' => 'sa', 'uae' => 'ae', 'jordan' => 'jo',
-            'qatar' => 'qa', 'kuwait' => 'kw', 'bahrain' => 'bh', 'oman' => 'om',
-            'lebanon' => 'lb', 'usa' => 'us', 'uk' => 'gb', 'canada' => 'ca', 'australia' => 'au'
-        );
-        $code = isset($mapping[$slug]) ? $mapping[$slug] : '';
-        return $code ? "https://flagcdn.com/w40/{$code}.png" : '';
-    }
-}
-
-// Pre-fetch recent messages for the logged-in user to support the slide-down notification panel
-$recent_messages_json = '[]';
-if ( is_user_logged_in() ) {
-    global $wpdb;
-    $curr_id = get_current_user_id();
-    $msg_table = Jobs_DB_Service::get_table('messages');
-    if ( $wpdb->get_var("SHOW TABLES LIKE '$msg_table'") ) {
-        $recent_msgs = $wpdb->get_results($wpdb->prepare(
-            "SELECT m.*, u.display_name as sender_name FROM $msg_table m
-             JOIN {$wpdb->users} u ON m.sender_id = u.ID
-             WHERE m.receiver_id = %d ORDER BY m.timestamp DESC LIMIT 10",
-            $curr_id
-        ));
-        foreach($recent_msgs as &$rm) {
-            $rm->avatar = get_avatar_url($rm->sender_id);
-            $rm->role = get_user_meta($rm->sender_id, '_specialization', true) ?: 'Professional';
-        }
-        $recent_messages_json = json_encode($recent_msgs);
-    }
-}
 
 get_header();
 ?>
-<script>window.v4RecentMessages = <?php echo $recent_messages_json; ?>;</script>
 <div class="jobs-premium-profile-v4">
     <div class="profile-layout-container">
 
@@ -88,13 +52,14 @@ get_header();
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($company['name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified Entity" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                     </div>
-                    <div style="margin: 10px 0;">
-                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px;"><?php echo esc_html($company['industry'] ?? 'Corporate Entity'); ?></span>
+                    <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($company['industry'] ?? 'Corporate Entity'); ?></span>
+                        <span class="v4-pastel-pill pill-green" style="height: 24px; font-size: 11px; width: auto;">Verified Entity</span>
                     </div>
                     <p class="profile-v4-headline"><?php echo esc_html($company['legal_name'] ?? ''); ?></p>
                     <div class="profile-v4-location-info">
                         <?php $c_slug = strtolower(str_replace(' ', '-', $company['address'] ?? '')); ?>
-                        <?php if($flag = jobs_get_flag_url($c_slug)): ?>
+                        <?php if($flag = Jobs_Data_Service::get_flag_url($c_slug)): ?>
                             <img src="<?php echo $flag; ?>" class="country-flag-icon">
                         <?php endif; ?>
                         <span><?php echo esc_html($company['address'] ?? 'International'); ?></span>
@@ -106,7 +71,7 @@ get_header();
                         <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
                         <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                         <?php if ( get_current_user_id() === $user_id ) : ?>
-                            <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                            <button class="v4-icon-btn jobs-module-link" data-module="company-profile" title="Update Company Profile"><span class="dashicons dashicons-admin-generic"></span></button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -319,8 +284,13 @@ get_header();
                     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
                     </div>
-                    <div style="margin: 10px 0;">
-                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px;"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+                    <div style="margin: 10px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span class="v4-pastel-pill pill-blue" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+                        <?php
+                        $status = $cv['preferences']['availability_status'] ?? 'Immediate';
+                        $status_pill = ($status === 'Immediate') ? 'pill-green' : 'pill-yellow';
+                        ?>
+                        <span class="v4-pastel-pill <?php echo $status_pill; ?>" style="height: 24px; font-size: 11px; width: auto;"><?php echo esc_html($status); ?></span>
                     </div>
                     <p class="profile-v4-headline"><?php echo esc_html($spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Years Exp.
                     <?php
@@ -339,7 +309,7 @@ get_header();
                         ?>
                         <?php if($nationality): ?>
                             <div class="location-item-row" title="Nationality">
-                                <?php if($f = jobs_get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
                                 <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
                             </div>
                         <?php endif; ?>
@@ -347,7 +317,7 @@ get_header();
                         <?php if($residence): ?>
                             <div class="location-item-row" title="Country of Residence">
                                 <span>Resident in </span>
-                                <?php if($f = jobs_get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon" style="margin-left: 5px;"><?php endif; ?>
+                                <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon" style="margin-left: 5px;"><?php endif; ?>
                                 <span><?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
                             </div>
                         <?php endif; ?>
@@ -591,6 +561,28 @@ get_header();
                             <span style="letter-spacing: 0.1em;">COMPLETENESS SCORE</span>
                             <span style="color: #34d399; font-size: 14px;"><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
                         </div>
+
+                        <?php
+                        $tips = array();
+                        if(empty($cv['personal']['summary'])) $tips[] = "Add a professional summary";
+                        if(empty($cv['experience'])) $tips[] = "List your work experience";
+                        if(empty($cv['academic'])) $tips[] = "Add your academic history";
+                        if(empty($skills)) $tips[] = "Highlight your key skills";
+                        if(empty($portfolio)) $tips[] = "Showcase your work samples";
+
+                        if(!empty($tips)): ?>
+                            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                <div style="font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">Improve Your Presence</div>
+                                <ul style="margin: 0; padding: 0; list-style: none;">
+                                    <?php foreach(array_slice($tips, 0, 3) as $tip): ?>
+                                        <li style="font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.9);">
+                                            <span class="dashicons dashicons-plus-alt" style="font-size: 14px; width: 14px; height: 14px; color: #34d399;"></span>
+                                            <?php echo esc_html($tip); ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
                     </section>
 
                     <div style="text-align: center; color: #999; font-size: 11px; font-weight: 500;">

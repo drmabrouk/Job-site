@@ -233,7 +233,13 @@ function jobs_ajax_send_message() {
     ) );
 
     // Also create a notification for the receiver
-    Jobs_Job_Service::add_notification( $receiver_id, 'You have a new message from ' . get_userdata($sender_id)->display_name, $sender_id );
+    $sender_name = get_userdata($sender_id)->display_name;
+    $notification_content = sprintf(
+        "Career Inquiry: %s has initiated a professional connection. Message excerpt: \"%s\"",
+        $sender_name,
+        wp_trim_words($message, 15)
+    );
+    Jobs_Job_Service::add_notification( $receiver_id, $notification_content, $sender_id );
 
     // Email Notification
     $recipient = get_userdata( $receiver_id );
@@ -525,7 +531,7 @@ function jobs_ajax_save_cv_handler_v3() {
     }
 
     $user_id = get_current_user_id();
-    $cv_data = array();
+    $cv_data = get_user_meta( $user_id, 'jobs_cv_data_v2', true ) ?: array();
 
     // Personal
     if(isset($_POST['personal'])) {
@@ -832,7 +838,8 @@ function jobs_ajax_get_notifications() {
         foreach ( $notifs as $n ) {
             $class = $n->is_read ? '' : 'unread';
             $sender_avatar = $n->sender_id ? get_avatar_url($n->sender_id) : '';
-            echo '<div class="notif-item ' . $class . '" data-content="' . esc_attr($n->content) . '" data-time="' . esc_attr(human_time_diff(strtotime($n->timestamp), current_time('timestamp')) . ' ago') . '" data-avatar="' . esc_attr($sender_avatar) . '">';
+            $sender_name = $n->sender_id ? get_userdata($n->sender_id)->display_name : 'Platform Notification';
+            echo '<div class="notif-item ' . $class . '" data-content="' . esc_attr($n->content) . '" data-time="' . esc_attr(human_time_diff(strtotime($n->timestamp), current_time('timestamp')) . ' ago') . '" data-avatar="' . esc_attr($sender_avatar) . '" data-sender="' . esc_attr($sender_name) . '">';
             echo '<div class="notif-content">' . esc_html($n->content) . '</div>';
             echo '<div style="font-size: 0.7em; color: #999; margin-top: 5px;">' . human_time_diff(strtotime($n->timestamp), current_time('timestamp')) . ' ago</div>';
             echo '</div>';
