@@ -5,11 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function jobs_enqueue_assets() {
-    // Rubik font
-    wp_enqueue_style( 'google-fonts-rubik', 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap', array(), null );
-
-    // Inter font for premium profiles
-    wp_enqueue_style( 'google-fonts-inter', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap', array(), null );
+    // Optimized Font Loading (Rubik & Inter combined)
+    wp_enqueue_style( 'jobs-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;700&display=swap', array(), null );
 
     // Dashicons for all browsers/devices
     wp_enqueue_style( 'dashicons' );

@@ -27,10 +27,11 @@
 .seeker-header-v2 {
     flex-direction: row !important;
     text-align: left !important;
-    align-items: flex-start !important;
+    align-items: center !important;
     justify-content: flex-start !important;
-    gap: 40px !important;
-    margin-bottom: 60px !important;
+    gap: 32px !important;
+    margin-bottom: 48px !important;
+    padding: 0 40px;
 }
 
 .seeker-identity-v2 {
@@ -38,30 +39,27 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start !important;
-    gap: 12px;
+    gap: 8px;
 }
 
 .seeker-name-v2 {
-    font-size: 36px !important; /* Slightly reduced as requested */
+    font-size: 32px !important; /* Reduced for better balance */
     margin: 0 !important;
-    line-height: 1.2 !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.02em;
 }
 
-.email-capsule-wrap {
+.seeker-header-capsules {
+    display: flex;
+    gap: 8px;
     margin: 4px 0;
-}
-
-.pill-email {
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
 }
 
 .seeker-meta-v2 {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin: 4px 0;
+    margin: 2px 0;
 }
 
 .experience-line-v2 {
@@ -110,13 +108,13 @@
 }
 
 .profile-v4-avatar-box {
-    width: 220px;
-    height: 220px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
-    border: 8px solid #FFFFFF;
-    box-shadow: 0 20px 48px rgba(0,0,0,0.12);
+    border: 6px solid #FFFFFF;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .profile-v4-avatar-box img {
@@ -410,6 +408,12 @@
     justify-content: center;
     width: 100%;
     margin-top: 10px;
+}
+
+.seeker-header-v2 .profile-v4-actions {
+    width: auto !important;
+    margin-top: 0 !important;
+    margin-left: auto;
 }
 
 .v4-action-group {
