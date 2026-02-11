@@ -13,11 +13,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 function jobs_render_essential_overlays() {
     if ( is_admin() ) return;
     ?>
-    <!-- Grid-based Applications Menu Overlay -->
+    <!-- Grid-based Account Management Menu Overlay -->
     <div class="jobs-apps-overlay-container" id="jobs-apps-menu">
         <div class="apps-grid-card">
             <div class="apps-grid-header">
-                <h3>Applications</h3>
+                <h3>Account Management</h3>
                 <span class="apps-grid-close" id="jobs-apps-close">&times;</span>
             </div>
             <div class="apps-grid-content">
@@ -39,16 +39,16 @@ function jobs_render_essential_overlays() {
 add_action( 'wp_footer', 'jobs_render_essential_overlays' );
 
 /**
- * Shortcode: [profile_management]
- * Outputs the Applications / Profile Management icon.
+ * Shortcode: [account_management_icon]
+ * Outputs the Account Management icon.
  */
-function jobs_profile_management_shortcode() {
+function jobs_account_management_shortcode() {
     if ( ! is_user_logged_in() ) return '';
 
     ob_start();
     ?>
     <div class="jobs-standalone-icon-wrap profile-management-trigger">
-        <div class="top-bar-icon-item" id="jobs-apps-toggle" title="Applications">
+        <div class="top-bar-icon-item" id="jobs-account-mgmt-toggle" title="Account Management">
             <span class="dashicons dashicons-screenoptions"></span>
         </div>
     </div>
@@ -95,6 +95,55 @@ function jobs_inject_secondary_logo() {
 }
 // add_action( 'wp_body_open', 'jobs_inject_secondary_logo' ); // Optional: uncomment if direct injection is preferred
 
+/**
+ * Shortcode: [notifications_icon]
+ * Standalone notifications icon and dropdown.
+ */
+function jobs_notifications_icon_shortcode() {
+    if ( ! is_user_logged_in() ) return '';
+
+    $current_user_id = get_current_user_id();
+    global $wpdb;
+    $table_notifications = Jobs_DB_Service::get_table( 'notifications' );
+    $unread_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_notifications WHERE user_id = %d AND is_read = 0", $current_user_id ) );
+
+    ob_start();
+    ?>
+    <div class="jobs-standalone-icon-wrap notifications-trigger-wrap">
+        <div class="top-bar-icon-item" id="jobs-notif-toggle" title="Notifications">
+            <span class="dashicons dashicons-bell"></span>
+            <?php if ($unread_count > 0) : ?>
+                <span class="notif-badge"><?php echo $unread_count; ?></span>
+            <?php endif; ?>
+
+            <div class="jobs-notif-dropdown" id="jobs-notif-menu">
+                <div class="dropdown-header">
+                    <strong>Notifications</strong>
+                </div>
+                <div id="jobs-notif-list" class="notif-list">
+                    <p style="padding:20px; text-align:center; color:#999;">Loading...</p>
+                </div>
+                <div id="jobs-notif-detail" style="display:none; padding: 20px; border-top: 1px solid #f1f5f9;">
+                    <button id="notif-back" class="v4-btn-secondary" style="height: 30px; padding: 0 12px; margin-bottom: 20px; font-size: 11px; width: auto;"><span class="dashicons dashicons-arrow-left-alt2" style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;"></span> Back</button>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                        <div style="width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 1px solid #eff6ff; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
+                            <img src="" id="notif-detail-avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                            <span class="dashicons dashicons-bell" id="notif-detail-icon-placeholder" style="color: #1d3469; font-size: 20px;"></span>
+                        </div>
+                        <div>
+                            <div id="notif-detail-sender" style="font-weight: 700; color: #1d3469; font-size: 14px;"></div>
+                            <div id="notif-detail-time" style="font-size: 11px; color: #94a3b8;"></div>
+                        </div>
+                    </div>
+                    <div id="notif-detail-content" style="font-size: 13px; color: #475569; line-height: 1.7; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
 function jobs_account_icon_shortcode() {
     $current_user = wp_get_current_user();
     $is_logged_in = is_user_logged_in();
@@ -104,42 +153,6 @@ function jobs_account_icon_shortcode() {
     <div class="jobs-standalone-icon-wrap account-access-wrap">
         <?php if ( $is_logged_in ) : ?>
             <div style="display: flex; align-items: center; gap: 15px;">
-                <!-- Notifications Icon -->
-                <?php
-                global $wpdb;
-                $table_notifications = Jobs_DB_Service::get_table( 'notifications' );
-                $unread_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_notifications WHERE user_id = %d AND is_read = 0", $current_user->ID ) );
-                ?>
-                <div class="top-bar-icon-item" id="jobs-notif-toggle" title="Notifications">
-                    <span class="dashicons dashicons-bell"></span>
-                    <?php if ($unread_count > 0) : ?>
-                        <span class="notif-badge"><?php echo $unread_count; ?></span>
-                    <?php endif; ?>
-
-                    <div class="jobs-notif-dropdown" id="jobs-notif-menu">
-                        <div class="dropdown-header">
-                            <strong>Notifications</strong>
-                        </div>
-                        <div id="jobs-notif-list" class="notif-list">
-                            <p style="padding:20px; text-align:center; color:#999;">Loading...</p>
-                        </div>
-                        <div id="jobs-notif-detail" style="display:none; padding: 20px; border-top: 1px solid #f1f5f9;">
-                            <button id="notif-back" class="v4-btn-secondary" style="height: 30px; padding: 0 12px; margin-bottom: 20px; font-size: 11px; width: auto;"><span class="dashicons dashicons-arrow-left-alt2" style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;"></span> Back</button>
-                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                                <div style="width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 1px solid #eff6ff; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
-                                    <img src="" id="notif-detail-avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                                    <span class="dashicons dashicons-bell" id="notif-detail-icon-placeholder" style="color: #1d3469; font-size: 20px;"></span>
-                                </div>
-                                <div>
-                                    <div id="notif-detail-sender" style="font-weight: 700; color: #1d3469; font-size: 14px;"></div>
-                                    <div id="notif-detail-time" style="font-size: 11px; color: #94a3b8;"></div>
-                                </div>
-                            </div>
-                            <div id="notif-detail-content" style="font-size: 13px; color: #475569; line-height: 1.7; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;"></div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- User Avatar & Dropdown -->
                 <div class="top-bar-user-item">
                     <img src="<?php echo get_avatar_url( $current_user->ID ); ?>" class="user-avatar-small" id="jobs-profile-toggle">

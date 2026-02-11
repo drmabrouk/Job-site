@@ -275,7 +275,7 @@ function jobs_ajax_quick_apply() {
 }
 add_action( 'wp_ajax_jobs_quick_apply', 'jobs_ajax_quick_apply' );
 
-// AJAX Quick Apply Form Loader (Multi-step)
+// AJAX Quick Apply Form Loader (Professional Overhaul)
 function jobs_ajax_load_quick_apply_form() {
     check_ajax_referer( 'jobs_main_nonce', 'nonce' );
 
@@ -283,25 +283,29 @@ function jobs_ajax_load_quick_apply_form() {
     if ( ! $job_id ) wp_send_json_error( 'Invalid job.' );
 
     $user_id = get_current_user_id();
+    $company_name = get_post_meta($job_id, '_company_name', true);
     $saved_letters = get_user_meta( $user_id, 'jobs_cover_letters', true ) ?: array('', '');
 
     ob_start();
     ?>
-    <div class="quick-apply-multi-step">
-        <div class="apply-steps-header">
-            <div class="apply-step-indicator active" data-step="1">1. Letter</div>
-            <div class="apply-step-indicator" data-step="2">2. Profile</div>
-            <div class="apply-step-indicator" data-step="3">3. Review</div>
-            <div class="apply-step-indicator" data-step="4">4. Submit</div>
+    <div class="quick-apply-professional-v2">
+        <div style="text-align: center; margin-bottom: 35px; border-bottom: 1px solid #f1f5f9; padding-bottom: 25px;">
+            <h2 style="color: #1d3469; margin: 0 0 10px; font-weight: 800; font-size: 1.6em;">Apply for this Position</h2>
+            <p style="color: #64748b; font-size: 0.95em; line-height: 1.6; max-width: 450px; margin: 0 auto;">You are about to submit your professional profile to <strong style="color: #1d3469;"><?php echo esc_html($company_name); ?></strong>. Please review and attach your cover letter.</p>
+        </div>
+
+        <div class="apply-steps-header" style="display: none;">
+            <div class="apply-step-indicator active" data-step="1">1</div>
+            <div class="apply-step-indicator" data-step="2">2</div>
         </div>
 
         <div class="apply-step-panel active" id="apply-step-1">
-            <h3>Choose or Write Cover Letter</h3>
-            <p style="font-size: 0.85em; color: #64748b; margin-bottom: 20px;">Select one of your saved letters or write a new one for this application.</p>
-
-            <div class="saved-letters-selector" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button type="button" class="jobs-btn-small select-saved-letter" data-index="0">Letter 1</button>
-                <button type="button" class="jobs-btn-small select-saved-letter" data-index="1">Letter 2</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0; color: #1d3469; font-weight: 700;">Professional Cover Letter</h4>
+                <div class="saved-letters-selector" style="display: flex; gap: 8px;">
+                    <button type="button" class="jobs-btn-minimal select-saved-letter" data-index="0" style="padding: 4px 10px; font-size: 0.7em;">Letter A</button>
+                    <button type="button" class="jobs-btn-minimal select-saved-letter" data-index="1" style="padding: 4px 10px; font-size: 0.7em;">Letter B</button>
+                </div>
             </div>
 
             <form class="jobs-quick-apply-form">
@@ -309,76 +313,20 @@ function jobs_ajax_load_quick_apply_form() {
                 <input type="hidden" name="job_id" value="<?php echo $job_id; ?>">
 
                 <div class="form-group">
-                    <textarea name="cover_letter" id="apply-cover-letter-text" placeholder="Write your cover letter here..." style="width:100%; height: 250px; border: 1px solid #e2e8f0; border-radius: 12px; padding:15px;"></textarea>
+                    <textarea name="cover_letter" id="apply-cover-letter-text" placeholder="Explain why you are the best fit for this role..." style="width:100%; height: 220px; border: 1.5px solid #e2e8f0; border-radius: 14px; padding:15px; font-family: inherit; font-size: 0.9em; transition: border-color 0.2s;"></textarea>
                 </div>
 
                 <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
                     <div class="save-letter-actions">
-                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="0" style="font-size: 0.75em;">Save to Slot 1</button>
-                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="1" style="font-size: 0.75em;">Save to Slot 2</button>
+                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="0" style="font-size: 0.65em; border:none; background:transparent; color:#94a3b8;">Save to Slot A</button>
+                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="1" style="font-size: 0.65em; border:none; background:transparent; color:#94a3b8;">Save to Slot B</button>
                     </div>
-                    <button type="button" class="jobs-btn next-apply-step" data-next="2">Next Step</button>
+                </div>
+
+                <div style="margin-top: 35px;">
+                    <button type="button" class="jobs-btn submit-quick-apply" style="width: 100%; padding: 18px; border-radius: 12px; background: #1d3469; color: white; font-weight: 700; font-size: 1.1em; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 10px 20px rgba(29, 52, 105, 0.15);">Confirm and Send Application</button>
                 </div>
             </form>
-        </div>
-
-        <div class="apply-step-panel" id="apply-step-2">
-            <h3>Your Professional Profile</h3>
-            <p style="font-size: 0.85em; color: #64748b; margin-bottom: 20px;">This is a summary of the profile that will be sent to the employer along with your letter.</p>
-
-            <div class="profile-preview-box" style="background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                <?php
-                $user = get_userdata($user_id);
-                $cv = get_user_meta($user_id, 'jobs_cv_data', true) ?: array();
-                ?>
-                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
-                    <?php echo get_avatar($user_id, 60, '', '', array('class'=>'rounded-full')); ?>
-                    <div>
-                        <strong style="display: block; font-size: 1.1em;"><?php echo esc_html($user->display_name); ?></strong>
-                        <span style="font-size: 0.85em; color: #64748b;"><?php echo esc_html(get_user_meta($user_id, '_specialization', true) ?: 'Professional'); ?></span>
-                    </div>
-                </div>
-                <div style="font-size: 0.9em; line-height: 1.6; color: #475569;">
-                    <div style="margin-bottom: 10px;"><strong>Experience:</strong> <?php echo esc_html(get_user_meta($user_id, '_experience', true) ?: '0'); ?> Years</div>
-                    <div style="margin-bottom: 10px;"><strong>Skills:</strong> <?php echo esc_html($cv['skills'] ?? 'Not specified'); ?></div>
-                    <div><strong>Education:</strong> <?php echo wp_trim_words($cv['education'] ?? 'Not specified', 20); ?></div>
-                </div>
-                <div style="margin-top: 20px; text-align: center;">
-                    <a href="#" class="jobs-module-link" data-module="cv-resume" style="font-size: 0.8em; color: var(--jobs-primary-color); text-decoration: underline;">Update Profile</a>
-                </div>
-            </div>
-
-            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
-                <button type="button" class="jobs-btn-minimal next-apply-step" data-next="1">Back</button>
-                <button type="button" class="jobs-btn next-apply-step" data-next="3">Next: Review Letter</button>
-            </div>
-        </div>
-
-        <div class="apply-step-panel" id="apply-step-3">
-            <h3>Review Application</h3>
-            <div class="review-box" style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
-                <div id="review-letter-content" style="white-space: pre-wrap; font-size: 0.95em; color: #334155;"></div>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <button type="button" class="jobs-btn-minimal export-pdf-letter">Export as PDF</button>
-                <button type="button" class="jobs-btn-minimal print-letter">Print Preview</button>
-            </div>
-
-            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
-                <button type="button" class="jobs-btn-minimal next-apply-step" data-next="2">Back</button>
-                <button type="button" class="jobs-btn next-apply-step" data-next="4">Finalize</button>
-            </div>
-        </div>
-
-        <div class="apply-step-panel" id="apply-step-4">
-            <h3>Ready to Submit?</h3>
-            <p>You are about to apply for <strong><?php echo get_the_title($job_id); ?></strong>. Your professional profile and cover letter will be sent to the employer.</p>
-
-            <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
-                <button type="button" class="jobs-btn submit-quick-apply" style="width: 100%; padding: 18px;">Confirm and Send Application</button>
-                <button type="button" class="jobs-btn-minimal next-apply-step" data-next="3" style="width: 100%;">Wait, let me check again</button>
-            </div>
         </div>
 
         <script>
@@ -831,7 +779,7 @@ function jobs_ajax_get_notifications() {
 
     global $wpdb;
     $table = Jobs_DB_Service::get_table( 'notifications' );
-    $notifs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE user_id = %d ORDER BY timestamp DESC LIMIT 10", $user_id ) );
+    $notifs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE user_id = %d ORDER BY timestamp DESC LIMIT 6", $user_id ) );
 
     ob_start();
     if ( $notifs ) {
