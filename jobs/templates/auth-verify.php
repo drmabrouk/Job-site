@@ -13,8 +13,8 @@ if ( ! $user ) {
     wp_die( 'Invalid user session.' );
 }
 ?>
-<div class="jobs-auth-container" style="background: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
-    <div class="jobs-auth-card" style="padding: 60px 40px; background: white; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08); width: 100%; max-width: 480px; text-align: center;">
+<div class="jobs-auth-container" style="background: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="jobs-auth-card" style="padding: 60px 40px; background: white; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.05); width: 100%; max-width: 480px; text-align: center; border: 1px solid #f1f5f9;">
         <div class="auth-header" style="margin-bottom: 40px;">
             <div style="width: 80px; height: 80px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; color: #1d3469;">
                 <span class="dashicons dashicons-shield-alt" style="font-size: 40px; width: 40px; height: 40px;"></span>

@@ -149,4 +149,18 @@ jQuery(document).ready(function($) {
 
     // Initialize styling for active button
     $('.account-type-btn.active').trigger('click');
+
+    // Username validation: minimum 4 English letters
+    $('#reg-username').on('blur', function() {
+        var val = $(this).val();
+        var $status = $('#auth-status-message');
+
+        if (val.length > 0 && val.length < 4) {
+            $status.html('<p style="background: #fef2f2; color: #b91c1c; padding: 10px; border-radius: 8px; border: 1px solid #fecaca;">The username must be at least 4 characters long.</p>');
+        } else if (val.length >= 4 && !/^[A-Za-z]+$/.test(val)) {
+            $status.html('<p style="background: #fef2f2; color: #b91c1c; padding: 10px; border-radius: 8px; border: 1px solid #fecaca;">The username must contain only English letters.</p>');
+        } else {
+            $status.empty();
+        }
+    });
 });

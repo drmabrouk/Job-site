@@ -103,7 +103,7 @@ $environments = Jobs_Data_Service::get_work_environments();
 
             <div class="form-group">
                 <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #1d3469; font-size: 0.9em;">Headquarters Location</label>
-                <input type="text" name="company_address" value="<?php echo esc_attr($company['address'] ?? ''); ?>" placeholder="City, Country" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1;">
+                <?php echo Jobs_Data_Service::render_country_picker('company_address', $company['address'] ?? ''); ?>
             </div>
 
             <div class="form-group">
