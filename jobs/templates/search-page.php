@@ -12,7 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
         $logo_width = get_option( 'jobs_logo_width', '180' );
         $logo_height = get_option( 'jobs_logo_height', 'auto' );
         ?>
-        <img src="<?php echo esc_url( $logo_url ); ?>" alt="Site Logo" class="jobs-main-logo" style="--logo-custom-width:<?php echo esc_attr($logo_width); ?>px; height:<?php echo esc_attr($logo_height); ?>;">
+        <a href="<?php echo home_url('/'); ?>" style="display: block; width: fit-content; margin: 0 auto; border: none; outline: none; background: transparent; text-decoration: none;">
+            <img src="<?php echo esc_url( $logo_url ); ?>" alt="Site Logo" class="jobs-main-logo" style="--logo-custom-width:<?php echo esc_attr($logo_width); ?>px; height:<?php echo esc_attr($logo_height); ?>; display: block;">
+        </a>
     </div>
     <?php endif; ?>
 
@@ -46,35 +48,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <span class="filter-icon dashicons dashicons-location"></span>
                         <select name="country" id="jobs-input-country">
                             <option value="">Country</option>
-                            <optgroup label="Middle East">
-                                <option value="algeria">Algeria</option>
-                                <option value="bahrain">Bahrain</option>
-                                <option value="egypt">Egypt</option>
-                                <option value="iran">Iran</option>
-                                <option value="iraq">Iraq</option>
-                                <option value="jordan">Jordan</option>
-                                <option value="kuwait">Kuwait</option>
-                                <option value="lebanon">Lebanon</option>
-                                <option value="libya">Libya</option>
-                                <option value="morocco">Morocco</option>
-                                <option value="oman">Oman</option>
-                                <option value="palestine">Palestine</option>
-                                <option value="qatar">Qatar</option>
-                                <option value="saudi-arabia">Saudi Arabia</option>
-                                <option value="syria">Syria</option>
-                                <option value="tunisia">Tunisia</option>
-                                <option value="uae">United Arab Emirates</option>
-                                <option value="yemen">Yemen</option>
-                            </optgroup>
-                            <optgroup label="English Official">
-                                <option value="usa">USA</option>
-                                <option value="uk">UK</option>
-                                <option value="canada">Canada</option>
-                                <option value="australia">Australia</option>
-                                <option value="new-zealand">New Zealand</option>
-                                <option value="ireland">Ireland</option>
-                                <option value="south-africa">South Africa</option>
-                            </optgroup>
+                            <?php
+                            $location_data = Jobs_Data_Service::get_location_data();
+                            foreach ( $location_data as $group_key => $group ) : ?>
+                                <optgroup label="<?php echo esc_attr($group['label']); ?>">
+                                    <?php foreach ( $group['countries'] as $slug => $c ) : ?>
+                                        <option value="<?php echo esc_attr($slug); ?>"><?php echo esc_html($c['name']); ?></option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="filter-separator"></div>

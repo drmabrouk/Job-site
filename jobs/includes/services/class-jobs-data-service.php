@@ -538,52 +538,97 @@ class Jobs_Data_Service {
         return array('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+');
     }
 
-    public static function get_countries_with_regions() {
-        return array(
-            'egypt' => array(
-                'Cairo', 'Giza', 'Alexandria', 'Dakahlia', 'Red Sea', 'Beheira', 'Fayoum', 'Gharbia', 'Ismailia', 'Monufia',
-                'Minya', 'Qalyubia', 'New Valley', 'Sharqia', 'Suez', 'Aswan', 'Assiut', 'Beni Suef', 'Damietta', 'South Sinai',
-                'Kafr El Sheikh', 'Matrouh', 'Luxor', 'Qena', 'North Sinai', 'Sohag'
+    public static function get_location_data() {
+        $default = array(
+            'middle-east' => array(
+                'label' => 'Middle East & Arab World',
+                'countries' => array(
+                    'algeria' => array('name' => 'Algeria', 'code' => 'dz', 'phone' => '+213', 'regions' => array('Algiers', 'Oran', 'Constantine', 'Annaba', 'Blida')),
+                    'bahrain' => array('name' => 'Bahrain', 'code' => 'bh', 'phone' => '+973', 'regions' => array('Manama', 'Muharraq', 'Northern', 'Southern')),
+                    'comoros' => array('name' => 'Comoros', 'code' => 'km', 'phone' => '+269', 'regions' => array('Grande Comore', 'Anjouan', 'Mohéli')),
+                    'djibouti' => array('name' => 'Djibouti', 'code' => 'dj', 'phone' => '+253', 'regions' => array('Djibouti City', 'Ali Sabieh', 'Tadjourah')),
+                    'egypt' => array('name' => 'Egypt', 'code' => 'eg', 'phone' => '+20', 'regions' => array('Cairo', 'Giza', 'Alexandria', 'Dakahlia', 'Red Sea', 'Sharqia', 'Suez', 'Aswan')),
+                    'iraq' => array('name' => 'Iraq', 'code' => 'iq', 'phone' => '+964', 'regions' => array('Baghdad', 'Basra', 'Nineveh', 'Erbil', 'Sulaymaniyah')),
+                    'iran' => array('name' => 'Iran', 'code' => 'ir', 'phone' => '+98', 'regions' => array('Tehran', 'Isfahan', 'Mashhad', 'Shiraz', 'Tabriz')),
+                    'jordan' => array('name' => 'Jordan', 'code' => 'jo', 'phone' => '+962', 'regions' => array('Amman', 'Irbid', 'Zarqa', 'Mafraq', 'Aqaba')),
+                    'kuwait' => array('name' => 'Kuwait', 'code' => 'kw', 'phone' => '+965', 'regions' => array('Kuwait City', 'Al Ahmadi', 'Hawalli', 'Farwaniya')),
+                    'lebanon' => array('name' => 'Lebanon', 'code' => 'lb', 'phone' => '+961', 'regions' => array('Beirut', 'Mount Lebanon', 'North', 'South', 'Beqaa')),
+                    'libya' => array('name' => 'Libya', 'code' => 'ly', 'phone' => '+218', 'regions' => array('Tripoli', 'Benghazi', 'Misrata', 'Bayda')),
+                    'mauritania' => array('name' => 'Mauritania', 'code' => 'mr', 'phone' => '+222', 'regions' => array('Nouakchott', 'Nouadhibou')),
+                    'morocco' => array('name' => 'Morocco', 'code' => 'ma', 'phone' => '+212', 'regions' => array('Casablanca', 'Rabat', 'Marrakesh', 'Fes', 'Tangier')),
+                    'oman' => array('name' => 'Oman', 'code' => 'om', 'phone' => '+968', 'regions' => array('Muscat', 'Dhofar', 'Musandam', 'Al Buraymi')),
+                    'palestine' => array('name' => 'Palestine', 'code' => 'ps', 'phone' => '+970', 'regions' => array('Jerusalem', 'Gaza', 'Ramallah', 'Nablus', 'Hebron')),
+                    'qatar' => array('name' => 'Qatar', 'code' => 'qa', 'phone' => '+974', 'regions' => array('Doha', 'Al Rayyan', 'Al Wakrah', 'Al Khor')),
+                    'saudi-arabia' => array('name' => 'Saudi Arabia', 'code' => 'sa', 'phone' => '+966', 'regions' => array('Riyadh', 'Makkah', 'Madinah', 'Eastern Province', 'Asir', 'Tabuk')),
+                    'somalia' => array('name' => 'Somalia', 'code' => 'so', 'phone' => '+252', 'regions' => array('Mogadishu', 'Hargeisa')),
+                    'sudan' => array('name' => 'Sudan', 'code' => 'sd', 'phone' => '+249', 'regions' => array('Khartoum', 'Omdurman')),
+                    'syria' => array('name' => 'Syria', 'code' => 'sy', 'phone' => '+963', 'regions' => array('Damascus', 'Aleppo', 'Homs', 'Latakia')),
+                    'tunisia' => array('name' => 'Tunisia', 'code' => 'tn', 'phone' => '+216', 'regions' => array('Tunis', 'Sfax', 'Sousse')),
+                    'turkey' => array('name' => 'Turkey', 'code' => 'tr', 'phone' => '+90', 'regions' => array('Istanbul', 'Ankara', 'Izmir', 'Antalya', 'Bursa')),
+                    'uae' => array('name' => 'United Arab Emirates', 'code' => 'ae', 'phone' => '+971', 'regions' => array('Abu Dhabi', 'Dubai', 'Sharjah', 'Ajman', 'Fujairah')),
+                    'yemen' => array('name' => 'Yemen', 'code' => 'ye', 'phone' => '+967', 'regions' => array('Sana\'a', 'Aden', 'Taiz', 'Hodeidah')),
+                )
             ),
-            'saudi-arabia' => array(
-                'Riyadh', 'Makkah', 'Madinah', 'Eastern Province', 'Al-Qassim', 'Asir', 'Tabuk', 'Ha\'il', 'Northern Borders', 'Jazan', 'Najran', 'Al-Bahah', 'Al-Jouf'
-            ),
-            'uae' => array(
-                'Abu Dhabi', 'Dubai', 'Sharjah', 'Ajman', 'Umm Al Quwain', 'Ras Al Khaimah', 'Fujairah'
-            ),
-            'jordan' => array(
-                'Amman', 'Irbid', 'Zarqa', 'Mafraq', 'Ajloun', 'Jerash', 'Madaba', 'Balqa', 'Karak', 'Tafilah', 'Ma\'an', 'Aqaba'
-            ),
-            'qatar' => array('Doha', 'Al Rayyan', 'Al Wakrah', 'Al Khor', 'Umm Salal', 'Al Daayen', 'Al Shahaniya', 'Madinat ash Shamal'),
-            'kuwait' => array('Kuwait City', 'Al Ahmadi', 'Hawalli', 'Farwaniya', 'Mubarak Al-Kabeer', 'Al Jahra'),
-            'bahrain' => array('Manama', 'Muharraq', 'Northern', 'Southern'),
-            'oman' => array('Muscat', 'Dhofar', 'Musandam', 'Al Buraymi', 'Ad Dakhiliyah', 'Al Batinah North', 'Al Batinah South', 'Ash Sharqiyah North', 'Ash Sharqiyah South', 'Ad Dhahirah', 'Al Wusta'),
-            'lebanon' => array('Beirut', 'Mount Lebanon', 'North Lebanon', 'South Lebanon', 'Beqaa', 'Nabatieh', 'Akkar', 'Baalbek-Hermel'),
-            'usa' => array(
-                'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-                'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-                'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-                'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-                'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-            ),
-            'uk' => array(
-                'England', 'Scotland', 'Wales', 'Northern Ireland'
-            ),
-            'canada' => array('Ontario', 'Quebec', 'British Columbia', 'Alberta', 'Manitoba', 'Saskatchewan', 'Nova Scotia', 'New Brunswick', 'Newfoundland and Labrador', 'Prince Edward Island'),
-            'australia' => array('New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Northern Territory', 'Australian Capital Territory')
+            'english-official' => array(
+                'label' => 'English Official Countries',
+                'countries' => array(
+                    'usa' => array('name' => 'USA', 'code' => 'us', 'phone' => '+1', 'regions' => array('California', 'New York', 'Texas', 'Florida', 'Illinois', 'Washington')),
+                    'uk' => array('name' => 'United Kingdom', 'code' => 'gb', 'phone' => '+44', 'regions' => array('England', 'Scotland', 'Wales', 'Northern Ireland')),
+                    'canada' => array('name' => 'Canada', 'code' => 'ca', 'phone' => '+1', 'regions' => array('Ontario', 'Quebec', 'British Columbia', 'Alberta')),
+                    'australia' => array('name' => 'Australia', 'code' => 'au', 'phone' => '+61', 'regions' => array('New South Wales', 'Victoria', 'Queensland', 'Western Australia')),
+                    'new-zealand' => array('name' => 'New Zealand', 'code' => 'nz', 'phone' => '+64', 'regions' => array('Auckland', 'Wellington', 'Canterbury')),
+                    'ireland' => array('name' => 'Ireland', 'code' => 'ie', 'phone' => '+353', 'regions' => array('Dublin', 'Cork', 'Galway')),
+                    'south-africa' => array('name' => 'South Africa', 'code' => 'za', 'phone' => '+27', 'regions' => array('Gauteng', 'Western Cape', 'KwaZulu-Natal')),
+                    'india' => array('name' => 'India', 'code' => 'in', 'phone' => '+91', 'regions' => array('Maharashtra', 'Delhi', 'Karnataka', 'Tamil Nadu', 'Gujarat')),
+                    'pakistan' => array('name' => 'Pakistan', 'code' => 'pk', 'phone' => '+92', 'regions' => array('Punjab', 'Sindh', 'Khyber Pakhtunkhwa', 'Balochistan')),
+                    'nigeria' => array('name' => 'Nigeria', 'code' => 'ng', 'phone' => '+234', 'regions' => array('Lagos', 'Kano', 'Oyo')),
+                    'philippines' => array('name' => 'Philippines', 'code' => 'ph', 'phone' => '+63', 'regions' => array('Metro Manila', 'Cebu', 'Davao')),
+                    'singapore' => array('name' => 'Singapore', 'code' => 'sg', 'phone' => '+65', 'regions' => array('Central', 'East', 'North', 'North-East', 'West')),
+                )
+            )
         );
+
+        $custom = get_option('jobs_location_data');
+        if ( ! empty($custom) && is_array($custom) ) {
+            return array_replace_recursive($default, $custom);
+        }
+        return $default;
     }
 
-    /**
-     * Get flag URL from country slug
-     */
+    public static function get_countries_with_regions() {
+        $data = self::get_location_data();
+        $output = array();
+        foreach ($data as $group) {
+            foreach ($group['countries'] as $slug => $c) {
+                $output[$slug] = $c['regions'];
+            }
+        }
+        return $output;
+    }
+
     public static function get_flag_url($slug) {
-        $mapping = array(
-            'egypt' => 'eg', 'saudi-arabia' => 'sa', 'uae' => 'ae', 'jordan' => 'jo',
-            'qatar' => 'qa', 'kuwait' => 'kw', 'bahrain' => 'bh', 'oman' => 'om',
-            'lebanon' => 'lb', 'usa' => 'us', 'uk' => 'gb', 'canada' => 'ca', 'australia' => 'au'
-        );
-        $code = isset($mapping[$slug]) ? $mapping[$slug] : '';
-        return $code ? "https://flagcdn.com/w40/{$code}.png" : '';
+        $data = self::get_location_data();
+        foreach ($data as $group) {
+            if ( isset($group['countries'][$slug]) ) {
+                $code = $group['countries'][$slug]['code'];
+                return "https://flagcdn.com/w40/{$code}.png";
+            }
+        }
+        return '';
+    }
+
+    public static function get_phone_codes() {
+        $data = self::get_location_data();
+        $output = array();
+        foreach ($data as $group) {
+            foreach ($group['countries'] as $slug => $c) {
+                $output[$slug] = array(
+                    'name' => $c['name'],
+                    'code' => $c['phone'],
+                    'iso' => $c['code']
+                );
+            }
+        }
+        return $output;
     }
 }

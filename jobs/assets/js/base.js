@@ -36,4 +36,21 @@ jQuery(document).ready(function($) {
             });
         }
     });
+
+    // Global Phone Initialization
+    function initPhoneFields() {
+        if (window.intlTelInput) {
+            $('.jobs-intl-phone:not(.iti-initialized)').each(function() {
+                var $this = $(this);
+                $this.addClass('iti-initialized');
+                window.intlTelInput(this, {
+                    preferredCountries: ['eg', 'ae', 'sa', 'jo', 'us', 'gb'],
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+                    separateDialCode: true,
+                });
+            });
+        }
+    }
+    initPhoneFields();
+    $(document).on('jobs_module_loaded', initPhoneFields); // Custom event when module loads
 });

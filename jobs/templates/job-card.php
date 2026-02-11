@@ -43,8 +43,14 @@ $is_active       = get_post_status() === 'publish';
     </div>
 
     <div class="job-meta">
-        <?php if ( $countries ) : ?>
-            <span class="capsule capsule-location"><?php echo esc_html( $countries[0]->name ); ?></span>
+        <?php if ( $countries ) :
+            $c_slug = $countries[0]->slug;
+            $flag = Jobs_Data_Service::get_flag_url($c_slug);
+            ?>
+            <span class="capsule capsule-location">
+                <?php if($flag): ?><img src="<?php echo $flag; ?>" style="width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px;"><?php endif; ?>
+                <?php echo esc_html( $countries[0]->name ); ?>
+            </span>
         <?php endif; ?>
         <?php if ( $salary ) : ?>
             <span class="capsule capsule-salary"><?php echo esc_html( $currency . ' ' . $salary ); ?></span>
