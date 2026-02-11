@@ -49,13 +49,13 @@
 }
 
 .profile-v4-avatar-box {
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 220px;
     border-radius: 50%;
     overflow: hidden;
     flex-shrink: 0;
-    border: 6px solid #FFFFFF;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    border: 8px solid #FFFFFF;
+    box-shadow: 0 20px 48px rgba(0,0,0,0.12);
 }
 
 .profile-v4-avatar-box img {
@@ -65,8 +65,8 @@
 }
 
 .profile-v4-identity-box h1 {
-    font-size: 48px;
-    font-weight: 800;
+    font-size: 54px;
+    font-weight: 900;
     margin: 0 0 16px 0;
     color: #1d3469;
     letter-spacing: -0.04em;

@@ -50,7 +50,7 @@ get_header();
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16px;">
-                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($company['name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified Entity" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
+                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0; font-size: 54px;"><?php echo esc_html($company['name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified Entity" style="margin: 0; position: static; width: 28px; height: 28px;"><span class="dashicons dashicons-yes" style="font-size: 18px; width: 18px; height: 18px;"></span></span></h1>
                     </div>
                     <div style="margin: 16px 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
                         <span class="v4-pastel-pill pill-blue"><?php echo esc_html($company['industry'] ?? 'Corporate Entity'); ?></span>
@@ -72,7 +72,7 @@ get_header();
                         <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
                         <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                         <?php if ( get_current_user_id() === $user_id ) : ?>
-                            <button class="v4-icon-btn jobs-module-link" data-module="company-profile" title="Update Company Profile"><span class="dashicons dashicons-admin-generic"></span></button>
+                            <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Update Company Profile"><span class="dashicons dashicons-admin-generic"></span></a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -309,7 +309,7 @@ get_header();
             <!-- HEADER: SEEKER -->
             <header class="profile-v4-header">
                 <div class="profile-v4-avatar-box" style="position: relative;">
-                    <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
+                    <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 180)); ?>
                     <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
                     <?php if(($cv['preferences']['availability_status'] ?? '') === 'Immediate'): ?>
                         <div class="v4-open-to-work-overlay" title="Open to Work"></div>
@@ -317,7 +317,7 @@ get_header();
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16px;">
-                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static;"><span class="dashicons dashicons-yes"></span></span></h1>
+                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0; font-size: 54px;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static; width: 28px; height: 28px;"><span class="dashicons dashicons-yes" style="font-size: 18px; width: 18px; height: 18px;"></span></span></h1>
                     </div>
                     <div style="margin: 16px 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
                         <span class="v4-pastel-pill pill-blue"><?php echo esc_html($prof ?: 'Professional'); ?></span>
@@ -366,7 +366,7 @@ get_header();
                         <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
                         <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
                         <?php if ( get_current_user_id() === $user_id ) : ?>
-                            <button class="v4-icon-btn jobs-module-link" data-module="cv-resume" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></button>
+                            <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -469,7 +469,10 @@ get_header();
                                 <div class="v4-timeline-item">
                                     <div class="v4-timeline-title"><?php echo esc_html($edu['degree']); ?></div>
                                     <div class="v4-timeline-org"><?php echo esc_html($edu['uni']); ?></div>
-                                    <div class="v4-timeline-meta">Class of <?php echo esc_html($edu['grad_date']); ?> • Grade: <?php echo esc_html($edu['gpa'] ?? 'Passed'); ?></div>
+                                    <div class="v4-timeline-meta">Class of <?php echo esc_html($edu['grad_date'] ?? $edu['grad_year'] ?? 'N/A'); ?> • <?php echo esc_html($edu['qual_type'] ?? 'Academic'); ?></div>
+                                    <?php if(!empty($edu['spec'])): ?>
+                                        <div style="font-size: 12px; color: #64748b; margin-top: 5px;">Major: <?php echo esc_html($edu['spec']); ?></div>
+                                    <?php endif; ?>
                                 </div>
                             <?php endforeach; else: ?>
                                 <p style="color: #999; font-size: 13px;">Academic history not provided.</p>
@@ -482,24 +485,29 @@ get_header();
                         <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Professional References</h3>
                         <div class="v4-card-body">
                             <?php foreach($refs as $r): ?>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-weight: 600;"><?php echo esc_html($r['name']); ?></div>
-                                    <div style="font-size: 12px; color: #666;"><?php echo esc_html($r['title']); ?> • <?php echo esc_html($r['company']); ?></div>
+                                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
+                                    <div style="font-weight: 700; color: #1d3469; font-size: 14px;"><?php echo esc_html($r['name']); ?></div>
+                                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;"><?php echo esc_html($r['title']); ?> • <?php echo esc_html($r['company']); ?></div>
                                 </div>
                             <?php endforeach; ?>
                         </div>
                     </section>
+                    <?php endif; ?>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title">Core Competencies</h3>
-                        <div class="v4-tag-container">
-                            <span class="v4-pastel-pill pill-dev">Strategic Thinking</span>
-                            <span class="v4-pastel-pill pill-design">Leadership</span>
-                            <span class="v4-pastel-pill pill-marketing">Problem Solving</span>
-                            <span class="v4-pastel-pill pill-mgmt">Communication</span>
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-settings"></span> Strategic Core Competencies</h3>
+                        <div class="v4-card-body">
+                            <p style="color: #64748b; margin-bottom: 20px;">Validated skills and operational capabilities acquired through professional engagement.</p>
+                            <div class="v4-tag-container">
+                                <span class="v4-pastel-pill pill-blue">Strategic Planning</span>
+                                <span class="v4-pastel-pill pill-purple">Operational Leadership</span>
+                                <span class="v4-pastel-pill pill-green">Project Execution</span>
+                                <span class="v4-pastel-pill pill-yellow">Business Transformation</span>
+                                <span class="v4-pastel-pill pill-dev">Crisis Management</span>
+                                <span class="v4-pastel-pill pill-design">Stakeholder Alignment</span>
+                            </div>
                         </div>
                     </section>
-                    <?php endif; ?>
 
                     <?php if(!empty($portfolio)): ?>
                     <section class="v4-card">

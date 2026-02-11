@@ -244,7 +244,8 @@ function jobs_render_modules_grid() {
             'bg' => '#ffebee',
             'color' => '#d32f2f',
             'check' => 'is_user_logged_in',
-            'type' => 'modal'
+            'type' => 'direct',
+            'url' => home_url('/account-setup/')
         ),
         'company-profile' => array(
             'label' => 'Company',

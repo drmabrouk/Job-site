@@ -53,4 +53,13 @@ jQuery(document).ready(function($) {
     };
     window.initJobsPhoneFields();
     $(document).on('jobs_module_loaded', window.initJobsPhoneFields); // Custom event when module loads
+
+    // Global Unified Country Picker Behavior
+    $(document).on('change', '.country-picker-unified', function() {
+        const flagUrl = $(this).find(':selected').data('flag');
+        const flagId = $(this).data('flag-id');
+        if (flagUrl && flagId) {
+            $('#' + flagId).attr('src', flagUrl);
+        }
+    });
 });

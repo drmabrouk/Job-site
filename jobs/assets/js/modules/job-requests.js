@@ -33,4 +33,27 @@
             }
         });
     });
+
+    $(document).on('click', '.update-app-status-btn', function() {
+        var $btn = $(this);
+        var $select = $btn.siblings('.v2-status-select');
+        var appId = $select.data('app-id');
+        var status = $select.val();
+
+        $btn.prop('disabled', true).text('...');
+
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_update_app_status',
+            app_id: appId,
+            status: status,
+            nonce: jobs_vars.nonce
+        }, function(response) {
+            $btn.prop('disabled', false).text('Update');
+            if(response.success) {
+                alert('Status updated successfully!');
+            } else {
+                alert('Error: ' + response.data);
+            }
+        });
+    });
 })(jQuery);

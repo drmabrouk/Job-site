@@ -4,6 +4,7 @@
     align-items: center;
     padding: 60px 20px;
     min-height: 70vh;
+    background: white;
 }
 
 .jobs-auth-card {
