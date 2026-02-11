@@ -96,30 +96,6 @@ if ( is_user_logged_in() ) {
                         </div>
                     </div>
 
-                    <!-- Conditional Fields for Job Seeker -->
-                    <div id="job-seeker-fields" class="conditional-fields">
-                        <div class="form-group">
-                            <select name="seeker_specialization" class="jobs-select-field">
-                                <option value="" disabled selected>Select Your Specialization</option>
-                                <?php
-                                $specializations = get_terms( array( 'taxonomy' => 'specialization', 'hide_empty' => false ) );
-                                foreach ( $specializations as $term ) {
-                                    echo '<option value="' . esc_attr( $term->slug ) . '">' . esc_html( $term->name ) . '</option>';
-                                }
-                                ?>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Conditional Fields for Employer -->
-                    <div id="employer-fields" class="conditional-fields" style="display: none;">
-                        <div class="form-group">
-                            <input type="text" name="company_name" placeholder="Company / Institution Name">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" name="company_website" placeholder="Website URL">
-                        </div>
-                    </div>
                     <div class="form-row" style="display:flex; gap:10px;">
                         <div class="form-group" style="flex:1;">
                             <input type="password" name="user_pass" placeholder="Password" required>

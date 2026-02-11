@@ -275,7 +275,7 @@ function jobs_ajax_quick_apply() {
 }
 add_action( 'wp_ajax_jobs_quick_apply', 'jobs_ajax_quick_apply' );
 
-// AJAX Quick Apply Form Loader (Multi-step)
+// AJAX Quick Apply Form Loader (Professional Overhaul)
 function jobs_ajax_load_quick_apply_form() {
     check_ajax_referer( 'jobs_main_nonce', 'nonce' );
 
@@ -283,25 +283,29 @@ function jobs_ajax_load_quick_apply_form() {
     if ( ! $job_id ) wp_send_json_error( 'Invalid job.' );
 
     $user_id = get_current_user_id();
+    $company_name = get_post_meta($job_id, '_company_name', true);
     $saved_letters = get_user_meta( $user_id, 'jobs_cover_letters', true ) ?: array('', '');
 
     ob_start();
     ?>
-    <div class="quick-apply-multi-step">
-        <div class="apply-steps-header">
-            <div class="apply-step-indicator active" data-step="1">1. Letter</div>
-            <div class="apply-step-indicator" data-step="2">2. Profile</div>
-            <div class="apply-step-indicator" data-step="3">3. Review</div>
-            <div class="apply-step-indicator" data-step="4">4. Submit</div>
+    <div class="quick-apply-professional-v2">
+        <div style="text-align: center; margin-bottom: 35px; border-bottom: 1px solid #f1f5f9; padding-bottom: 25px;">
+            <h2 style="color: #1d3469; margin: 0 0 10px; font-weight: 800; font-size: 1.6em;">Apply for this Position</h2>
+            <p style="color: #64748b; font-size: 0.95em; line-height: 1.6; max-width: 450px; margin: 0 auto;">You are about to submit your professional profile to <strong style="color: #1d3469;"><?php echo esc_html($company_name); ?></strong>. Please review and attach your cover letter.</p>
+        </div>
+
+        <div class="apply-steps-header" style="display: none;">
+            <div class="apply-step-indicator active" data-step="1">1</div>
+            <div class="apply-step-indicator" data-step="2">2</div>
         </div>
 
         <div class="apply-step-panel active" id="apply-step-1">
-            <h3>Choose or Write Cover Letter</h3>
-            <p style="font-size: 0.85em; color: #64748b; margin-bottom: 20px;">Select one of your saved letters or write a new one for this application.</p>
-
-            <div class="saved-letters-selector" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button type="button" class="jobs-btn-small select-saved-letter" data-index="0">Letter 1</button>
-                <button type="button" class="jobs-btn-small select-saved-letter" data-index="1">Letter 2</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0; color: #1d3469; font-weight: 700;">Professional Cover Letter</h4>
+                <div class="saved-letters-selector" style="display: flex; gap: 8px;">
+                    <button type="button" class="jobs-btn-minimal select-saved-letter" data-index="0" style="padding: 4px 10px; font-size: 0.7em;">Letter A</button>
+                    <button type="button" class="jobs-btn-minimal select-saved-letter" data-index="1" style="padding: 4px 10px; font-size: 0.7em;">Letter B</button>
+                </div>
             </div>
 
             <form class="jobs-quick-apply-form">
@@ -309,76 +313,20 @@ function jobs_ajax_load_quick_apply_form() {
                 <input type="hidden" name="job_id" value="<?php echo $job_id; ?>">
 
                 <div class="form-group">
-                    <textarea name="cover_letter" id="apply-cover-letter-text" placeholder="Write your cover letter here..." style="width:100%; height: 250px; border: 1px solid #e2e8f0; border-radius: 12px; padding:15px;"></textarea>
+                    <textarea name="cover_letter" id="apply-cover-letter-text" placeholder="Explain why you are the best fit for this role..." style="width:100%; height: 220px; border: 1.5px solid #e2e8f0; border-radius: 14px; padding:15px; font-family: inherit; font-size: 0.9em; transition: border-color 0.2s;"></textarea>
                 </div>
 
                 <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
                     <div class="save-letter-actions">
-                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="0" style="font-size: 0.75em;">Save to Slot 1</button>
-                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="1" style="font-size: 0.75em;">Save to Slot 2</button>
+                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="0" style="font-size: 0.65em; border:none; background:transparent; color:#94a3b8;">Save to Slot A</button>
+                        <button type="button" class="jobs-btn-minimal save-current-letter" data-index="1" style="font-size: 0.65em; border:none; background:transparent; color:#94a3b8;">Save to Slot B</button>
                     </div>
-                    <button type="button" class="jobs-btn next-apply-step" data-next="2">Next Step</button>
+                </div>
+
+                <div style="margin-top: 35px;">
+                    <button type="button" class="jobs-btn submit-quick-apply" style="width: 100%; padding: 18px; border-radius: 12px; background: #1d3469; color: white; font-weight: 700; font-size: 1.1em; cursor: pointer; transition: all 0.3s; border: none; box-shadow: 0 10px 20px rgba(29, 52, 105, 0.15);">Confirm and Send Application</button>
                 </div>
             </form>
-        </div>
-
-        <div class="apply-step-panel" id="apply-step-2">
-            <h3>Your Professional Profile</h3>
-            <p style="font-size: 0.85em; color: #64748b; margin-bottom: 20px;">This is a summary of the profile that will be sent to the employer along with your letter.</p>
-
-            <div class="profile-preview-box" style="background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                <?php
-                $user = get_userdata($user_id);
-                $cv = get_user_meta($user_id, 'jobs_cv_data', true) ?: array();
-                ?>
-                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
-                    <?php echo get_avatar($user_id, 60, '', '', array('class'=>'rounded-full')); ?>
-                    <div>
-                        <strong style="display: block; font-size: 1.1em;"><?php echo esc_html($user->display_name); ?></strong>
-                        <span style="font-size: 0.85em; color: #64748b;"><?php echo esc_html(get_user_meta($user_id, '_specialization', true) ?: 'Professional'); ?></span>
-                    </div>
-                </div>
-                <div style="font-size: 0.9em; line-height: 1.6; color: #475569;">
-                    <div style="margin-bottom: 10px;"><strong>Experience:</strong> <?php echo esc_html(get_user_meta($user_id, '_experience', true) ?: '0'); ?> Years</div>
-                    <div style="margin-bottom: 10px;"><strong>Skills:</strong> <?php echo esc_html($cv['skills'] ?? 'Not specified'); ?></div>
-                    <div><strong>Education:</strong> <?php echo wp_trim_words($cv['education'] ?? 'Not specified', 20); ?></div>
-                </div>
-                <div style="margin-top: 20px; text-align: center;">
-                    <a href="#" class="jobs-module-link" data-module="cv-resume" style="font-size: 0.8em; color: var(--jobs-primary-color); text-decoration: underline;">Update Profile</a>
-                </div>
-            </div>
-
-            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
-                <button type="button" class="jobs-btn-minimal next-apply-step" data-next="1">Back</button>
-                <button type="button" class="jobs-btn next-apply-step" data-next="3">Next: Review Letter</button>
-            </div>
-        </div>
-
-        <div class="apply-step-panel" id="apply-step-3">
-            <h3>Review Application</h3>
-            <div class="review-box" style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
-                <div id="review-letter-content" style="white-space: pre-wrap; font-size: 0.95em; color: #334155;"></div>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <button type="button" class="jobs-btn-minimal export-pdf-letter">Export as PDF</button>
-                <button type="button" class="jobs-btn-minimal print-letter">Print Preview</button>
-            </div>
-
-            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
-                <button type="button" class="jobs-btn-minimal next-apply-step" data-next="2">Back</button>
-                <button type="button" class="jobs-btn next-apply-step" data-next="4">Finalize</button>
-            </div>
-        </div>
-
-        <div class="apply-step-panel" id="apply-step-4">
-            <h3>Ready to Submit?</h3>
-            <p>You are about to apply for <strong><?php echo get_the_title($job_id); ?></strong>. Your professional profile and cover letter will be sent to the employer.</p>
-
-            <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
-                <button type="button" class="jobs-btn submit-quick-apply" style="width: 100%; padding: 18px;">Confirm and Send Application</button>
-                <button type="button" class="jobs-btn-minimal next-apply-step" data-next="3" style="width: 100%;">Wait, let me check again</button>
-            </div>
         </div>
 
         <script>
@@ -652,24 +600,36 @@ function jobs_ajax_save_cv_handler_v3() {
     // Critical: Update meta and confirm propagation
     update_user_meta( $user_id, 'jobs_cv_data_v2', $cv_data );
 
-    // Sync to individual meta for seeker filtering/directory
-    $visibility = (isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public') ? 'public' : 'private';
-    update_user_meta( $user_id, 'profile_visibility', $visibility );
-
-    $primary_spec = sanitize_text_field($_POST['personal']['specialization'] ?? '');
-    update_user_meta( $user_id, '_specialization', $primary_spec );
-    if (isset($_POST['personal']['secondary_specs'])) {
-        update_user_meta( $user_id, '_secondary_specs', array_map('sanitize_text_field', $_POST['personal']['secondary_specs']) );
+    // Sync to individual meta for seeker filtering/directory - Only if data is present
+    if (isset($_POST['profile_visibility'])) {
+        $visibility = $_POST['profile_visibility'] === 'public' ? 'public' : 'private';
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
     }
-    update_user_meta( $user_id, '_experience', ceil($total_experience_years) );
-    update_user_meta( $user_id, '_nationality', sanitize_text_field($_POST['personal']['nationality'] ?? '') );
-    update_user_meta( $user_id, '_country', sanitize_text_field($_POST['personal']['country'] ?? '') );
-    update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] ?? '' );
-    update_user_meta( $user_id, '_professional_summary', sanitize_textarea_field($_POST['personal']['summary'] ?? '') );
-    update_user_meta( $user_id, '_key_accomplishments', sanitize_textarea_field($_POST['personal']['accomplishments'] ?? '') );
-    update_user_meta( $user_id, '_professional_philosophy', sanitize_text_field($_POST['personal']['philosophy'] ?? '') );
-    update_user_meta( $user_id, '_qualification', $cv_data['academic'][0]['degree'] ?? '' );
-    update_user_meta( $user_id, '_english_level', $cv_data['languages']['score'] ?? '' );
+
+    if (isset($_POST['personal'])) {
+        $primary_spec = sanitize_text_field($_POST['personal']['specialization'] ?? '');
+        if ($primary_spec) update_user_meta( $user_id, '_specialization', $primary_spec );
+
+        if (isset($_POST['personal']['secondary_specs'])) {
+            update_user_meta( $user_id, '_secondary_specs', array_map('sanitize_text_field', $_POST['personal']['secondary_specs']) );
+        }
+
+        if ($total_experience_years > 0) update_user_meta( $user_id, '_experience', ceil($total_experience_years) );
+
+        $nationality = sanitize_text_field($_POST['personal']['nationality'] ?? '');
+        if ($nationality) update_user_meta( $user_id, '_nationality', $nationality );
+
+        $country = sanitize_text_field($_POST['personal']['country'] ?? '');
+        if ($country) update_user_meta( $user_id, '_country', $country );
+
+        if (isset($cv_data['personal']['gender'])) update_user_meta( $user_id, '_gender', $cv_data['personal']['gender'] );
+        if (isset($_POST['personal']['summary'])) update_user_meta( $user_id, '_professional_summary', sanitize_textarea_field($_POST['personal']['summary']) );
+        if (isset($_POST['personal']['accomplishments'])) update_user_meta( $user_id, '_key_accomplishments', sanitize_textarea_field($_POST['personal']['accomplishments']) );
+        if (isset($_POST['personal']['philosophy'])) update_user_meta( $user_id, '_professional_philosophy', sanitize_text_field($_POST['personal']['philosophy']) );
+    }
+
+    if (isset($cv_data['academic'][0]['degree'])) update_user_meta( $user_id, '_qualification', $cv_data['academic'][0]['degree'] );
+    if (isset($cv_data['languages']['score'])) update_user_meta( $user_id, '_english_level', $cv_data['languages']['score'] );
 
     // Compatibility update for legacy searches
     $legacy_cv = array(
@@ -763,14 +723,20 @@ function jobs_ajax_save_company_handler() {
         'last_update'      => current_time('mysql')
     );
 
+    // Merge with existing company data to prevent overwriting during photo-only uploads
+    $existing_company = get_user_meta( $user_id, 'jobs_company_data', true ) ?: array();
+    $company_data = array_merge($existing_company, $company_data);
+
     update_user_meta( $user_id, 'jobs_company_data', $company_data );
 
-    $visibility = (isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public') ? 'public' : 'private';
-    update_user_meta( $user_id, 'profile_visibility', $visibility );
+    if (isset($_POST['profile_visibility'])) {
+        $visibility = $_POST['profile_visibility'] === 'public' ? 'public' : 'private';
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
+    }
 
     // Sync to separate meta for search
-    update_user_meta( $user_id, '_company_industry', $company_data['industry'] );
-    update_user_meta( $user_id, '_company_type', $company_data['company_type'] );
+    if (!empty($company_data['industry'])) update_user_meta( $user_id, '_company_industry', $company_data['industry'] );
+    if (!empty($company_data['company_type'])) update_user_meta( $user_id, '_company_type', $company_data['company_type'] );
 
     wp_send_json_success( 'Company profile updated successfully.' );
 }
@@ -831,7 +797,7 @@ function jobs_ajax_get_notifications() {
 
     global $wpdb;
     $table = Jobs_DB_Service::get_table( 'notifications' );
-    $notifs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE user_id = %d ORDER BY timestamp DESC LIMIT 10", $user_id ) );
+    $notifs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE user_id = %d ORDER BY timestamp DESC LIMIT 6", $user_id ) );
 
     ob_start();
     if ( $notifs ) {
@@ -1118,19 +1084,6 @@ function jobs_ajax_complete_setup_v2_handler() {
 
     $role = sanitize_text_field( $_POST['user_role'] );
 
-    // Update display name
-    if ( isset( $_POST['display_name'] ) ) {
-        wp_update_user( array(
-            'ID' => $user_id,
-            'display_name' => sanitize_text_field( $_POST['display_name'] )
-        ) );
-    }
-
-    // Common meta
-    if ( isset( $_POST['phone'] ) ) update_user_meta( $user_id, '_phone', sanitize_text_field( $_POST['phone'] ) );
-    if ( isset( $_POST['country'] ) ) update_user_meta( $user_id, '_country', sanitize_text_field( $_POST['country'] ) );
-    if ( isset( $_POST['region'] ) ) update_user_meta( $user_id, '_region', sanitize_text_field( $_POST['region'] ) );
-
     if ( $role === 'employer' ) {
         $company_data = array(
             'name'             => sanitize_text_field( $_POST['company_name'] ),
@@ -1139,46 +1092,59 @@ function jobs_ajax_complete_setup_v2_handler() {
             'employee_count'   => sanitize_text_field( $_POST['company_employee_count'] ),
             'company_type'     => sanitize_text_field( $_POST['company_type'] ?? '' ),
             'founded_year'     => sanitize_text_field( $_POST['founded_year'] ?? '' ),
-            'logo'             => esc_url_raw( $_POST['company_logo'] ),
             'website'          => esc_url_raw( $_POST['company_website'] ),
             'details'          => sanitize_textarea_field( $_POST['company_description'] ),
+            'address'          => sanitize_text_field( $_POST['company_address'] ?? '' ),
+            'benefits'         => sanitize_textarea_field( $_POST['benefits'] ?? '' ),
+            'mission'          => sanitize_textarea_field( $_POST['mission'] ?? '' ),
+            'culture'          => sanitize_textarea_field( $_POST['culture'] ?? '' ),
             'last_update'      => current_time('mysql')
         );
-        update_user_meta( $user_id, 'jobs_company_data', $company_data );
-        $redirect = home_url( '/dashboard/#company-profile' );
-    } else {
-        // Job Seeker data
-        update_user_meta( $user_id, '_gender', sanitize_text_field( $_POST['gender'] ) );
-        update_user_meta( $user_id, '_nationality', sanitize_text_field( $_POST['nationality'] ) );
-        update_user_meta( $user_id, '_specialization', sanitize_text_field( $_POST['specialization'] ) );
-        update_user_meta( $user_id, '_profession', sanitize_text_field( $_POST['profession'] ) );
-        update_user_meta( $user_id, '_bio', sanitize_textarea_field( $_POST['bio'] ) );
-        update_user_meta( $user_id, '_experience', sanitize_text_field( $_POST['experience_years'] ) );
 
-        // Sync to unified CV data for compatibility
-        $cv_data = array(
-            'personal' => array(
-                'full_name' => $_POST['display_name'],
-                'phone' => $_POST['phone'],
-                'gender' => $_POST['gender'],
-                'country' => $_POST['country'],
-                'specialization' => $_POST['specialization'],
-                'profession' => $_POST['profession'],
-                'availability' => $_POST['availability'] ?? ''
-            ),
-            'academic' => $_POST['academic'] ?? array(),
-            'experience' => $_POST['experience'] ?? array(),
-            'skills' => $_POST['skills'] ?? array(),
-            'preferences' => $_POST['preferences'] ?? array(),
-            'last_update' => current_time('mysql')
+        $existing = get_user_meta( $user_id, 'jobs_company_data', true ) ?: array();
+        update_user_meta( $user_id, 'jobs_company_data', array_merge($existing, $company_data) );
+        update_user_meta( $user_id, 'profile_visibility', 'public' );
+
+    } else {
+        // Job Seeker data - Guided Onboarding V2
+        $cv_data = get_user_meta( $user_id, 'jobs_cv_data_v2', true ) ?: array();
+
+        $personal = array(
+            'full_name'      => sanitize_text_field( $_POST['display_name'] ),
+            'nationality'    => sanitize_text_field( $_POST['nationality'] ),
+            'nat_city'       => sanitize_text_field( $_POST['nat_city'] ),
+            'country'        => sanitize_text_field( $_POST['residence'] ),
+            'res_city'       => sanitize_text_field( $_POST['res_city'] ),
+            'phone'          => sanitize_text_field( $_POST['phone'] ),
+            'phone_extra'    => sanitize_text_field( $_POST['phone_extra'] ),
+            'whatsapp_linked'=> sanitize_text_field( $_POST['whatsapp_linked'] ),
+            'specialization' => sanitize_text_field( $_POST['specialization'] ),
+            'profession'     => sanitize_text_field( $_POST['profession'] ),
+            'summary'        => sanitize_textarea_field( $_POST['summary'] ),
         );
+
+        $cv_data['personal'] = $personal;
+        $cv_data['academic'] = $_POST['academic'] ?? array();
+        $cv_data['experience'] = $_POST['experience'] ?? array();
+        $cv_data['skills']['core'] = sanitize_text_field( $_POST['skills_list'] ?? '' );
+        $cv_data['languages'] = $_POST['languages'] ?? array();
+        $cv_data['preferences']['english_exam'] = sanitize_text_field( $_POST['english_exam'] ?? 'None' );
+        $cv_data['last_update'] = current_time('mysql');
+
         update_user_meta( $user_id, 'jobs_cv_data_v2', $cv_data );
 
-        $redirect = home_url( '/dashboard/' );
+        // Sync to flat meta for directory/search
+        update_user_meta( $user_id, '_nationality', $personal['nationality'] );
+        update_user_meta( $user_id, '_country', $personal['country'] );
+        update_user_meta( $user_id, '_phone', $personal['phone'] );
+        update_user_meta( $user_id, '_specialization', $personal['specialization'] );
+        update_user_meta( $user_id, '_profession', $personal['profession'] );
+        update_user_meta( $user_id, '_professional_summary', $personal['summary'] );
+        update_user_meta( $user_id, 'profile_visibility', 'public' );
     }
 
     update_user_meta( $user_id, '_setup_complete', 1 );
-    wp_send_json_success( array( 'redirect' => $redirect ) );
+    wp_send_json_success( array( 'redirect' => home_url('/') ) );
 }
 
 /**
@@ -1327,4 +1293,27 @@ function jobs_ajax_resend_verify_code_handler() {
     } else {
         wp_send_json_error( 'Failed to send verification code.' );
     }
+}
+
+/**
+ * AJAX Handler: Upload Photo during setup/editing
+ */
+add_action( 'wp_ajax_jobs_upload_photo', 'jobs_ajax_upload_photo_handler' );
+function jobs_ajax_upload_photo_handler() {
+    check_ajax_referer( 'jobs_main_nonce', 'nonce' );
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) wp_send_json_error( 'Unauthorized' );
+
+    if ( ! empty( $_FILES['photo']['name'] ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        $uploaded_file = wp_handle_upload( $_FILES['photo'], array( 'test_form' => false ) );
+        if ( ! isset( $uploaded_file['error'] ) ) {
+            update_user_meta( $user_id, '_jobs_profile_photo', $uploaded_file['url'] );
+            clean_user_cache( $user_id );
+            wp_send_json_success( array( 'url' => $uploaded_file['url'] ) );
+        } else {
+            wp_send_json_error( $uploaded_file['error'] );
+        }
+    }
+    wp_send_json_error( 'No file uploaded' );
 }

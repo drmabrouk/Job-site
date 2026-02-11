@@ -27,7 +27,14 @@ class Jobs_Auth_Service {
     }
 
     /**
-     * Send verification email with 6-digit code
+     * Helper to set mail from address
+     */
+    public static function get_mail_from_address() {
+        return get_option( 'admin_email' );
+    }
+
+    /**
+     * Send verification email with 6-digit code (Professional Branded Version)
      */
     public static function send_verification_email( $user_id ) {
         $user = get_userdata( $user_id );
@@ -40,20 +47,57 @@ class Jobs_Auth_Service {
         update_user_meta( $user_id, '_jobs_email_verify_expiry', $expiry );
 
         $site_name = get_bloginfo( 'name' );
-        $subject = "[{$site_name}] Your Verification Code";
+        $logo_url = get_option( 'jobs_site_logo' );
+        $primary_color = get_option( 'jobs_primary_color', '#1d3469' );
+        $subject = "Your Verification Code - {$site_name}";
 
-        $message = "Hello " . $user->display_name . ",\n\n";
-        $message .= "Your verification code is: " . $code . "\n\n";
-        $message .= "This code is valid for 5 minutes.\n\n";
-        $message .= "If you did not request this, please ignore this email.\n\n";
-        $message .= "Regards,\nThe {$site_name} Team";
+        ob_start();
+        ?>
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff;">
+            <div style="background-color: <?php echo $primary_color; ?>; padding: 40px; text-align: center;">
+                <?php if ($logo_url) : ?>
+                    <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($site_name); ?>" style="max-width: 180px;">
+                <?php else : ?>
+                    <h1 style="color: #ffffff; margin: 0; font-size: 24px;"><?php echo esc_html($site_name); ?></h1>
+                <?php endif; ?>
+            </div>
+            <div style="padding: 40px; color: #1e293b; line-height: 1.6;">
+                <h2 style="margin-top: 0; color: #1d3469;">Verify Your Account</h2>
+                <p>Hello <strong><?php echo esc_html($user->display_name); ?></strong>,</p>
+                <p>Thank you for joining our community. To complete your registration and secure your account, please use the following one-time password (OTP):</p>
 
-        // Set professional filters safely
+                <div style="background-color: #f8fafc; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0; border: 1px dashed #cbd5e1;">
+                    <span style="font-size: 36px; font-weight: 800; letter-spacing: 12px; color: <?php echo $primary_color; ?>;"><?php echo $code; ?></span>
+                </div>
+
+                <p style="font-size: 0.9em; color: #64748b;">This code is valid for <strong>5 minutes</strong>. For security reasons, do not share this code with anyone.</p>
+                <p>If you did not initiate this request, you can safely ignore this email.</p>
+
+                <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 30px 0;">
+
+                <p style="font-size: 0.8em; color: #94a3b8; text-align: center; margin: 0;">
+                    &copy; <?php echo date('Y'); ?> <?php echo esc_html($site_name); ?>. All rights reserved.<br>
+                    Providing professional opportunities worldwide.
+                </p>
+            </div>
+        </div>
+        <?php
+        $message = ob_get_clean();
+
+        // Headers to hide WP identity and set HTML
+        $headers = array(
+            'Content-Type: text/html; charset=UTF-8',
+            'From: ' . $site_name . ' <' . get_option('admin_email') . '>',
+            'Reply-To: ' . get_option('admin_email')
+        );
+
         add_filter( 'wp_mail_from_name', array( 'Jobs_Auth_Service', 'get_mail_from_name' ) );
+        add_filter( 'wp_mail_from', array( 'Jobs_Auth_Service', 'get_mail_from_address' ) );
 
-        $sent = wp_mail( $user->user_email, $subject, $message );
+        $sent = wp_mail( $user->user_email, $subject, $message, $headers );
 
         remove_filter( 'wp_mail_from_name', array( 'Jobs_Auth_Service', 'get_mail_from_name' ) );
+        remove_filter( 'wp_mail_from', array( 'Jobs_Auth_Service', 'get_mail_from_address' ) );
 
         return $sent;
     }
