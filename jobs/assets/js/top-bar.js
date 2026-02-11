@@ -1,8 +1,9 @@
 jQuery(document).ready(function($) {
-    $('#jobs-apps-toggle').on('click', function(e) {
+    $(document).on('click', '#jobs-account-mgmt-toggle', function(e) {
         e.stopPropagation();
         $('#jobs-apps-menu').toggleClass('active');
         $('#jobs-profile-menu').removeClass('active');
+        $('#jobs-notif-menu').removeClass('active');
         $('body').css('overflow', $('#jobs-apps-menu').hasClass('active') ? 'hidden' : '');
     });
 
@@ -18,8 +19,8 @@ jQuery(document).ready(function($) {
         $('#jobs-notif-menu').removeClass('active');
     });
 
-    $('#jobs-notif-toggle').on('click', function(e) {
-        if ($(e.target).closest('#jobs-notif-menu').length) return; // Don't toggle if clicking inside the menu
+    $(document).on('click', '#jobs-notif-toggle', function(e) {
+        if ($(e.target).closest('#jobs-notif-menu').length) return;
 
         e.stopPropagation();
         $('#jobs-notif-menu').toggleClass('active');
@@ -80,8 +81,8 @@ jQuery(document).ready(function($) {
     }
 
     $(document).on('click', function(event) {
-        // Click outside apps menu
-        if (!$(event.target).closest('.apps-grid-card').length && !$(event.target).closest('#jobs-apps-toggle').length) {
+        // Click outside account management menu
+        if (!$(event.target).closest('.apps-grid-card').length && !$(event.target).closest('#jobs-account-mgmt-toggle').length) {
             if ($('#jobs-apps-menu').hasClass('active')) {
                 $('#jobs-apps-menu').removeClass('active');
                 $('body').css('overflow', '');

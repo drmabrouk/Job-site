@@ -37,6 +37,21 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
 
     $share_url = urlencode(get_permalink());
     $share_title = urlencode(get_the_title());
+
+    // Calculate Application Count
+    $app_count_query = new WP_Query(array(
+        'post_type' => 'application',
+        'meta_query' => array(
+            array(
+                'key' => '_job_id',
+                'value' => $post_id,
+                'compare' => '='
+            )
+        ),
+        'posts_per_page' => -1,
+        'fields' => 'ids'
+    ));
+    $total_apps = $app_count_query->found_posts;
 ?>
 
 <div class="jobs-premium-profile-v4 job-details-v7-optimized">
@@ -69,6 +84,11 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
 
             <div class="profile-v4-actions">
                 <div class="v4-action-group">
+                    <div class="v4-app-count-indicator" title="Total Applications Received">
+                        <span class="dashicons dashicons-groups"></span>
+                        <strong><?php echo number_format($total_apps); ?></strong>
+                        <small>Applicants</small>
+                    </div>
                     <button class="v4-btn-primary quick-apply-toggle" data-job-id="<?php echo $post_id; ?>"><span class="dashicons dashicons-paper-plane"></span> Apply Now</button>
                     <button class="v4-icon-btn open-share-modal" title="Share Job"><span class="dashicons dashicons-share"></span></button>
                 </div>
