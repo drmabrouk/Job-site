@@ -307,7 +307,7 @@ get_header();
             $region = get_user_meta($user_id, '_region', true);
             ?>
             <!-- HEADER: SEEKER -->
-            <header class="profile-v4-header">
+            <header class="profile-v4-header seeker-header-v2">
                 <div class="profile-v4-avatar-box" style="position: relative;">
                     <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 180)); ?>
                     <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
@@ -315,47 +315,35 @@ get_header();
                         <div class="v4-open-to-work-overlay" title="Open to Work"></div>
                     <?php endif; ?>
                 </div>
-                <div class="profile-v4-identity-box">
-                    <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16px;">
-                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0; font-size: 54px;"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified" style="margin: 0; position: static; width: 28px; height: 28px;"><span class="dashicons dashicons-yes" style="font-size: 18px; width: 18px; height: 18px;"></span></span></h1>
-                    </div>
-                    <div style="margin: 16px 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
-                        <span class="v4-pastel-pill pill-blue"><?php echo esc_html($prof ?: 'Professional'); ?></span>
-                        <?php
-                        $status = $cv['preferences']['availability_status'] ?? 'Immediate';
-                        $status_pill = ($status === 'Immediate') ? 'pill-green' : 'pill-yellow';
-                        ?>
-                        <span class="v4-pastel-pill <?php echo $status_pill; ?>"><?php echo esc_html($status); ?></span>
-                        <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
-                    </div>
-                    <p class="profile-v4-headline" style="font-size: 18px; font-weight: 500; color: #475569;"><?php echo esc_html($spec); ?> • <?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years
-                    <?php
-                    $dob = $cv['personal']['dob'] ?? '';
-                    if($dob):
-                        $age = date_diff(date_create($dob), date_create('today'))->y;
-                        echo ' • ' . esc_html($age) . ' Years Old';
-                    endif;
-                    ?>
-                    </p>
+                <div class="profile-v4-identity-box seeker-identity-v2">
+                    <h1 class="seeker-name-v2"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></span></h1>
 
-                    <div class="profile-v4-location-info v4-mobile-row">
+                    <div class="email-capsule-wrap">
+                         <span class="v4-pastel-pill pill-email"><?php echo esc_html($cv['personal']['email'] ?? $user->user_email); ?></span>
+                    </div>
+
+                    <div class="seeker-meta-v2">
+                        <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
+                        <p class="experience-line-v2"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</p>
+                    </div>
+
+                    <div class="profile-v4-location-info seeker-location-v2">
                         <?php
                         $nationality = get_user_meta($user_id, '_nationality', true);
                         $residence = get_user_meta($user_id, '_country', true);
                         $region = get_user_meta($user_id, '_region', true);
                         ?>
-                        <?php if($nationality): ?>
-                            <div class="location-item-row" title="Nationality">
-                                <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
+                        <?php if($residence): ?>
+                            <div class="location-item-row" title="Country of Residence">
+                                <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
                             </div>
                         <?php endif; ?>
 
-                        <?php if($residence): ?>
-                            <div class="location-item-row" title="Country of Residence">
-                                <span>Resident in </span>
-                                <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon" style="margin-left: 5px;"><?php endif; ?>
-                                <span><?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
+                        <?php if($nationality): ?>
+                            <div class="location-item-row" title="Nationality">
+                                <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                <span>Nationality: <?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -377,32 +365,7 @@ get_header();
                     <?php Jobs_Ads_Service::display_ad('above_content'); ?>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
-                        <div class="v4-card-body">
-                            <?php $summary = get_user_meta($user_id, '_professional_summary', true) ?: (get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.'); ?>
-                            <p><?php echo nl2br(esc_html($summary)); ?></p>
-
-                            <?php if($philosophy = get_user_meta($user_id, '_professional_philosophy', true)): ?>
-                            <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
-                                <span class="dashicons dashicons-format-quote" style="position: absolute; right: 20px; top: 20px; color: #fbcfe8; font-size: 32px; width: 32px; height: 32px;"></span>
-                                <h4 style="font-size: 14px; font-weight: 700; color: #9d174d; margin-bottom: 8px;">Professional Philosophy</h4>
-                                <p style="font-size: 13px; color: #be185d; line-height: 1.6; font-style: italic; margin: 0; max-width: 90%;">"<?php echo esc_html($philosophy); ?>"</p>
-                            </div>
-                            <?php endif; ?>
-
-                            <?php if(!empty($sec_specs)): ?>
-                                <div style="margin-top: 16px;">
-                                    <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Secondary Specializations</small>
-                                    <div class="v4-tag-container">
-                                        <?php foreach($sec_specs as $ss): ?><span class="v4-pastel-pill" style="height: 22px; font-size: 11px;"><?php echo esc_html($ss); ?></span><?php endforeach; ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </section>
-
-                    <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-portfolio"></span> Experience History</h3>
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-portfolio"></span> Professional Experience</h3>
                         <div class="v4-card-body">
                             <?php if(!empty($experience)): foreach($experience as $exp): ?>
                                 <div class="v4-timeline-item">
@@ -421,7 +384,7 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Career Milestone Highlights</h3>
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Career Highlights / Milestones</h3>
                         <div class="v4-card-body">
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
                                 <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
@@ -493,6 +456,22 @@ get_header();
                         </div>
                     </section>
                     <?php endif; ?>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
+                        <div class="v4-card-body">
+                            <?php $summary = get_user_meta($user_id, '_professional_summary', true) ?: (get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.'); ?>
+                            <p><?php echo nl2br(esc_html($summary)); ?></p>
+
+                            <?php if($philosophy = get_user_meta($user_id, '_professional_philosophy', true)): ?>
+                            <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
+                                <span class="dashicons dashicons-format-quote" style="position: absolute; right: 20px; top: 20px; color: #fbcfe8; font-size: 32px; width: 32px; height: 32px;"></span>
+                                <h4 style="font-size: 14px; font-weight: 700; color: #9d174d; margin-bottom: 8px;">Professional Philosophy</h4>
+                                <p style="font-size: 13px; color: #be185d; line-height: 1.6; font-style: italic; margin: 0; max-width: 90%;">"<?php echo esc_html($philosophy); ?>"</p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </section>
 
                     <section class="v4-card">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-admin-settings"></span> Strategic Core Competencies</h3>
