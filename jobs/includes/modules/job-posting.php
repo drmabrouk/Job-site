@@ -75,8 +75,14 @@ $currencies = Jobs_Data_Service::get_currencies();
                 <label style="font-weight: 600; font-size: 0.85em; margin-bottom: 8px; display: block; color: #475569;">Country</label>
                 <select name="country" id="posting-country" style="width:100%; border-radius: 10px; border: 1px solid #cbd5e1; padding: 12px; height: 48px;">
                     <option value="">Select Country</option>
-                    <?php foreach(array_keys($locations) as $c): ?>
-                        <option value="<?php echo esc_attr($c); ?>"><?php echo esc_html(ucwords(str_replace('-', ' ', $c))); ?></option>
+                    <?php
+                    $location_groups = Jobs_Data_Service::get_location_data();
+                    foreach ($location_groups as $group) : ?>
+                        <optgroup label="<?php echo esc_attr($group['label']); ?>">
+                            <?php foreach ($group['countries'] as $slug => $c) : ?>
+                                <option value="<?php echo esc_attr($slug); ?>"><?php echo esc_html($c['name']); ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
                     <?php endforeach; ?>
                 </select>
             </div>

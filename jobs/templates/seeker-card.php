@@ -37,7 +37,13 @@ $can_send_offer = Jobs_Permission_Service::can_post_job();
     <div class="seeker-details-list" style="margin-bottom: auto;">
         <div style="display: flex; align-items: center; gap: 10px; font-size: 0.85em; color: #475569; margin-bottom: 12px;">
             <span class="dashicons dashicons-location" style="font-size: 18px; color: #94a3b8;"></span>
-            <span><?php echo esc_html($region ? $region . ', ' . $nationality : ($nationality ?: 'Global')); ?></span>
+            <span>
+                <?php
+                if($nationality && $f = Jobs_Data_Service::get_flag_url($nationality)): ?>
+                    <img src="<?php echo $f; ?>" style="width: 14px; height: 10px; margin-right: 5px; vertical-align: middle; border-radius: 1px;">
+                <?php endif; ?>
+                <?php echo esc_html($region ? $region . ', ' . ucwords(str_replace('-', ' ', $nationality)) : ($nationality ? ucwords(str_replace('-', ' ', $nationality)) : 'Global')); ?>
+            </span>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; font-size: 0.85em; color: #475569;">
             <span class="dashicons dashicons-welcome-learn-more" style="font-size: 18px; color: #94a3b8;"></span>

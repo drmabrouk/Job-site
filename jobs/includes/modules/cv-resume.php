@@ -100,16 +100,27 @@ $specializations_data = Jobs_Data_Service::get_specializations();
                 <div class="form-group">
                     <select name="personal[nationality]">
                         <option value="">Select Nationality</option>
-                        <?php foreach(array_keys($locations) as $c): ?>
-                            <option value="<?php echo esc_attr($c); ?>" <?php selected($cv['personal']['nationality'] ?? '', $c); ?>><?php echo esc_html(ucwords(str_replace('-', ' ', $c))); ?></option>
+                        <?php
+                        $location_groups = Jobs_Data_Service::get_location_data();
+                        foreach ($location_groups as $group) : ?>
+                            <optgroup label="<?php echo esc_attr($group['label']); ?>">
+                                <?php foreach ($group['countries'] as $slug => $c) : ?>
+                                    <option value="<?php echo esc_attr($slug); ?>" <?php selected($cv['personal']['nationality'] ?? '', $slug); ?>><?php echo esc_html($c['name']); ?></option>
+                                <?php endforeach; ?>
+                            </optgroup>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="form-group">
                     <select name="personal[country]" id="cv-country">
                         <option value="">Country of Residence</option>
-                        <?php foreach(array_keys($locations) as $c): ?>
-                            <option value="<?php echo esc_attr($c); ?>" <?php selected($cv['personal']['country'] ?? '', $c); ?>><?php echo esc_html(ucwords(str_replace('-', ' ', $c))); ?></option>
+                        <?php
+                        foreach ($location_groups as $group) : ?>
+                            <optgroup label="<?php echo esc_attr($group['label']); ?>">
+                                <?php foreach ($group['countries'] as $slug => $c) : ?>
+                                    <option value="<?php echo esc_attr($slug); ?>" <?php selected($cv['personal']['country'] ?? '', $slug); ?>><?php echo esc_html($c['name']); ?></option>
+                                <?php endforeach; ?>
+                            </optgroup>
                         <?php endforeach; ?>
                     </select>
                 </div>

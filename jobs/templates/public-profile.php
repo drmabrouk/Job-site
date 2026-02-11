@@ -306,6 +306,7 @@ get_header();
                         <?php
                         $nationality = get_user_meta($user_id, '_nationality', true);
                         $residence = get_user_meta($user_id, '_country', true);
+                        $region = get_user_meta($user_id, '_region', true);
                         ?>
                         <?php if($nationality): ?>
                             <div class="location-item-row" title="Nationality">
@@ -318,7 +319,7 @@ get_header();
                             <div class="location-item-row" title="Country of Residence">
                                 <span>Resident in </span>
                                 <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon" style="margin-left: 5px;"><?php endif; ?>
-                                <span><?php echo ucwords(str_replace('-', ' ', $residence)); ?></span>
+                                <span><?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
                             </div>
                         <?php endif; ?>
                     </div>

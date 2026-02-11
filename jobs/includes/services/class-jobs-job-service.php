@@ -113,5 +113,13 @@ class Jobs_Job_Service {
             unset($data['sender_id']);
             $wpdb->insert( $table, $data );
         }
+
+        // Enforce 6-item limit (FIFO)
+        $notifs = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM $table WHERE user_id = %d ORDER BY timestamp DESC", $user_id ) );
+        if ( count($notifs) > 6 ) {
+            $to_delete = array_slice($notifs, 6);
+            $ids = implode(',', array_map('intval', $to_delete));
+            $wpdb->query("DELETE FROM $table WHERE id IN ($ids)");
+        }
     }
 }
