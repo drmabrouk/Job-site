@@ -198,12 +198,27 @@ function jobs_handle_forms() {
             'display_name' => trim($first_name . ' ' . $last_name),
         );
 
-        // Update username if changed and allowed
+        // Update username if changed and allowed (60-day constraint)
         if ( ! empty( $new_username ) && $new_username !== $current_user->user_login ) {
-            if ( ! username_exists( $new_username ) ) {
-                global $wpdb;
-                $wpdb->update( $wpdb->users, array( 'user_login' => $new_username ), array( 'ID' => $user_id ) );
-                clean_user_cache( $user_id );
+            $can_change = true;
+            if ( ! current_user_can( 'manage_options' ) ) {
+                $last_username_change = get_user_meta( $user_id, '_last_username_change', true );
+                if ( $last_username_change && ( time() - $last_username_change ) < 60 * DAY_IN_SECONDS ) {
+                    $can_change = false;
+                    $days_left = ceil((60 * DAY_IN_SECONDS - (time() - $last_username_change)) / DAY_IN_SECONDS);
+                    wp_die( "You can only change your username once every 60 days. Please wait $days_left more days." );
+                }
+            }
+
+            if ( $can_change ) {
+                if ( ! username_exists( $new_username ) ) {
+                    global $wpdb;
+                    $wpdb->update( $wpdb->users, array( 'user_login' => $new_username ), array( 'ID' => $user_id ) );
+                    update_user_meta( $user_id, '_last_username_change', time() );
+                    clean_user_cache( $user_id );
+                } else {
+                    wp_die( 'Username already exists.' );
+                }
             }
         }
 

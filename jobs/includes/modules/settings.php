@@ -31,8 +31,21 @@ $current_user = wp_get_current_user();
             </div>
 
             <div class="form-group">
-                <input type="text" name="user_login_change" value="<?php echo esc_attr( $current_user->user_login ); ?>" placeholder="Username" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px; background: #f1f5f9;">
-                <small style="font-size: 0.7em; color: #999;">Changeable once per month</small>
+                <?php
+                $last_change = get_user_meta($current_user->ID, '_last_username_change', true);
+                $can_change = true;
+                $message = 'Changeable once every 60 days';
+                if ($last_change && !current_user_can('manage_options')) {
+                    $diff = time() - $last_change;
+                    if ($diff < 60 * DAY_IN_SECONDS) {
+                        $can_change = false;
+                        $days_left = ceil((60 * DAY_IN_SECONDS - $diff) / DAY_IN_SECONDS);
+                        $message = "Changeable in $days_left days";
+                    }
+                }
+                ?>
+                <input type="text" name="user_login_change" value="<?php echo esc_attr( $current_user->user_login ); ?>" placeholder="Username" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px; <?php echo !$can_change ? 'background: #f1f5f9; cursor: not-allowed;' : ''; ?>" <?php echo !$can_change ? 'readonly' : ''; ?>>
+                <small style="font-size: 0.7em; color: <?php echo $can_change ? '#999' : '#e11d48'; ?>;"><?php echo $message; ?></small>
             </div>
 
             <div class="form-group" style="grid-column: span 2;">
