@@ -120,22 +120,8 @@ function jobs_notifications_icon_shortcode() {
                 <div class="dropdown-header">
                     <strong>Notifications</strong>
                 </div>
-                <div id="jobs-notif-list" class="notif-list">
+                <div id="jobs-notif-list" class="notif-list" style="max-height: 400px; overflow-y: auto;">
                     <p style="padding:20px; text-align:center; color:#999;">Loading...</p>
-                </div>
-                <div id="jobs-notif-detail" style="display:none; padding: 20px; border-top: 1px solid #f1f5f9;">
-                    <button id="notif-back" class="v4-btn-secondary" style="height: 30px; padding: 0 12px; margin-bottom: 20px; font-size: 11px; width: auto;"><span class="dashicons dashicons-arrow-left-alt2" style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;"></span> Back</button>
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                        <div style="width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 1px solid #eff6ff; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
-                            <img src="" id="notif-detail-avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                            <span class="dashicons dashicons-bell" id="notif-detail-icon-placeholder" style="color: #1d3469; font-size: 20px;"></span>
-                        </div>
-                        <div>
-                            <div id="notif-detail-sender" style="font-weight: 700; color: #1d3469; font-size: 14px;"></div>
-                            <div id="notif-detail-time" style="font-size: 11px; color: #94a3b8;"></div>
-                        </div>
-                    </div>
-                    <div id="notif-detail-content" style="font-size: 13px; color: #475569; line-height: 1.7; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;"></div>
                 </div>
             </div>
         </div>

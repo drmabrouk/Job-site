@@ -12,8 +12,16 @@ if ( ! is_user_logged_in() ) {
 }
 
 $user_id = get_current_user_id();
+if ( ! $user_id ) {
+    wp_safe_redirect( home_url( '/login/' ) );
+    exit;
+}
 $user = get_userdata( $user_id );
-$role = $user->roles[0] ?? 'job_seeker';
+if ( ! $user ) {
+    wp_safe_redirect( home_url( '/login/' ) );
+    exit;
+}
+$role = ! empty( $user->roles ) ? $user->roles[0] : 'job_seeker';
 $first_name = get_user_meta($user_id, 'first_name', true) ?: $user->display_name;
 $is_revisit = get_user_meta($user_id, '_setup_complete', true);
 $cv_data = get_user_meta($user_id, 'jobs_cv_data_v2', true) ?: array();
@@ -828,6 +836,28 @@ input:focus, select:focus, textarea:focus { border-color: #1d3469; background: w
 .v2-button-toggle-group { display: flex; gap: 10px; }
 .v2-toggle-btn { flex: 1; padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0; background: #f8fafc; color: #64748b; font-weight: 600; cursor: pointer; transition: all 0.3s; }
 .v2-toggle-btn.active { background: #1d3469; color: white; border-color: #1d3469; }
+
+.new-entry-anim { animation: newEntryFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+@keyframes newEntryFadeIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.v2-btn-minimal {
+    background: #eff6ff;
+    color: #1d3469;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: 1px solid #dbeafe;
+    transition: all 0.3s ease;
+}
+.v2-btn-minimal:hover {
+    background: #1d3469;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(29, 52, 105, 0.1);
+}
 </style>
 
 <script>
@@ -1014,8 +1044,9 @@ jQuery(document).ready(function($) {
     $('#add-cert-btn').on('click', function() {
         const index = certIndex++;
         const html = `
-            <div class="cert-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
-                <button type="button" class="remove-repeat-item">&times;</button>
+            <div class="cert-entry-card v2-repeat-item new-entry-anim" style="background: #ffffff; border: 2px solid #f59e0b; border-radius: 24px; padding: 35px; margin-bottom: 30px; position: relative; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.08);">
+                <div style="position: absolute; top: -15px; left: 30px; background: #f59e0b; color: white; padding: 5px 20px; border-radius: 50px; font-size: 12px; font-weight: 700;">New Certification Asset</div>
+                <button type="button" class="remove-repeat-item" style="top: 20px; right: 20px; background: #fee2e2; color: #ef4444; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-size: 18px;">&times;</button>
                 <div class="form-grid-v2">
                     <div class="form-group-v2 span-2">
                         <label>Certification Name</label>
@@ -1037,8 +1068,9 @@ jQuery(document).ready(function($) {
     $('#add-academic-btn').on('click', function() {
         const index = academicIndex++;
         const html = `
-            <div class="academic-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
-                <button type="button" class="remove-repeat-item">&times;</button>
+            <div class="academic-entry-card v2-repeat-item new-entry-anim" style="background: #ffffff; border: 2px solid #1d3469; border-radius: 24px; padding: 35px; margin-bottom: 30px; position: relative; box-shadow: 0 10px 30px rgba(29, 52, 105, 0.08);">
+                <div style="position: absolute; top: -15px; left: 30px; background: #1d3469; color: white; padding: 5px 20px; border-radius: 50px; font-size: 12px; font-weight: 700;">New Qualification Asset</div>
+                <button type="button" class="remove-repeat-item" style="top: 20px; right: 20px; background: #fee2e2; color: #ef4444; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-size: 18px;">&times;</button>
                 <div class="form-grid-v2">
                     <div class="form-group-v2">
                         <label>Degree / Qualification</label>
@@ -1101,8 +1133,9 @@ jQuery(document).ready(function($) {
     $('#add-experience-btn').on('click', function() {
         const index = experienceIndex++;
         const html = `
-            <div class="experience-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
-                <button type="button" class="remove-repeat-item">&times;</button>
+            <div class="experience-entry-card v2-repeat-item new-entry-anim" style="background: #ffffff; border: 2px solid #10b981; border-radius: 24px; padding: 35px; margin-bottom: 30px; position: relative; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);">
+                <div style="position: absolute; top: -15px; left: 30px; background: #10b981; color: white; padding: 5px 20px; border-radius: 50px; font-size: 12px; font-weight: 700;">New Experience Asset</div>
+                <button type="button" class="remove-repeat-item" style="top: 20px; right: 20px; background: #fee2e2; color: #ef4444; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; font-size: 18px;">&times;</button>
                 <div class="form-grid-v2">
                     <div class="form-group-v2">
                         <label>Field of Work / Industry</label>

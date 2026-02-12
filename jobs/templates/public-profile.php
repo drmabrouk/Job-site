@@ -63,7 +63,7 @@ get_header();
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16px;">
-                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0; font-size: 54px;"><?php echo esc_html($company['name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified Entity" style="margin: 0; position: static; width: 28px; height: 28px;"><span class="dashicons dashicons-yes" style="font-size: 18px; width: 18px; height: 18px;"></span></span></h1>
+                        <h1 style="display: inline-flex; align-items: center; gap: 10px; margin: 0; font-size: 54px;"><?php echo esc_html($company['name'] ?? $display_name); ?></h1>
                     </div>
                     <div style="margin: 16px 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
                         <span class="v4-pastel-pill pill-blue"><?php echo esc_html($company['industry'] ?? 'Corporate Entity'); ?></span>
@@ -373,11 +373,24 @@ get_header();
                         <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=1'); ?>" class="v4-avatar-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
                     </div>
                     <div class="profile-v4-identity-box seeker-identity-v2">
-                        <h1 class="seeker-name-v2"><?php echo esc_html($display_name); ?> <span class="badge-verified-circle" title="Verified Member"><span class="dashicons dashicons-yes"></span></span></h1>
+                        <h1 class="seeker-name-v2"><?php echo esc_html($display_name); ?></h1>
 
                         <div class="seeker-header-capsules">
+                            <?php
+                            $is_currently_working = false;
+                            if (!empty($experience)) {
+                                foreach ($experience as $exp) {
+                                    if (!empty($exp['is_current'])) {
+                                        $is_currently_working = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            $status = $is_currently_working ? 'Currently Working' : ($cv['preferences']['availability_status'] ?? 'Available');
+                            $status_class = ($status === 'Currently Working') ? 'pill-blue' : ((strpos($status, 'Immediate') !== false || strpos($status, 'Available') !== false) ? 'pill-green' : 'pill-purple');
+                            ?>
+                            <span class="v4-pastel-pill <?php echo $status_class; ?>"><?php echo esc_html($status); ?></span>
                             <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
-                            <span class="v4-pastel-pill pill-blue"><?php echo esc_html($prof ?: 'Professional'); ?></span>
                         </div>
 
                         <div class="seeker-meta-v2">
@@ -734,7 +747,10 @@ get_header();
 
                     <?php if(!empty($certs)): ?>
                     <section class="v4-card">
-                        <h3 class="v4-card-title">Certifications</h3>
+                        <h3 class="v4-card-title">
+                            Certifications
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=11'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php foreach($certs as $c): ?>
                                 <div style="margin-bottom: 12px;">
@@ -746,40 +762,42 @@ get_header();
                     </section>
                     <?php endif; ?>
 
-                    <a href="<?php echo home_url('/account-setup/'); ?>" class="integrity-card-link" style="text-decoration: none;">
-                    <section class="v4-card integrity-card" style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); border: none; color: #FFFFFF; cursor: pointer; transition: transform 0.3s ease;">
-                        <h3 class="v4-card-title" style="color: #FFFFFF; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;"><span class="dashicons dashicons-shield-alt" style="color: #fff;"></span> Profile Strength</h3>
-                        <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 24px 0 12px; border: 1px solid rgba(255,255,255,0.05);">
-                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #34d399, #fbbf24); border-radius: 10px; box-shadow: 0 0 15px rgba(52,211,153,0.5);"></div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7);">
-                            <span style="letter-spacing: 0.1em;">COMPLETENESS SCORE</span>
-                            <span style="color: #34d399; font-size: 14px;"><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
-                        </div>
-
-                        <?php
-                        $tips = array();
-                        if(empty($cv['personal']['summary'])) $tips[] = "Add a professional summary";
-                        if(empty($cv['experience'])) $tips[] = "List your work experience";
-                        if(empty($cv['academic'])) $tips[] = "Add your academic history";
-                        if(empty($skills)) $tips[] = "Highlight your key skills";
-                        if(empty($portfolio)) $tips[] = "Showcase your work samples";
-
-                        if(!empty($tips)): ?>
-                            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-                                <div style="font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">Improve Your Presence</div>
-                                <ul style="margin: 0; padding: 0; list-style: none;">
-                                    <?php foreach(array_slice($tips, 0, 3) as $tip): ?>
-                                        <li style="font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.9);">
-                                            <span class="dashicons dashicons-plus-alt" style="font-size: 14px; width: 14px; height: 14px; color: #34d399;"></span>
-                                            <?php echo esc_html($tip); ?>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
+                    <?php if ( get_current_user_id() === $user_id ) : ?>
+                        <a href="<?php echo home_url('/account-setup/'); ?>" class="integrity-card-link" style="text-decoration: none;">
+                        <section class="v4-card integrity-card" style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); border: none; color: #FFFFFF; cursor: pointer; transition: transform 0.3s ease;">
+                            <h3 class="v4-card-title" style="color: #FFFFFF; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;"><span class="dashicons dashicons-shield-alt" style="color: #fff;"></span> Profile Strength</h3>
+                            <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 24px 0 12px; border: 1px solid rgba(255,255,255,0.05);">
+                                <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #34d399, #fbbf24); border-radius: 10px; box-shadow: 0 0 15px rgba(52,211,153,0.5);"></div>
                             </div>
-                        <?php endif; ?>
-                    </section>
-                    </a>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7);">
+                                <span style="letter-spacing: 0.1em;">COMPLETENESS SCORE</span>
+                                <span style="color: #34d399; font-size: 14px;"><?php echo esc_html($cv['completeness'] ?? 75); ?>%</span>
+                            </div>
+
+                            <?php
+                            $tips = array();
+                            if(empty($cv['personal']['summary'])) $tips[] = "Add a professional summary";
+                            if(empty($cv['experience'])) $tips[] = "List your work experience";
+                            if(empty($cv['academic'])) $tips[] = "Add your academic history";
+                            if(empty($skills)) $tips[] = "Highlight your key skills";
+                            if(empty($portfolio)) $tips[] = "Showcase your work samples";
+
+                            if(!empty($tips)): ?>
+                                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                    <div style="font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">Improve Your Presence</div>
+                                    <ul style="margin: 0; padding: 0; list-style: none;">
+                                        <?php foreach(array_slice($tips, 0, 3) as $tip): ?>
+                                            <li style="font-size: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.9);">
+                                                <span class="dashicons dashicons-plus-alt" style="font-size: 14px; width: 14px; height: 14px; color: #34d399;"></span>
+                                                <?php echo esc_html($tip); ?>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            <?php endif; ?>
+                        </section>
+                        </a>
+                    <?php endif; ?>
 
                     <div style="text-align: center; color: #999; font-size: 11px; font-weight: 500;">
                         Last Active: <?php echo $last_activity ? human_time_diff($last_activity, current_time('timestamp')).' ago' : 'Recently'; ?>
