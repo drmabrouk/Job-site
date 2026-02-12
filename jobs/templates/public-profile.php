@@ -34,6 +34,15 @@ $last_activity = isset($all_meta['_last_activity'][0]) ? $all_meta['_last_activi
 get_header();
 ?>
 <div class="jobs-premium-profile-v4">
+    <!-- PDF Header (Hidden on Screen) -->
+    <div class="pdf-only-header" style="display: none;">
+        <?php
+        $logo_url = get_option( 'jobs_site_logo' );
+        if($logo_url): ?>
+            <img src="<?php echo esc_url($logo_url); ?>" style="height: 40px; width: auto;">
+        <?php endif; ?>
+    </div>
+
     <div class="profile-layout-container">
 
         <?php if ($role === 'employer') :
@@ -48,8 +57,9 @@ get_header();
             ?>
             <!-- HEADER: EMPLOYER -->
             <header class="profile-v4-header">
-                <div class="profile-v4-avatar-box">
+                <div class="profile-v4-avatar-box" style="position: relative;">
                     <img src="<?php echo esc_url($logo); ?>" alt="Company Logo">
+                    <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=1'); ?>" class="v4-avatar-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16px;">
@@ -84,7 +94,10 @@ get_header();
             <div class="profile-v4-grid">
                 <div class="profile-v4-main">
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-businesswoman"></span> Company Overview</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-businesswoman"></span> Company Overview
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=6'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <p><?php echo nl2br(esc_html($company['details'] ?? 'Strategic organization focused on global excellence.')); ?></p>
 
@@ -120,7 +133,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Corporate Heritage & Recognition</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-awards"></span> Corporate Heritage & Recognition
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=7'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div style="padding: 20px; background: #fdfcfb; border: 1px solid #f3f4f6; border-radius: 16px;">
@@ -167,7 +183,10 @@ get_header();
                 <div class="profile-v4-sidebar">
                     <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
                     <section class="v4-card contact-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=5'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php
                             $c_email = $company['email'] ?? $user->user_email;
@@ -209,7 +228,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-location"></span> Global Operation Footprint</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-location"></span> Global Operation Footprint
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=4'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                                 <p style="font-size: 12px; color: #475569; margin: 0;">Our operations span across multiple regions, providing localized expertise with a global perspective.</p>
@@ -227,7 +249,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title">Corporate Profile</h3>
+                        <h3 class="v4-card-title">
+                            Corporate Profile
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=3'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div style="margin-bottom: 16px;">
                                 <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Founded</small>
@@ -350,9 +375,14 @@ get_header();
                                 </div>
                             <?php endif; ?>
 
-                            <div class="profile-views-display" title="Profile Views">
+                            <div class="profile-views-display-v2 desktop-only" title="Profile Views">
                                 <span class="dashicons dashicons-visibility"></span>
-                                <strong><?php echo number_format( (int) get_user_meta($user_id, '_profile_views', true) ); ?></strong> Views
+                                <strong><?php echo number_format( (int) get_user_meta($user_id, '_profile_views', true) ); ?></strong> Profile Views
+                            </div>
+
+                            <div class="profile-views-display-mobile mobile-only" title="Profile Views">
+                                <span class="dashicons dashicons-visibility"></span>
+                                <strong><?php echo number_format( (int) get_user_meta($user_id, '_profile_views', true) ); ?></strong>
                             </div>
                         </div>
                     </div>
@@ -374,20 +404,14 @@ get_header();
                     <?php Jobs_Ads_Service::display_ad('above_content'); ?>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-admin-users"></span> Professional Summary
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=6'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php $summary = get_user_meta($user_id, '_professional_summary', true) ?: (get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.'); ?>
                             <p><?php echo nl2br(esc_html($summary)); ?></p>
 
-                            <?php
-                            $ielts = get_user_meta($user_id, '_ielts_score', true);
-                            $toefl = get_user_meta($user_id, '_toefl_score', true);
-                            if($ielts || $toefl): ?>
-                                <div style="display: flex; gap: 12px; margin-top: 15px;">
-                                    <?php if($ielts): ?><span class="v4-pastel-pill pill-blue">IELTS: <?php echo esc_html($ielts); ?></span><?php endif; ?>
-                                    <?php if($toefl): ?><span class="v4-pastel-pill pill-purple">TOEFL: <?php echo esc_html($toefl); ?></span><?php endif; ?>
-                                </div>
-                            <?php endif; ?>
 
                             <?php if($philosophy = get_user_meta($user_id, '_professional_philosophy', true)): ?>
                             <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
@@ -401,7 +425,10 @@ get_header();
 
                     <!-- Career Highlights (Boxes) -->
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-chart-bar"></span> Career Highlights</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-chart-bar"></span> Career Highlights
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=8'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div class="career-highlights-row">
                                 <div class="highlight-box">
@@ -422,7 +449,10 @@ get_header();
 
                     <!-- Key Achievements -->
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Key Achievements</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-awards"></span> Key Professional Achievements & Milestones
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=8'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php
                             $accomplishments = get_user_meta($user_id, '_key_accomplishments', true);
@@ -444,7 +474,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-welcome-learn-more"></span> Academic Background</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-welcome-learn-more"></span> Academic Background
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=7'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php if(!empty($academic)): foreach($academic as $edu): ?>
                                 <div class="v4-timeline-item">
@@ -462,7 +495,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-portfolio"></span> Professional Experience</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-portfolio"></span> Professional Experience
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=8'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php if(!empty($experience)): foreach($experience as $exp): ?>
                                 <div class="v4-timeline-item">
@@ -481,7 +517,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-settings"></span> Core & Strategic Competencies</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-admin-settings"></span> Core & Strategic Competencies
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=9'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <p style="color: #64748b; margin-bottom: 20px;">Validated skills and operational capabilities acquired through professional engagement.</p>
                             <div class="v4-tag-container">
@@ -496,7 +535,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-visibility"></span> References</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-visibility"></span> References
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=11'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php if(!empty($refs)): ?>
                                 <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;">
@@ -531,25 +573,18 @@ get_header();
                 </div>
 
                 <div class="profile-v4-sidebar">
-                    <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
-
-                    <section class="v4-card social-sidebar-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-share"></span> Social Links</h3>
-                        <div class="v4-card-body">
-                            <div style="display: flex; gap: 12px;">
-                                <a href="#" class="sidebar-social-icon black-icon"><span class="dashicons dashicons-facebook"></span></a>
-                                <a href="#" class="sidebar-social-icon black-icon"><span class="dashicons dashicons-twitter"></span></a>
-                                <a href="#" class="sidebar-social-icon black-icon"><span class="dashicons dashicons-networking"></span></a>
-                            </div>
-                        </div>
-                    </section>
-
                     <section class="v4-card contact-card sidebar-contact-info">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=4'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php
                             $s_email = $cv['personal']['email'] ?? $user->user_email;
                             $s_phone = $cv['personal']['phone'] ?? get_user_meta($user_id, '_phone', true);
+                            $facebook = get_user_meta($user_id, '_facebook_url', true);
+                            $twitter = get_user_meta($user_id, '_twitter_url', true);
+                            $linkedin = get_user_meta($user_id, '_linkedin_url', true);
                             ?>
                             <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 <span class="dashicons dashicons-email" style="color: #64748b; font-size: 18px; width: 18px; height: 18px;"></span>
@@ -557,7 +592,7 @@ get_header();
                             </div>
 
                             <?php if($s_phone): ?>
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 <span class="dashicons dashicons-phone" style="color: #64748b; font-size: 18px; width: 18px; height: 18px;"></span>
                                 <span style="color: #1d3469; font-weight: 600; font-size: 13px;"><?php echo esc_html($s_phone); ?></span>
                                 <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $s_phone); ?>" target="_blank" style="margin-left: auto; color: #25D366;" title="WhatsApp Chat">
@@ -565,11 +600,24 @@ get_header();
                                 </a>
                             </div>
                             <?php endif; ?>
+
+                            <?php if($facebook || $twitter || $linkedin): ?>
+                            <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; padding-top: 15px; border-top: 1px solid #f1f5f9;">
+                                <?php if($facebook): ?><a href="<?php echo esc_url($facebook); ?>" target="_blank" class="sidebar-social-icon-v2" title="Facebook"><span class="dashicons dashicons-facebook"></span></a><?php endif; ?>
+                                <?php if($twitter): ?><a href="<?php echo esc_url($twitter); ?>" target="_blank" class="sidebar-social-icon-v2" title="Twitter/X"><span class="dashicons dashicons-twitter"></span></a><?php endif; ?>
+                                <?php if($linkedin): ?><a href="<?php echo esc_url($linkedin); ?>" target="_blank" class="sidebar-social-icon-v2" title="LinkedIn"><span class="dashicons dashicons-networking"></span></a><?php endif; ?>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </section>
 
+                    <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
+
                     <section class="v4-card">
-                        <h3 class="v4-card-title">Career Summary</h3>
+                        <h3 class="v4-card-title">
+                            Career Summary
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=5'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div class="v4-career-item">
                                 <span class="dashicons dashicons-awards"></span>
@@ -604,13 +652,25 @@ get_header();
                                 <div>
                                     <small>Language Proficiency</small>
                                     <span><?php echo esc_html($cv['languages']['native'] ?? 'English'); ?><?php echo !empty($cv['languages']['other']) ? ', '.esc_html($cv['languages']['other']) : ''; ?></span>
+                                    <?php
+                                    $ielts = get_user_meta($user_id, '_ielts_score', true);
+                                    $toefl = get_user_meta($user_id, '_toefl_score', true);
+                                    if($ielts || $toefl): ?>
+                                        <div style="display: flex; gap: 8px; margin-top: 5px;">
+                                            <?php if($ielts): ?><span style="font-size: 10px; background: #eff6ff; color: #1d4ed8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">IELTS: <?php echo esc_html($ielts); ?></span><?php endif; ?>
+                                            <?php if($toefl): ?><span style="font-size: 10px; background: #faf5ff; color: #7e22ce; padding: 2px 8px; border-radius: 4px; font-weight: 700;">TOEFL: <?php echo esc_html($toefl); ?></span><?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title">Strategic Domain Knowledge</h3>
+                        <h3 class="v4-card-title">
+                            Strategic Domain Knowledge
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=9'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Comprehensive expertise across core technical and professional domains, developed through years of practical application.</p>
                             <div class="v4-tag-container">
@@ -681,6 +741,14 @@ get_header();
             <?php Jobs_Ads_Service::display_ad('below_content'); ?>
         <?php endif; ?>
 
+    </div>
+
+    <!-- PDF Footer (Hidden on Screen) -->
+    <div class="pdf-only-footer" style="display: none;">
+        <div style="border-top: 1px solid #ccc; padding-top: 10px; margin-top: 30px; text-align: center; font-size: 10px; color: #666;">
+            <p>This professional profile was generated via <strong><?php bloginfo('name'); ?></strong> - The Premium Career Platform.</p>
+            <p><?php echo home_url(); ?> | Verified Professional Identity</p>
+        </div>
     </div>
 </div>
 

@@ -212,6 +212,22 @@ $total_steps = count($active_steps);
                             <?php $pre_phone_extra = $cv_data['personal']['phone_extra'] ?? ''; ?>
                             <input type="tel" name="phone_extra" id="extra-phone" class="v2-phone-input" value="<?php echo esc_attr($pre_phone_extra); ?>">
                         </div>
+
+                        <div class="form-grid-v2" style="margin-top: 40px; border-top: 1px solid #f1f5f9; padding-top: 30px;">
+                            <div class="form-group-v2">
+                                <label>Facebook Profile URL</label>
+                                <input type="url" name="facebook_url" value="<?php echo esc_url(get_user_meta($user_id, '_facebook_url', true)); ?>" placeholder="https://facebook.com/yourprofile">
+                            </div>
+                            <div class="form-group-v2">
+                                <label>Twitter / X Profile URL</label>
+                                <input type="url" name="twitter_url" value="<?php echo esc_url(get_user_meta($user_id, '_twitter_url', true)); ?>" placeholder="https://x.com/yourprofile">
+                            </div>
+                            <div class="form-group-v2 span-2">
+                                <label>LinkedIn Professional URL</label>
+                                <input type="url" name="linkedin_url" value="<?php echo esc_url(get_user_meta($user_id, '_linkedin_url', true)); ?>" placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+                        </div>
+
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="3">Back</button>
                             <button type="button" class="v2-next-btn" data-next="5">Continue</button>
@@ -545,9 +561,23 @@ $total_steps = count($active_steps);
                             <p>Finalize your professional profile and data accuracy confirmation.</p>
                         </div>
                         <div class="agreement-box">
-                            <label><input type="checkbox" required> I agree to the <a href="<?php echo home_url('/policies'); ?>" target="_blank">Terms of Use</a> and <a href="<?php echo home_url('/policies'); ?>" target="_blank">Privacy Policy</a>.</label>
-                            <label><input type="checkbox" required> I confirm that all provided information is accurate and authentic.</label>
-                            <label><input type="checkbox" checked disabled> I understand that I can add more details to my public profile later.</label>
+                            <label><input type="checkbox" <?php echo $is_revisit ? 'checked' : 'required'; ?>> I agree to the <a href="<?php echo home_url('/policies'); ?>" target="_blank">Terms of Use</a> and <a href="<?php echo home_url('/policies'); ?>" target="_blank">Privacy Policy</a>.</label>
+                            <label><input type="checkbox" <?php echo $is_revisit ? 'checked' : 'required'; ?>> I confirm that all provided information is accurate and authentic.</label>
+
+                            <?php if ($is_revisit): ?>
+                                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                                    <label style="font-weight: 700; color: #1d3469; display: block; margin-bottom: 10px;">Advanced Profile Visibility</label>
+                                    <?php $visibility = get_user_meta($user_id, 'profile_visibility', true) ?: 'public'; ?>
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="checkbox" name="profile_visibility" value="public" <?php checked($visibility, 'public'); ?> style="width: auto;">
+                                        Make my profile visible to employers and the public
+                                    </label>
+                                    <p style="font-size: 0.8em; color: #64748b; margin: 5px 0 0 25px;">When disabled, only you can see your profile. Employers can still see your applications.</p>
+                                </div>
+                            <?php else: ?>
+                                <input type="hidden" name="profile_visibility" value="public">
+                                <label><input type="checkbox" checked disabled> I understand that I can add more details to my public profile later.</label>
+                            <?php endif; ?>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="11">Back</button>
@@ -709,8 +739,21 @@ $total_steps = count($active_steps);
                             <h2>Privacy & Final Protocols</h2>
                         </div>
                         <div class="agreement-box">
-                            <label><input type="checkbox" required> I agree to the <a href="<?php echo home_url('/policies'); ?>" target="_blank">Terms of Use</a>.</label>
-                            <label><input type="checkbox" required> I confirm the organizational data is legitimate.</label>
+                            <label><input type="checkbox" <?php echo $is_revisit ? 'checked' : 'required'; ?>> I agree to the <a href="<?php echo home_url('/policies'); ?>" target="_blank">Terms of Use</a>.</label>
+                            <label><input type="checkbox" <?php echo $is_revisit ? 'checked' : 'required'; ?>> I confirm the organizational data is legitimate.</label>
+
+                            <?php if ($is_revisit): ?>
+                                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                                    <label style="font-weight: 700; color: #1d3469; display: block; margin-bottom: 10px;">Corporate Visibility</label>
+                                    <?php $visibility = get_user_meta($user_id, 'profile_visibility', true) ?: 'public'; ?>
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="checkbox" name="profile_visibility" value="public" <?php checked($visibility, 'public'); ?> style="width: auto;">
+                                        Make company profile public
+                                    </label>
+                                </div>
+                            <?php else: ?>
+                                <input type="hidden" name="profile_visibility" value="public">
+                            <?php endif; ?>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="7">Back</button>
@@ -726,8 +769,8 @@ $total_steps = count($active_steps);
 
 <style>
 .jobs-premium-setup-v2 { background: transparent; min-height: auto; padding: 0; font-family: 'Rubik', sans-serif; color: #1e293b; width: 100%; }
-.setup-container { max-width: 860px; margin: 0 auto; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: visible; border: 1px solid #eef2f6; }
-.setup-v2-header { padding: 48px; border-bottom: 1px solid #f1f5f9; background: #ffffff; }
+.setup-container { max-width: 900px; margin: 20px auto; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: visible; border: 1px solid #eef2f6; }
+.setup-v2-header { padding: 40px 48px; border-bottom: 1px solid #f1f5f9; background: #ffffff; }
 .setup-welcome h1 { font-size: 2.4em; font-weight: 800; margin: 24px 0 8px; color: #0f172a; }
 .setup-welcome p { color: #64748b; font-size: 1.1em; margin: 0; }
 .setup-v2-progress { margin-top: 40px; }
@@ -746,7 +789,10 @@ $total_steps = count($active_steps);
 .form-grid-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; width: 100% !important; }
 .span-2 { grid-column: span 2 !important; }
 input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
-    width: 100%; padding: 14px 18px; border-radius: 14px; border: 2px solid #e2e8f0; background: #f8fafc; font-size: 1em; color: #1e293b; transition: all 0.3s ease; outline: none;
+    width: 100%; padding: 12px 18px; border-radius: 14px; border: 2px solid #e2e8f0; background: #f8fafc; font-size: 1em; color: #1e293b; transition: all 0.3s ease; outline: none; box-sizing: border-box; line-height: 1.2;
+}
+select {
+    height: 50px;
 }
 input:focus, select:focus, textarea:focus { border-color: #1d3469; background: white; box-shadow: 0 0 0 4px rgba(29, 52, 105, 0.05); }
 .photo-upload-zone { display: flex; align-items: center; gap: 32px; background: #f8fafc; padding: 24px; border-radius: 20px; border: 2px dashed #e2e8f0; }
@@ -1184,6 +1230,13 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    // Handle URL Step Parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const startStep = urlParams.get('step');
+    if (startStep && startStep >= 1 && startStep <= totalSteps) {
+        goToStep(parseInt(startStep));
+    }
 
     // Initialize Global Scripts
     if (window.initJobsPhoneFields) window.initJobsPhoneFields();
