@@ -319,7 +319,7 @@ get_header();
                     <?php endif; ?>
                 </div>
                 <div class="profile-v4-identity-box seeker-identity-v2">
-                    <h1 class="seeker-name-v2"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></span></h1>
+                    <h1 class="seeker-name-v2"><?php echo esc_html($display_name); ?> <span class="badge-verified-circle" title="Verified Member"><span class="dashicons dashicons-yes"></span></span></h1>
 
                     <div class="seeker-header-capsules">
                         <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
@@ -327,28 +327,34 @@ get_header();
                     </div>
 
                     <div class="seeker-meta-v2">
-                        <p class="experience-line-v2"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</p>
-                    </div>
+                        <div class="seeker-meta-row-combined">
+                            <p class="experience-line-v2"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</p>
 
-                    <div class="profile-v4-location-info seeker-location-v2">
-                        <?php
-                        $nationality = get_user_meta($user_id, '_nationality', true);
-                        $residence = get_user_meta($user_id, '_country', true);
-                        $region = get_user_meta($user_id, '_region', true);
-                        ?>
-                        <?php if($nationality): ?>
-                            <div class="location-item-row" title="Nationality">
-                                <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                <span>Nationality: <?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
-                            </div>
-                        <?php endif; ?>
+                            <?php
+                            $nationality = get_user_meta($user_id, '_nationality', true);
+                            $residence = get_user_meta($user_id, '_country', true);
+                            $region = get_user_meta($user_id, '_region', true);
+                            ?>
 
-                        <?php if($residence): ?>
-                            <div class="location-item-row" title="Country of Residence">
-                                <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
+                            <?php if($nationality): ?>
+                                <div class="location-item-row-inline" title="Nationality">
+                                    <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                    <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if($residence): ?>
+                                <div class="location-item-row-inline" title="Country of Residence">
+                                    <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                    <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="profile-views-display" title="Profile Views">
+                                <span class="dashicons dashicons-visibility"></span>
+                                <strong><?php echo number_format( (int) get_user_meta($user_id, '_profile_views', true) ); ?></strong> Views
                             </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
                 </div>
                 <div class="profile-v4-actions">
@@ -373,6 +379,16 @@ get_header();
                             <?php $summary = get_user_meta($user_id, '_professional_summary', true) ?: (get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.'); ?>
                             <p><?php echo nl2br(esc_html($summary)); ?></p>
 
+                            <?php
+                            $ielts = get_user_meta($user_id, '_ielts_score', true);
+                            $toefl = get_user_meta($user_id, '_toefl_score', true);
+                            if($ielts || $toefl): ?>
+                                <div style="display: flex; gap: 12px; margin-top: 15px;">
+                                    <?php if($ielts): ?><span class="v4-pastel-pill pill-blue">IELTS: <?php echo esc_html($ielts); ?></span><?php endif; ?>
+                                    <?php if($toefl): ?><span class="v4-pastel-pill pill-purple">TOEFL: <?php echo esc_html($toefl); ?></span><?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+
                             <?php if($philosophy = get_user_meta($user_id, '_professional_philosophy', true)): ?>
                             <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
                                 <span class="dashicons dashicons-format-quote" style="position: absolute; right: 20px; top: 20px; color: #fbcfe8; font-size: 32px; width: 32px; height: 32px;"></span>
@@ -383,24 +399,31 @@ get_header();
                         </div>
                     </section>
 
+                    <!-- Career Highlights (Boxes) -->
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Key Professional Achievements & Milestones</h3>
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-chart-bar"></span> Career Highlights</h3>
                         <div class="v4-card-body">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 30px;">
-                                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
-                                    <div style="font-size: 24px; font-weight: 800; color: #1d3469; margin-bottom: 5px;"><?php echo esc_html($exp_years ?: '0'); ?>+</div>
-                                    <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Years Experience</div>
+                            <div class="career-highlights-row">
+                                <div class="highlight-box">
+                                    <div class="highlight-value"><?php echo esc_html($exp_years ?: '0'); ?>+</div>
+                                    <div class="highlight-label">Years Experience</div>
                                 </div>
-                                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
-                                    <div style="font-size: 24px; font-weight: 800; color: #1d3469; margin-bottom: 5px;"><?php echo count($experience); ?></div>
-                                    <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Corporate Roles</div>
+                                <div class="highlight-box">
+                                    <div class="highlight-value"><?php echo count($experience); ?></div>
+                                    <div class="highlight-label">Corporate Roles</div>
                                 </div>
-                                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
-                                    <div style="font-size: 24px; font-weight: 800; color: #1d3469; margin-bottom: 5px;"><?php echo count($skills); ?>+</div>
-                                    <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Key Competencies</div>
+                                <div class="highlight-box">
+                                    <div class="highlight-value"><?php echo count($skills); ?>+</div>
+                                    <div class="highlight-label">Key Competencies</div>
                                 </div>
                             </div>
+                        </div>
+                    </section>
 
+                    <!-- Key Achievements -->
+                    <section class="v4-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Key Achievements</h3>
+                        <div class="v4-card-body">
                             <?php
                             $accomplishments = get_user_meta($user_id, '_key_accomplishments', true);
                             if($accomplishments):
@@ -510,7 +533,18 @@ get_header();
                 <div class="profile-v4-sidebar">
                     <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
 
-                    <section class="v4-card contact-card">
+                    <section class="v4-card social-sidebar-card">
+                        <h3 class="v4-card-title"><span class="dashicons dashicons-share"></span> Social Links</h3>
+                        <div class="v4-card-body">
+                            <div style="display: flex; gap: 12px;">
+                                <a href="#" class="sidebar-social-icon black-icon"><span class="dashicons dashicons-facebook"></span></a>
+                                <a href="#" class="sidebar-social-icon black-icon"><span class="dashicons dashicons-twitter"></span></a>
+                                <a href="#" class="sidebar-social-icon black-icon"><span class="dashicons dashicons-networking"></span></a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="v4-card contact-card sidebar-contact-info">
                         <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
                         <div class="v4-card-body">
                             <?php
@@ -604,10 +638,11 @@ get_header();
                     </section>
                     <?php endif; ?>
 
-                    <section class="v4-card integrity-card" style="background: linear-gradient(135deg, #1d3469 0%, #2a4a8c 100%); border: none; color: #FFFFFF;">
-                        <h3 class="v4-card-title" style="color: #FFFFFF; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;"><span class="dashicons dashicons-shield-alt" style="color: #60a5fa;"></span> Profile Strength</h3>
+                    <a href="<?php echo home_url('/account-setup/'); ?>" class="integrity-card-link" style="text-decoration: none;">
+                    <section class="v4-card integrity-card" style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); border: none; color: #FFFFFF; cursor: pointer; transition: transform 0.3s ease;">
+                        <h3 class="v4-card-title" style="color: #FFFFFF; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;"><span class="dashicons dashicons-shield-alt" style="color: #fff;"></span> Profile Strength</h3>
                         <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 24px 0 12px; border: 1px solid rgba(255,255,255,0.05);">
-                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #60a5fa, #34d399); border-radius: 10px; box-shadow: 0 0 15px rgba(96,165,250,0.5);"></div>
+                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #34d399, #fbbf24); border-radius: 10px; box-shadow: 0 0 15px rgba(52,211,153,0.5);"></div>
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7);">
                             <span style="letter-spacing: 0.1em;">COMPLETENESS SCORE</span>
@@ -636,6 +671,7 @@ get_header();
                             </div>
                         <?php endif; ?>
                     </section>
+                    </a>
 
                     <div style="text-align: center; color: #999; font-size: 11px; font-weight: 500;">
                         Last Active: <?php echo $last_activity ? human_time_diff($last_activity, current_time('timestamp')).' ago' : 'Recently'; ?>
@@ -678,21 +714,43 @@ get_header();
 </div>
 
 
-<!-- Modal: Contact/Message -->
-<div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
-    <div class="modal-content" style="background:white; padding:32px; border-radius:16px; width:100%; max-width:480px; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
-        <h3 style="margin-top:0; font-size: 18px; font-weight: 600; color: #111;">Contact <?php echo esc_html($display_name); ?></h3>
-        <p style="color: #666; font-size: 13px; margin: 8px 0 24px;">Initiate a professional inquiry through the Jobedia platform.</p>
-        <textarea id="message-text" placeholder="Write your professional message here..." style="width:100%; height:160px; padding:12px; border-radius:8px; border:1px solid #E0E0E0; margin-bottom: 24px; font-family: inherit; font-size: 13px;"></textarea>
+<!-- Modal: Contact/Message (Job Offer) -->
+<div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(29, 52, 105, 0.2); backdrop-filter: blur(8px); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:white; padding:40px; border-radius:24px; width:100%; max-width:540px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+        <h3 style="margin-top:0; font-size: 22px; font-weight: 800; color: #1d3469;">Offer a Position to <?php echo esc_html($display_name); ?></h3>
+
+        <div style="margin: 20px 0; padding: 15px; background: #eff6ff; border-radius: 12px; border-left: 4px solid #2563eb;">
+            <h4 style="margin: 0 0 5px; font-size: 14px; color: #1e40af;">Guidelines:</h4>
+            <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: #1e40af; line-height: 1.6;">
+                <li>Be specific about the role and company culture.</li>
+                <li>Mention why you are interested in this candidate specifically.</li>
+                <li>Keep the tone professional and respectful.</li>
+            </ul>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <input type="text" id="message-subject" placeholder="Message Subject" style="width:100%; padding:12px 16px; border-radius:10px; border:1.5px solid #E2E8F0; font-family: inherit; font-size: 14px; outline: none;">
+        </div>
+
+        <textarea id="message-text" placeholder="Write your job offer or inquiry here..." style="width:100%; height:180px; padding:12px 16px; border-radius:10px; border:1.5px solid #E2E8F0; margin-bottom: 24px; font-family: inherit; font-size: 14px; resize: none; outline: none;"></textarea>
+
         <div style="display:flex; justify-content:flex-end; gap:12px;">
-            <button class="v4-btn-secondary close-modal">Discard</button>
-            <button class="v4-btn-primary" id="confirm-send-message">Deliver Message</button>
+            <button class="v4-btn-secondary close-modal" style="border-radius: 10px;">Cancel</button>
+            <button class="v4-btn-primary" id="confirm-send-message" style="border-radius: 10px; background: #1d3469;">Send Job Offer</button>
         </div>
     </div>
 </div>
 
 <script>
 jQuery(document).ready(function($) {
+    // Profile View Tracking (1 minute delay)
+    setTimeout(function() {
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_track_profile_view',
+            user_id: <?php echo $user_id; ?>
+        });
+    }, 60000);
+
     // Share Modal Logic
     $('.open-share-modal').on('click', function() { $('#share-modal').css('display', 'flex'); });
     $('.close-share-modal').on('click', function() { $('#share-modal').hide(); });
@@ -723,22 +781,35 @@ jQuery(document).ready(function($) {
     });
     $('.close-modal').on('click', function() { $('#message-modal').hide(); });
     $('#confirm-send-message').on('click', function() {
+        var subject = $('#message-subject').val();
         var msg = $('#message-text').val();
-        if(!msg) return;
+        if(!msg) { alert('Please enter a message.'); return; }
+
         var btn = $(this);
-        btn.prop('disabled', true).text('Sending...');
+        btn.prop('disabled', true).text('Delivering...');
+
         $.post(jobs_vars.ajax_url, {
             action: 'jobs_send_message',
             receiver_id: <?php echo $user_id; ?>,
+            subject: subject,
             message: msg,
             nonce: '<?php echo wp_create_nonce("jobs_messaging_nonce"); ?>'
         }, function(res) {
             if(res.success) {
-                $('#message-modal .modal-content').html('<div style="text-align:center; padding: 24px;"><h3>Message Delivered</h3><p style="font-size:13px; color:#666;">Your inquiry has been sent successfully.</p><button class="v4-btn-primary close-modal" style="margin-top:16px;">Close</button></div>');
+                $('#message-modal .modal-content').html(`
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <div style="width: 80px; height: 80px; background: #dcfce7; color: #166534; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                            <span class="dashicons dashicons-yes" style="font-size: 40px; width: 40px; height: 40px;"></span>
+                        </div>
+                        <h3 style="margin: 0 0 10px; font-size: 24px; color: #111;">Job Offer Sent!</h3>
+                        <p style="font-size:15px; color:#64748b; margin-bottom: 30px;">Your professional inquiry has been delivered to <?php echo esc_html($display_name); ?>.</p>
+                        <button class="v4-btn-primary close-modal" style="width: 100%; border-radius: 12px;">Back to Profile</button>
+                    </div>
+                `);
                 $('.close-modal').on('click', function() { $('#message-modal').hide(); });
             } else {
-                alert('Failed to send message.');
-                btn.prop('disabled', false).text('Deliver Message');
+                alert('Failed to deliver message: ' + res.data);
+                btn.prop('disabled', false).text('Send Job Offer');
             }
         });
     });
