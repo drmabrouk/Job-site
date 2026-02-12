@@ -162,12 +162,25 @@ function jobs_render_plugin_footer() {
 
     if ( $is_plugin_page ) {
         ?>
-        <footer class="jobs-global-footer" style="padding: 40px 20px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05); background: transparent; color: #94a3b8; font-size: 0.9em; font-family: 'Rubik', sans-serif;">
-            <p>&copy; <?php echo date('Y'); ?> <?php echo get_bloginfo('name'); ?>. All Rights Reserved.</p>
-            <div style="margin-top: 10px; display: flex; justify-content: center; gap: 20px;">
-                <a href="<?php echo home_url('/policies/'); ?>" style="color: inherit; text-decoration: none;">Privacy Policy</a>
-                <a href="<?php echo home_url('/policies/'); ?>" style="color: inherit; text-decoration: none;">Terms of Use</a>
-                <a href="<?php echo home_url('/support/'); ?>" style="color: inherit; text-decoration: none;">Support</a>
+        <footer class="jobs-global-footer" style="padding: 20px 40px; border-top: 1px solid rgba(0,0,0,0.05); background: #fff; color: #1e293b; font-size: 0.85em; font-family: 'Rubik', sans-serif;">
+            <div style="max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+                <!-- Social Left -->
+                <div style="display: flex; gap: 15px; flex: 1; justify-content: flex-start;">
+                    <a href="#" style="color: #000; text-decoration: none;"><span class="dashicons dashicons-facebook" style="font-size: 18px; width: 18px; height: 18px;"></span></a>
+                    <a href="#" style="color: #000; text-decoration: none;"><span class="dashicons dashicons-twitter" style="font-size: 18px; width: 18px; height: 18px;"></span></a>
+                </div>
+
+                <!-- Copyright Center -->
+                <div style="flex: 2; text-align: center; font-weight: 500;">
+                    &copy; <?php echo date('Y'); ?> <?php echo get_bloginfo('name'); ?>. All Rights Reserved.
+                </div>
+
+                <!-- Links Right -->
+                <div style="display: flex; gap: 20px; flex: 1; justify-content: flex-end;">
+                    <a href="<?php echo home_url('/policies/'); ?>" style="color: inherit; text-decoration: none;">Privacy Policy</a>
+                    <a href="<?php echo home_url('/policies/'); ?>" style="color: inherit; text-decoration: none;">Terms</a>
+                    <a href="<?php echo home_url('/support/'); ?>" style="color: inherit; text-decoration: none;">Support</a>
+                </div>
             </div>
         </footer>
         <?php
