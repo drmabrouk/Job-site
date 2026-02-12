@@ -7,12 +7,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $current_user_id = get_current_user_id();
+$is_system_admin = Jobs_Permission_Service::is_system_admin($current_user_id);
 
-$apps = new WP_Query( array(
+$args = array(
     'post_type'   => 'application',
-    'author'      => $current_user_id,
     'posts_per_page' => -1,
-) );
+);
+
+if (!$is_system_admin) {
+    $args['author'] = $current_user_id;
+}
+
+$apps = new WP_Query( $args );
 ?>
 <div class="jobs-module-content" id="jobs-applications-submitted">
     <div style="margin-bottom: 30px;">

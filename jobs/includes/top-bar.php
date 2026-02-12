@@ -159,11 +159,19 @@ function jobs_account_icon_shortcode() {
                     <div class="jobs-profile-dropdown" id="jobs-profile-menu">
                         <div class="dropdown-header">
                             <strong><?php echo esc_html( $current_user->display_name ); ?></strong>
-                            <span><?php echo esc_html( $current_user->user_email ); ?></span>
+                            <?php
+                            $prof = get_user_meta($current_user->ID, '_profession', true) ?: 'Professional';
+                            ?>
+                            <div style="margin-top: 5px;">
+                                <span style="background: #e0f2fe; color: #0369a1; padding: 2px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-block;"><?php echo esc_html($prof); ?></span>
+                            </div>
                         </div>
                         <ul>
-                            <li><a href="#" class="jobs-module-link" data-module="settings"><span class="dashicons dashicons-admin-generic"></span> Account Settings</a></li>
-                            <li><a href="#" class="jobs-module-link" data-module="public-profile"><span class="dashicons dashicons-admin-users"></span> Activity / Profile</a></li>
+                            <li><a href="<?php echo jobs_get_profile_link($current_user->ID); ?>"><span class="dashicons dashicons-admin-users"></span> View Profile</a></li>
+                            <li><a href="<?php echo home_url('/account-setup/'); ?>"><span class="dashicons dashicons-edit"></span> Data Editing</a></li>
+                            <li><a href="#" class="jobs-module-link" data-module="favorites" data-type="modal"><span class="dashicons dashicons-heart"></span> Favorites</a></li>
+                            <li><a href="#" class="jobs-module-link" data-module="settings" data-type="modal"><span class="dashicons dashicons-admin-generic"></span> Account Settings</a></li>
+                            <li><a href="<?php echo home_url('/support'); ?>"><span class="dashicons dashicons-editor-help"></span> Support</a></li>
                             <li class="divider"></li>
                             <li><a href="<?php echo wp_logout_url(); ?>"><span class="dashicons dashicons-exit"></span> Logout</a></li>
                         </ul>
@@ -238,15 +246,6 @@ function jobs_render_modules_grid() {
             'type' => 'page',
             'url' => home_url('/applications-submitted/')
         ),
-        'cv-resume' => array(
-            'label' => 'Data Editing',
-            'icon' => 'media-text',
-            'bg' => '#ffebee',
-            'color' => '#d32f2f',
-            'check' => 'is_user_logged_in',
-            'type' => 'direct',
-            'url' => home_url('/account-setup/')
-        ),
         'company-profile' => array(
             'label' => 'Company',
             'icon' => 'building',
@@ -255,14 +254,6 @@ function jobs_render_modules_grid() {
             'check' => 'can_post_job',
             'type' => 'page',
             'url' => home_url('/company-profile/')
-        ),
-        'favorites' => array(
-            'label' => 'Favorites',
-            'icon' => 'heart',
-            'bg' => '#fce4ec',
-            'color' => '#c2185b',
-            'check' => 'is_user_logged_in',
-            'type' => 'modal'
         ),
         'drafts' => array(
             'label' => 'Drafts',
@@ -317,27 +308,23 @@ function jobs_render_modules_grid() {
             'type' => 'direct',
             'url' => home_url('/policies/')
         ),
-        'support' => array(
-            'label' => 'Support',
-            'icon' => 'editor-help',
-            'bg' => '#e1f5fe',
-            'color' => '#0288d1',
-            'check' => 'is_user_logged_in',
-            'type' => 'direct',
-            'url' => home_url('/support')
-        ),
     );
 
+    $is_system_admin = Jobs_Permission_Service::is_system_admin($user_id);
     $visible_modules = get_option( 'jobs_visible_modules', array_keys( $modules ) );
     $restricted_modules = get_user_meta( $user_id, 'jobs_restricted_modules', true ) ?: array();
 
     foreach ( $modules as $slug => $data ) {
-        if ( ! in_array( $slug, $visible_modules ) && $slug !== 'advanced-settings' ) continue;
-        if ( in_array( $slug, $restricted_modules ) ) continue;
+        if ( !$is_system_admin ) {
+            if ( ! in_array( $slug, $visible_modules ) && $slug !== 'advanced-settings' ) continue;
+            if ( in_array( $slug, $restricted_modules ) ) continue;
+        }
 
         $allowed = false;
         $check = $data['check'];
-        if ( $check === 'is_user_logged_in' ) {
+        if ( $is_system_admin ) {
+            $allowed = true;
+        } elseif ( $check === 'is_user_logged_in' ) {
             $allowed = is_user_logged_in();
         } elseif ( method_exists( 'Jobs_Permission_Service', $check ) ) {
             $allowed = Jobs_Permission_Service::$check( $user_id );
