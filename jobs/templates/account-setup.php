@@ -133,12 +133,21 @@ $total_steps = count($active_steps);
                         <div class="form-row-v2">
                             <div class="form-group-v2">
                                 <label>Nationality Country</label>
-                                <?php echo Jobs_Data_Service::render_country_picker('nationality', '', 'nat-country-select', 'country-picker'); ?>
+                                <?php
+                                $pre_nat = get_user_meta($user_id, '_nationality', true);
+                                echo Jobs_Data_Service::render_country_picker('nationality', $pre_nat, 'nat-country-select', 'country-picker');
+                                ?>
                             </div>
                             <div class="form-group-v2">
                                 <label>City / State</label>
-                                <select name="nat_city" id="nat-city-select" disabled>
-                                    <option value="">Select Country First</option>
+                                <?php $pre_nat_city = $cv_data['personal']['nat_city'] ?? ''; ?>
+                                <select name="nat_city" id="nat-city-select" <?php echo $pre_nat ? '' : 'disabled'; ?>>
+                                    <option value="">Select City / State</option>
+                                    <?php if($pre_nat && isset($locations[$pre_nat])): ?>
+                                        <?php foreach($locations[$pre_nat] as $city): ?>
+                                            <option value="<?php echo esc_attr($city); ?>" <?php selected($pre_nat_city, $city); ?>><?php echo esc_html($city); ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -157,12 +166,21 @@ $total_steps = count($active_steps);
                         <div class="form-row-v2">
                             <div class="form-group-v2">
                                 <label>Current Country</label>
-                                <?php echo Jobs_Data_Service::render_country_picker('residence', '', 'res-country-select', 'country-picker'); ?>
+                                <?php
+                                $pre_res = get_user_meta($user_id, '_country', true);
+                                echo Jobs_Data_Service::render_country_picker('residence', $pre_res, 'res-country-select', 'country-picker');
+                                ?>
                             </div>
                             <div class="form-group-v2">
                                 <label>City / State</label>
-                                <select name="res_city" id="res-city-select" disabled>
-                                    <option value="">Select Country First</option>
+                                <?php $pre_res_city = $cv_data['personal']['res_city'] ?? get_user_meta($user_id, '_region', true); ?>
+                                <select name="res_city" id="res-city-select" <?php echo $pre_res ? '' : 'disabled'; ?>>
+                                    <option value="">Select City / State</option>
+                                    <?php if($pre_res && isset($locations[$pre_res])): ?>
+                                        <?php foreach($locations[$pre_res] as $city): ?>
+                                            <option value="<?php echo esc_attr($city); ?>" <?php selected($pre_res_city, $city); ?>><?php echo esc_html($city); ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -180,16 +198,19 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Primary Phone Number</label>
-                            <input type="tel" name="phone" id="primary-phone" class="v2-phone-input">
+                            <?php $pre_phone = get_user_meta($user_id, '_phone', true); ?>
+                            <input type="tel" name="phone" id="primary-phone" class="v2-phone-input" value="<?php echo esc_attr($pre_phone); ?>">
                             <div style="margin-top: 10px;">
                                 <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9em; cursor: pointer;">
-                                    <input type="checkbox" name="whatsapp_linked" value="1" style="width: auto;"> This number is linked to <strong>WhatsApp</strong>
+                                    <?php $pre_wa = $cv_data['personal']['whatsapp_linked'] ?? ''; ?>
+                                    <input type="checkbox" name="whatsapp_linked" value="1" <?php checked($pre_wa, '1'); ?> style="width: auto;"> This number is linked to <strong>WhatsApp</strong>
                                 </label>
                             </div>
                         </div>
                         <div class="form-group-v2" style="margin-top: 30px;">
                             <label>Additional Phone (Optional)</label>
-                            <input type="tel" name="phone_extra" id="extra-phone" class="v2-phone-input">
+                            <?php $pre_phone_extra = $cv_data['personal']['phone_extra'] ?? ''; ?>
+                            <input type="tel" name="phone_extra" id="extra-phone" class="v2-phone-input" value="<?php echo esc_attr($pre_phone_extra); ?>">
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="3">Back</button>
@@ -206,33 +227,26 @@ $total_steps = count($active_steps);
                         <div class="form-row-v2">
                             <div class="form-group-v2">
                                 <label>Industry / Specialization</label>
+                                <?php $pre_spec = get_user_meta($user_id, '_specialization', true); ?>
                                 <select name="specialization" id="v2-spec-select">
                                     <option value="">Select Field</option>
                                     <?php foreach(array_keys($specializations) as $s): ?>
-                                        <option value="<?php echo esc_attr($s); ?>"><?php echo esc_html($s); ?></option>
+                                        <option value="<?php echo esc_attr($s); ?>" <?php selected($pre_spec, $s); ?>><?php echo esc_html($s); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="form-group-v2">
                                 <label>Job Profession / Role</label>
-                                <select name="profession" id="v2-prof-select" disabled>
-                                    <option value="">Select Field First</option>
+                                <?php $pre_prof = get_user_meta($user_id, '_profession', true); ?>
+                                <select name="profession" id="v2-prof-select" <?php echo $pre_spec ? '' : 'disabled'; ?>>
+                                    <option value="">Select Role</option>
+                                    <?php if($pre_spec && isset($specializations[$pre_spec])): ?>
+                                        <?php foreach($specializations[$pre_spec] as $p): ?>
+                                            <option value="<?php echo esc_attr($p); ?>" <?php selected($pre_prof, $p); ?>><?php echo esc_html($p); ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
-                            <?php if ($is_revisit) : ?>
-                                <div class="form-group-v2 span-2">
-                                    <label>Secondary Specializations (Optional)</label>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                                        <?php
-                                        $current_sec = $cv_data['personal']['secondary_specs'] ?? array();
-                                        foreach(array_slice(array_keys($specializations), 0, 9) as $s): ?>
-                                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85em; cursor: pointer;">
-                                                <input type="checkbox" name="secondary_specs[]" value="<?php echo esc_attr($s); ?>" <?php checked(in_array($s, $current_sec)); ?> style="width: auto;"> <?php echo esc_html($s); ?>
-                                            </label>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="4">Back</button>
@@ -244,11 +258,12 @@ $total_steps = count($active_steps);
                     <div class="setup-v2-panel" data-step="6">
                         <div class="panel-header">
                             <h2>Executive Summary</h2>
-                            <p>Draft a compelling narrative of your professional journey (200 - 500 characters).</p>
+                            <p>Draft a compelling narrative of your professional journey (250 - 600 characters).</p>
                         </div>
                         <div class="form-group-v2">
-                            <textarea name="summary" id="v2-summary" placeholder="e.g. Dedicated Software Architect with over 8 years of experience in building scalable distributed systems..." style="height: 180px;"></textarea>
-                            <div class="char-counter"><span id="char-count">0</span> / 500 characters</div>
+                            <?php $pre_summary = get_user_meta($user_id, '_professional_summary', true); ?>
+                            <textarea name="summary" id="v2-summary" placeholder="e.g. Dedicated Software Architect with over 8 years of experience in building scalable distributed systems..." style="height: 200px;"><?php echo esc_textarea($pre_summary); ?></textarea>
+                            <div class="char-counter"><span id="char-count">0</span> / 600 characters</div>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="5">Back</button>
@@ -442,24 +457,38 @@ $total_steps = count($active_steps);
                             <p>Global communication proficiency (Up to 3 languages).</p>
                         </div>
                         <div id="languages-container">
+                            <?php
+                            $langs = !empty($cv_data['languages']) && is_array($cv_data['languages']) ? $cv_data['languages'] : array(array('name' => 'English', 'level' => 'Native'));
+                            foreach($langs as $li => $l): if(!is_array($l)) continue; ?>
                             <div class="language-entry">
-                                <input type="text" name="languages[0][name]" placeholder="e.g. English" value="English">
-                                <select name="languages[0][level]">
-                                    <option value="Native">Native</option>
-                                    <option value="Fluent">Fluent</option>
-                                    <option value="Professional">Professional</option>
-                                    <option value="Intermediate">Intermediate</option>
+                                <input type="text" name="languages[<?php echo $li; ?>][name]" placeholder="e.g. English" value="<?php echo esc_attr($l['name'] ?? ''); ?>">
+                                <select name="languages[<?php echo $li; ?>][level]">
+                                    <option value="Native" <?php selected($l['level'] ?? '', 'Native'); ?>>Native</option>
+                                    <option value="Fluent" <?php selected($l['level'] ?? '', 'Fluent'); ?>>Fluent</option>
+                                    <option value="Professional" <?php selected($l['level'] ?? '', 'Professional'); ?>>Professional</option>
+                                    <option value="Intermediate" <?php selected($l['level'] ?? '', 'Intermediate'); ?>>Intermediate</option>
                                 </select>
                             </div>
+                            <?php endforeach; ?>
                         </div>
-                        <button type="button" id="add-language" class="v2-btn-minimal">+ Add Another Language</button>
+                        <button type="button" id="add-language" class="v2-btn-minimal" <?php echo count($langs) >= 3 ? 'style="display:none;"' : ''; ?>>+ Add Another Language</button>
 
-                        <div style="margin-top: 30px; padding: 20px; background: #f0f9ff; border-radius: 12px; border: 1px solid #bae6fd;">
-                            <label style="display: block; font-weight: 700; color: #0369a1; margin-bottom: 10px;">English Proficiency Exams</label>
-                            <div style="display: flex; gap: 20px;">
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="IELTS" style="width:auto;"> IELTS</label>
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="TOEFL" style="width:auto;"> TOEFL</label>
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="None" checked style="width:auto;"> None</label>
+                        <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="padding: 20px; background: #f0f9ff; border-radius: 12px; border: 1px solid #bae6fd;">
+                                <label style="display: block; font-weight: 700; color: #0369a1; margin-bottom: 10px;">English Proficiency Exams</label>
+                                <?php $pre_exam = $cv_data['preferences']['english_exam'] ?? 'None'; ?>
+                                <div style="display: flex; gap: 20px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="IELTS" <?php checked($pre_exam, 'IELTS'); ?> style="width:auto;"> IELTS</label>
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="TOEFL" <?php checked($pre_exam, 'TOEFL'); ?> style="width:auto;"> TOEFL</label>
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="None" <?php checked($pre_exam, 'None'); ?> style="width:auto;"> None</label>
+                                </div>
+                            </div>
+                            <div style="padding: 20px; background: #fdf2f8; border-radius: 12px; border: 1px solid #fbcfe8;">
+                                <label style="display: block; font-weight: 700; color: #9d174d; margin-bottom: 10px;">IELTS / TOEFL Score</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" name="ielts_score" value="<?php echo esc_attr(get_user_meta($user_id, '_ielts_score', true)); ?>" placeholder="IELTS Score" style="padding: 8px;">
+                                    <input type="text" name="toefl_score" value="<?php echo esc_attr(get_user_meta($user_id, '_toefl_score', true)); ?>" placeholder="TOEFL Score" style="padding: 8px;">
+                                </div>
                             </div>
                         </div>
                         <div class="panel-footer">
@@ -526,7 +555,9 @@ $total_steps = count($active_steps);
                         </div>
                     </div>
 
-                <?php else : ?>
+                <?php else :
+                    $comp_data = get_user_meta($user_id, 'jobs_company_data', true) ?: array();
+                ?>
                     <!-- EMPLOYER STEPS -->
                     <!-- Adapted from seeker steps but for company -->
                     <div class="setup-v2-panel active" data-step="1">
@@ -544,11 +575,11 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2" style="margin-top: 30px;">
                             <label>Company Registered Name</label>
-                            <input type="text" name="company_name" placeholder="Brand Name" required>
+                            <input type="text" name="company_name" value="<?php echo esc_attr($comp_data['name'] ?? ''); ?>" placeholder="Brand Name" required>
                         </div>
                         <div class="form-group-v2">
                             <label>Legal Registered Entity Name</label>
-                            <input type="text" name="legal_name" placeholder="Official Corporate Name">
+                            <input type="text" name="legal_name" value="<?php echo esc_attr($comp_data['legal_name'] ?? ''); ?>" placeholder="Official Corporate Name">
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-next-btn" data-next="2">Continue</button>
@@ -564,7 +595,7 @@ $total_steps = count($active_steps);
                             <label>Primary Industry</label>
                             <select name="company_industry">
                                 <?php foreach(array_keys($specializations) as $s): ?>
-                                    <option value="<?php echo esc_attr($s); ?>"><?php echo esc_html($s); ?></option>
+                                    <option value="<?php echo esc_attr($s); ?>" <?php selected($comp_data['industry'] ?? '', $s); ?>><?php echo esc_html($s); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -572,7 +603,7 @@ $total_steps = count($active_steps);
                             <label>Company Type</label>
                             <select name="company_type">
                                 <?php foreach(Jobs_Data_Service::get_company_types() as $t): ?>
-                                    <option value="<?php echo $t; ?>"><?php echo $t; ?></option>
+                                    <option value="<?php echo $t; ?>" <?php selected($comp_data['company_type'] ?? '', $t); ?>><?php echo $t; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -591,13 +622,13 @@ $total_steps = count($active_steps);
                             <label>Employee Count</label>
                             <select name="company_employee_count">
                                 <?php foreach(Jobs_Data_Service::get_company_sizes() as $s): ?>
-                                    <option value="<?php echo $s; ?>"><?php echo $s; ?></option>
+                                    <option value="<?php echo $s; ?>" <?php selected($comp_data['employee_count'] ?? '', $s); ?>><?php echo $s; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="form-group-v2">
                             <label>Founded Year</label>
-                            <input type="number" name="founded_year" placeholder="YYYY">
+                            <input type="number" name="founded_year" value="<?php echo esc_attr($comp_data['founded_year'] ?? ''); ?>" placeholder="YYYY">
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="2">Back</button>
@@ -612,7 +643,7 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Headquarters Country</label>
-                            <?php echo Jobs_Data_Service::render_country_picker('company_address', '', 'hq-country-select'); ?>
+                            <?php echo Jobs_Data_Service::render_country_picker('company_address', $comp_data['address'] ?? '', 'hq-country-select'); ?>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="3">Back</button>
@@ -627,11 +658,11 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Corporate Website</label>
-                            <input type="url" name="company_website" placeholder="https://www.example.com">
+                            <input type="url" name="company_website" value="<?php echo esc_url($comp_data['website'] ?? ''); ?>" placeholder="https://www.example.com">
                         </div>
                         <div class="form-group-v2">
                             <label>Our Mission</label>
-                            <textarea name="mission" placeholder="What drives your company?" style="height: 120px;"></textarea>
+                            <textarea name="mission" placeholder="What drives your company?" style="height: 120px;"><?php echo esc_textarea($comp_data['mission'] ?? ''); ?></textarea>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="4">Back</button>
@@ -646,11 +677,11 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>About the Organization</label>
-                            <textarea name="company_description" placeholder="Full company overview..." style="height: 120px;"></textarea>
+                            <textarea name="company_description" placeholder="Full company overview..." style="height: 120px;"><?php echo esc_textarea($comp_data['details'] ?? ''); ?></textarea>
                         </div>
                         <div class="form-group-v2">
                             <label>Employee Benefits & Perks</label>
-                            <textarea name="benefits" placeholder="Why should people work with you?" style="height: 120px;"></textarea>
+                            <textarea name="benefits" placeholder="Why should people work with you?" style="height: 120px;"><?php echo esc_textarea($comp_data['benefits'] ?? ''); ?></textarea>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="5">Back</button>
@@ -665,7 +696,7 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Work Culture</label>
-                            <textarea name="culture" placeholder="Describe the atmosphere..." style="height: 120px;"></textarea>
+                            <textarea name="culture" placeholder="Describe the atmosphere..." style="height: 120px;"><?php echo esc_textarea($comp_data['culture'] ?? ''); ?></textarea>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="6">Back</button>
@@ -759,7 +790,11 @@ jQuery(document).ready(function($) {
     const skillsList = <?php echo json_encode($skills_list); ?>;
     const specializations = <?php echo json_encode($specializations); ?>;
     const totalSteps = <?php echo $total_steps; ?>;
-    let selectedSkills = [];
+    let selectedSkills = <?php
+        $existing_skills = array_filter(array_map('trim', explode(',', $cv_data['skills']['core'] ?? '')));
+        echo json_encode(array_values($existing_skills));
+    ?>;
+    updateSkillsUI();
 
     // Toggle Button Logic
     $(document).on('click', '.v2-toggle-btn', function() {
@@ -847,7 +882,7 @@ jQuery(document).ready(function($) {
     $('#v2-summary').on('input', function() {
         const count = $(this).val().length;
         $('#char-count').text(count);
-        if (count >= 200 && count <= 500) {
+        if (count >= 250 && count <= 600) {
             $('#char-count').css('color', '#10b981');
             $('#summary-next').prop('disabled', false).css('opacity', 1);
         } else {
@@ -879,11 +914,32 @@ jQuery(document).ready(function($) {
         } else { $('#v2-skills-suggestions').hide(); }
     });
 
+    $('#v2-skills-input').on('keypress', function(e) {
+        if(e.which == 13) {
+            e.preventDefault();
+            const val = $(this).val().trim();
+            if(val) {
+                if (selectedSkills.includes(val)) {
+                    $(this).val('');
+                } else if (selectedSkills.length < 10) {
+                    selectedSkills.push(val);
+                    updateSkillsUI();
+                    $(this).val('');
+                } else {
+                    alert('Maximum 10 skills allowed.');
+                }
+            }
+            $('#v2-skills-suggestions').hide();
+        }
+    });
+
     $(document).on('click', '.skill-choice', function() {
         const skill = $(this).data('skill');
         if (selectedSkills.length < 10) {
             selectedSkills.push(skill);
             updateSkillsUI();
+        } else {
+            alert('Maximum 10 skills allowed.');
         }
         $('#v2-skills-input').val('').focus();
         $('#v2-skills-suggestions').hide();

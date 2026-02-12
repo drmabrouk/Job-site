@@ -247,6 +247,7 @@ function jobs_ajax_send_message() {
 
     $receiver_id = intval( $_POST['receiver_id'] );
     $sender_id   = get_current_user_id();
+    $subject_raw = sanitize_text_field( $_POST['subject'] ?? '' );
     $message     = sanitize_textarea_field( $_POST['message'] );
 
     if ( ! $sender_id || ! $receiver_id || ! $message ) {
@@ -258,15 +259,15 @@ function jobs_ajax_send_message() {
     $wpdb->insert( $table, array(
         'sender_id'   => $sender_id,
         'receiver_id' => $receiver_id,
-        'message'     => $message,
+        'message'     => ($subject_raw ? "Subject: $subject_raw\n\n" : "") . $message,
     ) );
 
     // Also create a notification for the receiver
     $sender_name = get_userdata($sender_id)->display_name;
     $notification_content = sprintf(
-        "Career Inquiry: %s has initiated a professional connection. Message excerpt: \"%s\"",
+        "Job Offer: %s has initiated a professional connection. Subject: %s",
         $sender_name,
-        wp_trim_words($message, 15)
+        $subject_raw ?: 'No Subject'
     );
     Jobs_Job_Service::add_notification( $receiver_id, $notification_content, $sender_id );
 
@@ -275,13 +276,14 @@ function jobs_ajax_send_message() {
     $sender = get_userdata( $sender_id );
     $site_name = get_bloginfo( 'name' );
 
-    $subject = "[{$site_name}] New Message Received";
+    $email_subject = $subject_raw ? "[{$site_name}] $subject_raw" : "[{$site_name}] New Job Offer Received";
     $body = "Hello " . $recipient->display_name . ",\n\n";
-    $body .= "You have received a new message from " . $sender->display_name . ".\n\n";
+    $body .= "You have received a professional inquiry from " . $sender->display_name . ".\n\n";
+    if($subject_raw) $body .= "Subject: " . $subject_raw . "\n\n";
     $body .= "Message content:\n\"" . $message . "\"\n\n";
     $body .= "Log in to your dashboard to reply: " . home_url('/dashboard/') . "\n\n";
 
-    wp_mail( $recipient->user_email, $subject, $body );
+    wp_mail( $recipient->user_email, $email_subject, $body );
 
     wp_send_json_success( 'Message sent' );
 }
@@ -1211,6 +1213,8 @@ function jobs_ajax_complete_setup_v2_handler() {
         update_user_meta( $user_id, '_specialization', $personal['specialization'] );
         update_user_meta( $user_id, '_profession', $personal['profession'] );
         update_user_meta( $user_id, '_professional_summary', $personal['summary'] );
+        update_user_meta( $user_id, '_ielts_score', sanitize_text_field($_POST['ielts_score'] ?? '') );
+        update_user_meta( $user_id, '_toefl_score', sanitize_text_field($_POST['toefl_score'] ?? '') );
         update_user_meta( $user_id, 'profile_visibility', 'public' );
     }
 
@@ -1387,4 +1391,20 @@ function jobs_ajax_upload_photo_handler() {
         }
     }
     wp_send_json_error( 'No file uploaded' );
+}
+
+/**
+ * AJAX Handler: Track Profile View
+ */
+add_action( 'wp_ajax_jobs_track_profile_view', 'jobs_ajax_track_profile_view' );
+add_action( 'wp_ajax_nopriv_jobs_track_profile_view', 'jobs_ajax_track_profile_view' );
+function jobs_ajax_track_profile_view() {
+    $user_id = intval( $_POST['user_id'] );
+    if ( ! $user_id ) wp_send_json_error();
+
+    $views = (int) get_user_meta( $user_id, '_profile_views', true );
+    $views++;
+    update_user_meta( $user_id, '_profile_views', $views );
+
+    wp_send_json_success( array( 'views' => $views ) );
 }
