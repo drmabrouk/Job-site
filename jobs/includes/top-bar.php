@@ -219,15 +219,6 @@ function jobs_render_modules_grid() {
             'check' => 'is_user_logged_in',
             'type' => 'modal'
         ),
-        'public-profile' => array(
-            'label' => 'Public Profile',
-            'icon' => 'admin-users',
-            'bg' => '#e0f2f1',
-            'color' => '#00796b',
-            'check' => 'is_user_logged_in',
-            'type' => 'direct',
-            'url' => jobs_get_profile_link( get_current_user_id() )
-        ),
         'public-profile-view' => array(
             'label' => 'Public Profile View',
             'icon' => 'visibility',

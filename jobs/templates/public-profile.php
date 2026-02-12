@@ -81,12 +81,39 @@ get_header();
                 </div>
                 <div class="profile-v4-actions">
                     <div class="v4-action-group">
+                            <?php if ( get_current_user_id() === $user_id || current_user_can('manage_options') ) :
+                                $views = (int) get_user_meta($user_id, '_profile_views', true);
+                                global $wpdb;
+                                $msg_table = Jobs_DB_Service::get_table('messages');
+                                $requests_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $msg_table WHERE receiver_id = %d", $user_id));
+                            ?>
+                                <div class="stats-dropdown-wrapper">
+                                    <button class="v4-icon-btn stats-trigger" title="Profile Statistics">
+                                        <span class="dashicons dashicons-visibility"></span>
+                                    </button>
+                                    <div class="stats-dropdown-panel">
+                                        <div class="stats-dropdown-header">Corporate Activity</div>
+                                        <div class="stats-grid-mini">
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($views); ?></div>
+                                                <div class="stat-mini-label">Profile Views</div>
+                                            </div>
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($total_posted); ?></div>
+                                                <div class="stat-mini-label">Jobs Posted</div>
+                                            </div>
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($requests_count); ?></div>
+                                                <div class="stat-mini-label">Total Requests</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Settings"><span class="dashicons dashicons-admin-generic"></span></a>
+                            <?php endif; ?>
                         <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-email-alt"></span> Contact Platform</button>
-                        <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
-                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                        <?php if ( get_current_user_id() === $user_id ) : ?>
-                            <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Update Company Profile"><span class="dashicons dashicons-admin-generic"></span></a>
-                        <?php endif; ?>
+                            <button class="v4-icon-btn" onclick="window.print()" title="PDF"><span class="dashicons dashicons-media-document"></span></button>
+                            <button class="v4-icon-btn open-share-modal" title="Share"><span class="dashicons dashicons-share"></span></button>
                     </div>
                 </div>
             </header>
@@ -335,69 +362,90 @@ get_header();
             $region = isset($all_meta['_region'][0]) ? $all_meta['_region'][0] : '';
             ?>
             <!-- HEADER: SEEKER -->
-            <header class="profile-v4-header seeker-header-v2">
-                <div class="profile-v4-avatar-box" style="position: relative;">
-                    <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
-                    <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
-                    <?php if(($cv['preferences']['availability_status'] ?? '') === 'Immediate'): ?>
-                        <div class="v4-open-to-work-overlay" title="Open to Work"></div>
-                    <?php endif; ?>
-                </div>
-                <div class="profile-v4-identity-box seeker-identity-v2">
-                    <h1 class="seeker-name-v2"><?php echo esc_html($display_name); ?> <span class="badge-verified-circle" title="Verified Member"><span class="dashicons dashicons-yes"></span></span></h1>
-
-                    <div class="seeker-header-capsules">
-                        <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
-                        <span class="v4-pastel-pill pill-blue"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+            <div class="v4-card profile-header-card">
+                <header class="profile-v4-header seeker-header-v2">
+                    <div class="profile-v4-avatar-box" style="position: relative;">
+                        <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
+                        <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
+                        <?php if(($cv['preferences']['availability_status'] ?? '') === 'Immediate'): ?>
+                            <div class="v4-open-to-work-overlay" title="Open to Work"></div>
+                        <?php endif; ?>
+                        <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=1'); ?>" class="v4-avatar-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
                     </div>
+                    <div class="profile-v4-identity-box seeker-identity-v2">
+                        <h1 class="seeker-name-v2"><?php echo esc_html($display_name); ?> <span class="badge-verified-circle" title="Verified Member"><span class="dashicons dashicons-yes"></span></span></h1>
 
-                    <div class="seeker-meta-v2">
-                        <div class="seeker-meta-row-combined">
-                            <p class="experience-line-v2"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</p>
+                        <div class="seeker-header-capsules">
+                            <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
+                            <span class="v4-pastel-pill pill-blue"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+                        </div>
 
-                            <?php
-                            $nationality = get_user_meta($user_id, '_nationality', true);
-                            $residence = get_user_meta($user_id, '_country', true);
-                            $region = get_user_meta($user_id, '_region', true);
-                            ?>
+                        <div class="seeker-meta-v2">
+                            <div class="seeker-meta-row-combined">
+                                <p class="experience-line-v2"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</p>
 
-                            <?php if($nationality): ?>
-                                <div class="location-item-row-inline" title="Nationality">
-                                    <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                    <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
-                                </div>
-                            <?php endif; ?>
+                                <?php
+                                $nationality = get_user_meta($user_id, '_nationality', true);
+                                $residence = get_user_meta($user_id, '_country', true);
+                                $region = get_user_meta($user_id, '_region', true);
+                                ?>
 
-                            <?php if($residence): ?>
-                                <div class="location-item-row-inline" title="Country of Residence">
-                                    <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                    <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
-                                </div>
-                            <?php endif; ?>
+                                <?php if($nationality): ?>
+                                    <div class="location-item-row-inline nationality-meta" title="Nationality">
+                                        <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                        <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
+                                    </div>
+                                <?php endif; ?>
 
-                            <div class="profile-views-display-v2 desktop-only" title="Profile Views">
-                                <span class="dashicons dashicons-visibility"></span>
-                                <strong><?php echo number_format( (int) get_user_meta($user_id, '_profile_views', true) ); ?></strong> Profile Views
-                            </div>
-
-                            <div class="profile-views-display-mobile mobile-only" title="Profile Views">
-                                <span class="dashicons dashicons-visibility"></span>
-                                <strong><?php echo number_format( (int) get_user_meta($user_id, '_profile_views', true) ); ?></strong>
+                                <?php if($residence): ?>
+                                    <div class="location-item-row-inline residence-meta" title="Country of Residence">
+                                        <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                        <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="profile-v4-actions">
-                    <div class="v4-action-group">
-                        <?php if ( get_current_user_id() === $user_id ) : ?>
-                            <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></a>
-                        <?php endif; ?>
-                        <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
-                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                        <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Offer a Job</button>
+                    <div class="profile-v4-actions">
+                        <div class="v4-action-group">
+                            <?php if ( get_current_user_id() === $user_id || current_user_can('manage_options') ) :
+                                $views = (int) get_user_meta($user_id, '_profile_views', true);
+                                $apps_count = count_user_posts($user_id, 'application', true);
+                                global $wpdb;
+                                $msg_table = Jobs_DB_Service::get_table('messages');
+                                $requests_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $msg_table WHERE receiver_id = %d", $user_id));
+                            ?>
+                                <div class="stats-dropdown-wrapper">
+                                    <button class="v4-icon-btn stats-trigger" title="Profile Statistics">
+                                        <span class="dashicons dashicons-visibility"></span>
+                                    </button>
+                                    <div class="stats-dropdown-panel">
+                                        <div class="stats-dropdown-header">Professional Activity</div>
+                                        <div class="stats-grid-mini">
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($views); ?></div>
+                                                <div class="stat-mini-label">Profile Views</div>
+                                            </div>
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($apps_count); ?></div>
+                                                <div class="stat-mini-label">Apps Submitted</div>
+                                            </div>
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($requests_count); ?></div>
+                                                <div class="stat-mini-label">Total Requests</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Settings"><span class="dashicons dashicons-admin-generic"></span></a>
+                            <?php endif; ?>
+                            <button class="v4-icon-btn" onclick="window.print()" title="PDF"><span class="dashicons dashicons-media-document"></span></button>
+                            <button class="v4-icon-btn open-share-modal" title="Share"><span class="dashicons dashicons-share"></span></button>
+                            <button class="v4-btn-primary <?php echo is_user_logged_in() ? 'open-message-modal' : 'guest-offer-trigger'; ?>" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Offer a Job</button>
+                        </div>
                     </div>
-                </div>
-            </header>
+                </header>
+            </div>
 
             <div class="profile-v4-grid">
                 <div class="profile-v4-main">
@@ -656,9 +704,9 @@ get_header();
                                     $ielts = get_user_meta($user_id, '_ielts_score', true);
                                     $toefl = get_user_meta($user_id, '_toefl_score', true);
                                     if($ielts || $toefl): ?>
-                                        <div style="display: flex; gap: 8px; margin-top: 5px;">
-                                            <?php if($ielts): ?><span style="font-size: 10px; background: #eff6ff; color: #1d4ed8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">IELTS: <?php echo esc_html($ielts); ?></span><?php endif; ?>
-                                            <?php if($toefl): ?><span style="font-size: 10px; background: #faf5ff; color: #7e22ce; padding: 2px 8px; border-radius: 4px; font-weight: 700;">TOEFL: <?php echo esc_html($toefl); ?></span><?php endif; ?>
+                                        <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center;">
+                                            <?php if($ielts): ?><div style="flex: 1; font-size: 10px; background: #eff6ff; color: #1d4ed8; padding: 4px 8px; border-radius: 6px; font-weight: 700; text-align: center; border: 1px solid #dbeafe;">IELTS: <?php echo esc_html($ielts); ?></div><?php endif; ?>
+                                            <?php if($toefl): ?><div style="flex: 1; font-size: 10px; background: #faf5ff; color: #7e22ce; padding: 4px 8px; border-radius: 6px; font-weight: 700; text-align: center; border: 1px solid #f3e8ff;">TOEFL: <?php echo esc_html($toefl); ?></div><?php endif; ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -811,6 +859,25 @@ get_header();
 
 <script>
 jQuery(document).ready(function($) {
+    // Statistics Dropdown Logic
+    $('.stats-trigger').on('click', function(e) {
+        e.stopPropagation();
+        $('.stats-dropdown-panel').fadeToggle(200);
+    });
+    $(document).on('click', function() {
+        $('.stats-dropdown-panel').fadeOut(200);
+    });
+    $('.stats-dropdown-panel').on('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Guest Offer Logic
+    $('.guest-offer-trigger').on('click', function() {
+        if(confirm('Please log in or register to offer a job to this professional. Redirect to login?')) {
+            window.location.href = '<?php echo home_url('/login/'); ?>?redirect_to=' + encodeURIComponent(window.location.href);
+        }
+    });
+
     // Profile View Tracking (1 minute delay)
     setTimeout(function() {
         $.post(jobs_vars.ajax_url, {
