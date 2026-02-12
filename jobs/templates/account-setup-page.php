@@ -20,9 +20,9 @@
         }
         .jobs-setup-root-container {
             width: 100% !important;
-            max-width: 1000px !important;
+            max-width: 900px !important;
             margin: 0 auto !important;
-            padding: 40px 20px !important;
+            padding: 20px !important; /* Reduced top padding */
             box-sizing: border-box !important;
         }
     </style>

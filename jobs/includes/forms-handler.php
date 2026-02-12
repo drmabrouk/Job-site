@@ -1176,7 +1176,8 @@ function jobs_ajax_complete_setup_v2_handler() {
 
         $existing = get_user_meta( $user_id, 'jobs_company_data', true ) ?: array();
         update_user_meta( $user_id, 'jobs_company_data', array_merge($existing, $company_data) );
-        update_user_meta( $user_id, 'profile_visibility', 'public' );
+        $visibility = isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public' ? 'public' : 'private';
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
 
     } else {
         // Job Seeker data - Guided Onboarding V2
@@ -1199,6 +1200,7 @@ function jobs_ajax_complete_setup_v2_handler() {
         $cv_data['personal'] = $personal;
         $cv_data['academic'] = $_POST['academic'] ?? array();
         $cv_data['experience'] = $_POST['experience'] ?? array();
+        $cv_data['certs'] = $_POST['certs'] ?? array();
         $cv_data['skills']['core'] = sanitize_text_field( $_POST['skills_list'] ?? '' );
         $cv_data['languages'] = $_POST['languages'] ?? array();
         $cv_data['preferences']['english_exam'] = sanitize_text_field( $_POST['english_exam'] ?? 'None' );
@@ -1215,7 +1217,11 @@ function jobs_ajax_complete_setup_v2_handler() {
         update_user_meta( $user_id, '_professional_summary', $personal['summary'] );
         update_user_meta( $user_id, '_ielts_score', sanitize_text_field($_POST['ielts_score'] ?? '') );
         update_user_meta( $user_id, '_toefl_score', sanitize_text_field($_POST['toefl_score'] ?? '') );
-        update_user_meta( $user_id, 'profile_visibility', 'public' );
+        update_user_meta( $user_id, '_facebook_url', esc_url_raw($_POST['facebook_url'] ?? '') );
+        update_user_meta( $user_id, '_twitter_url', esc_url_raw($_POST['twitter_url'] ?? '') );
+        update_user_meta( $user_id, '_linkedin_url', esc_url_raw($_POST['linkedin_url'] ?? '') );
+        $visibility = isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public' ? 'public' : 'private';
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
     }
 
     update_user_meta( $user_id, '_setup_complete', 1 );

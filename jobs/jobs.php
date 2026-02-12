@@ -166,8 +166,8 @@ function jobs_render_plugin_footer() {
             <div style="max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
                 <!-- Social Left -->
                 <div style="display: flex; gap: 15px; flex: 1; justify-content: flex-start;">
-                    <a href="#" style="color: #000; text-decoration: none;"><span class="dashicons dashicons-facebook"></span></a>
-                    <a href="#" style="color: #000; text-decoration: none;"><span class="dashicons dashicons-twitter"></span></a>
+                    <a href="#" style="color: #000; text-decoration: none;"><span class="dashicons dashicons-facebook" style="font-size: 18px; width: 18px; height: 18px;"></span></a>
+                    <a href="#" style="color: #000; text-decoration: none;"><span class="dashicons dashicons-twitter" style="font-size: 18px; width: 18px; height: 18px;"></span></a>
                 </div>
 
                 <!-- Copyright Center -->
