@@ -621,13 +621,19 @@
     right: 0;
     width: 320px;
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-    border: 1px solid #f1f5f9;
-    padding: 24px;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(29, 52, 105, 0.18);
+    border: 1px solid rgba(29, 52, 105, 0.08);
+    padding: 28px;
     z-index: 100;
     display: none;
     text-align: left;
+    animation: statsFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes statsFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .stats-dropdown-panel:after {
@@ -900,44 +906,68 @@
     }
 
     .v4-action-group {
-        display: flex !important;
-        flex-direction: column !important; /* Stack vertically as requested */
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(36px, 1fr)) !important;
         align-items: center !important;
         width: 100% !important;
-        gap: 12px !important;
+        gap: 6px !important;
     }
 
     .v4-action-group .v4-btn-primary {
+        grid-column: 1 / -1 !important; /* Force primary button to its own row if needed, or just make it fit? */
         width: 100% !important;
-        height: 48px !important;
+        height: 44px !important;
         font-size: 14px !important;
+        margin-top: 10px !important;
         border-radius: 12px !important;
+        order: 100;
+    }
+
+    .v4-action-group .v4-icon-btn,
+    .v4-action-group .stats-dropdown-wrapper {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
     }
 
     .v4-action-group .v4-icon-btn {
         width: 100% !important;
-        height: 48px !important;
+        max-width: 44px !important;
+        height: 44px !important;
+        min-width: 0 !important;
         border-radius: 12px !important;
-        justify-content: flex-start !important;
-        padding: 0 20px !important;
+        padding: 0 !important;
     }
 
     .v4-action-group .v4-icon-btn:after {
-        content: attr(title); /* Show title as text on mobile */
-        margin-left: 10px;
-        font-size: 14px;
-        font-weight: 600;
+        display: none !important; /* Remove text to save space */
     }
 
     .seeker-meta-row-combined {
         display: flex !important;
         flex-direction: row !important; /* One line as requested */
-        flex-wrap: wrap !important;
+        flex-wrap: nowrap !important; /* Force single line */
         justify-content: center !important;
         align-items: center !important;
-        gap: 12px !important;
-        width: 100%;
-        font-size: 11px !important;
+        gap: 1.5vw !important; /* Fluid gap */
+        width: 100% !important;
+        font-size: clamp(9px, 2.8vw, 13px) !important; /* Fluid scaling */
+        white-space: nowrap !important;
+        overflow: visible !important;
+    }
+
+    .seeker-meta-row-combined > * {
+        flex: 0 0 auto !important;
+    }
+
+    .experience-line-v2 {
+        font-size: inherit !important;
+        font-weight: 700 !important;
+    }
+
+    .country-flag-icon {
+        width: 16px !important;
+        height: 11px !important;
     }
 
     .seeker-meta-row-combined > * {

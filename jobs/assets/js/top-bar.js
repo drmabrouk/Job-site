@@ -41,33 +41,34 @@ jQuery(document).ready(function($) {
 
     $(document).on('click', '.notif-item', function() {
         var $this = $(this);
-        var content = $this.data('content');
-        var time = $this.data('time');
-        var avatar = $this.data('avatar');
-        var sender = $this.data('sender');
 
-        $('#notif-detail-content').text(content);
-        $('#notif-detail-time').text(time);
-        $('#notif-detail-sender').text(sender);
+        // Remove existing detail panels if any
+        $('.notif-inline-detail').slideUp(200, function() { $(this).remove(); });
 
-        if (avatar) {
-            $('#notif-detail-avatar').attr('src', avatar).show();
-            $('#notif-detail-icon-placeholder').hide();
-        } else {
-            $('#notif-detail-avatar').hide();
-            $('#notif-detail-icon-placeholder').show();
+        if ($this.hasClass('is-open')) {
+            $this.removeClass('is-open');
+            return;
         }
 
-        $('#jobs-notif-list').hide();
-        $('#jobs-notif-detail').show();
-        $('#jobs-notif-menu .dropdown-header strong').text('Notification Detail');
+        $('.notif-item').removeClass('is-open');
+        $this.addClass('is-open');
+
+        var content = $this.data('content');
+        var time = $this.data('time');
+        var sender = $this.data('sender');
+
+        var detailHtml = `
+            <div class="notif-inline-detail" style="display:none; padding: 15px; background: #f8fafc; border-top: 1px solid #edf2f7; margin-top: 10px; border-radius: 8px;">
+                <div style="font-weight: 700; color: #1d3469; font-size: 0.9em; margin-bottom: 5px;">From: ${sender}</div>
+                <div style="color: #475569; font-size: 0.95em; line-height: 1.5;">${content}</div>
+                <div style="font-size: 0.8em; color: #94a3b8; margin-top: 10px;">Received: ${time}</div>
+            </div>
+        `;
+
+        $this.append(detailHtml);
+        $this.find('.notif-inline-detail').slideDown(200);
     });
 
-    $(document).on('click', '#notif-back', function() {
-        $('#jobs-notif-detail').hide();
-        $('#jobs-notif-list').show();
-        $('#jobs-notif-menu .dropdown-header strong').text('Notifications');
-    });
 
     function loadNotifications() {
         $.post(jobs_vars.ajax_url, {
