@@ -167,23 +167,58 @@ function jobs_handle_forms() {
         }
 
         $email = sanitize_email( $_POST['user_email'] );
-        $display_name = sanitize_text_field( $_POST['display_name'] );
+        $first_name = sanitize_text_field( $_POST['first_name'] );
+        $last_name = sanitize_text_field( $_POST['last_name'] );
         $visibility = sanitize_text_field( $_POST['profile_visibility'] );
         $new_username = sanitize_user( $_POST['user_login_change'] );
+
+        $current_user = get_userdata( $user_id );
+
+        // Validate password confirmation if provided
+        if ( ! empty( $_POST['user_pass'] ) ) {
+            if ( $_POST['user_pass'] !== $_POST['user_pass_confirm'] ) {
+                wp_die( 'Passwords do not match.' );
+            }
+        }
+
+        // Handle Email verification if changed
+        $email_changed = false;
+        if ( $email !== $current_user->user_email ) {
+            $email_changed = true;
+            if ( email_exists( $email ) ) {
+                wp_die( 'Email address already registered by another user.' );
+            }
+        }
 
         $update_data = array(
             'ID'           => $user_id,
             'user_email'   => $email,
-            'display_name' => $display_name,
+            'first_name'   => $first_name,
+            'last_name'    => $last_name,
+            'display_name' => trim($first_name . ' ' . $last_name),
         );
 
-        // Update username if changed and allowed
-        $current_user = get_userdata( $user_id );
+        // Update username if changed and allowed (60-day constraint)
         if ( ! empty( $new_username ) && $new_username !== $current_user->user_login ) {
-            if ( ! username_exists( $new_username ) ) {
-                global $wpdb;
-                $wpdb->update( $wpdb->users, array( 'user_login' => $new_username ), array( 'ID' => $user_id ) );
-                clean_user_cache( $user_id );
+            $can_change = true;
+            if ( ! current_user_can( 'manage_options' ) ) {
+                $last_username_change = get_user_meta( $user_id, '_last_username_change', true );
+                if ( $last_username_change && ( time() - $last_username_change ) < 60 * DAY_IN_SECONDS ) {
+                    $can_change = false;
+                    $days_left = ceil((60 * DAY_IN_SECONDS - (time() - $last_username_change)) / DAY_IN_SECONDS);
+                    wp_die( "You can only change your username once every 60 days. Please wait $days_left more days." );
+                }
+            }
+
+            if ( $can_change ) {
+                if ( ! username_exists( $new_username ) ) {
+                    global $wpdb;
+                    $wpdb->update( $wpdb->users, array( 'user_login' => $new_username ), array( 'ID' => $user_id ) );
+                    update_user_meta( $user_id, '_last_username_change', time() );
+                    clean_user_cache( $user_id );
+                } else {
+                    wp_die( 'Username already exists.' );
+                }
             }
         }
 
@@ -191,6 +226,11 @@ function jobs_handle_forms() {
 
         if ( ! empty( $_POST['user_pass'] ) ) {
             wp_set_password( $_POST['user_pass'], $user_id );
+        }
+
+        if ( $email_changed ) {
+            delete_user_meta( $user_id, '_is_email_verified' );
+            Jobs_Auth_Service::send_verification_email( $user_id );
         }
 
         update_user_meta( $user_id, 'profile_visibility', $visibility );
@@ -222,6 +262,7 @@ function jobs_ajax_send_message() {
 
     $receiver_id = intval( $_POST['receiver_id'] );
     $sender_id   = get_current_user_id();
+    $subject_raw = sanitize_text_field( $_POST['subject'] ?? '' );
     $message     = sanitize_textarea_field( $_POST['message'] );
 
     if ( ! $sender_id || ! $receiver_id || ! $message ) {
@@ -233,15 +274,15 @@ function jobs_ajax_send_message() {
     $wpdb->insert( $table, array(
         'sender_id'   => $sender_id,
         'receiver_id' => $receiver_id,
-        'message'     => $message,
+        'message'     => ($subject_raw ? "Subject: $subject_raw\n\n" : "") . $message,
     ) );
 
     // Also create a notification for the receiver
     $sender_name = get_userdata($sender_id)->display_name;
     $notification_content = sprintf(
-        "Career Inquiry: %s has initiated a professional connection. Message excerpt: \"%s\"",
+        "Job Offer: %s has initiated a professional connection. Subject: %s",
         $sender_name,
-        wp_trim_words($message, 15)
+        $subject_raw ?: 'No Subject'
     );
     Jobs_Job_Service::add_notification( $receiver_id, $notification_content, $sender_id );
 
@@ -250,13 +291,14 @@ function jobs_ajax_send_message() {
     $sender = get_userdata( $sender_id );
     $site_name = get_bloginfo( 'name' );
 
-    $subject = "[{$site_name}] New Message Received";
+    $email_subject = $subject_raw ? "[{$site_name}] $subject_raw" : "[{$site_name}] New Job Offer Received";
     $body = "Hello " . $recipient->display_name . ",\n\n";
-    $body .= "You have received a new message from " . $sender->display_name . ".\n\n";
+    $body .= "You have received a professional inquiry from " . $sender->display_name . ".\n\n";
+    if($subject_raw) $body .= "Subject: " . $subject_raw . "\n\n";
     $body .= "Message content:\n\"" . $message . "\"\n\n";
     $body .= "Log in to your dashboard to reply: " . home_url('/dashboard/') . "\n\n";
 
-    wp_mail( $recipient->user_email, $subject, $body );
+    wp_mail( $recipient->user_email, $email_subject, $body );
 
     wp_send_json_success( 'Message sent' );
 }
@@ -1149,7 +1191,8 @@ function jobs_ajax_complete_setup_v2_handler() {
 
         $existing = get_user_meta( $user_id, 'jobs_company_data', true ) ?: array();
         update_user_meta( $user_id, 'jobs_company_data', array_merge($existing, $company_data) );
-        update_user_meta( $user_id, 'profile_visibility', 'public' );
+        $visibility = isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public' ? 'public' : 'private';
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
 
     } else {
         // Job Seeker data - Guided Onboarding V2
@@ -1172,6 +1215,7 @@ function jobs_ajax_complete_setup_v2_handler() {
         $cv_data['personal'] = $personal;
         $cv_data['academic'] = $_POST['academic'] ?? array();
         $cv_data['experience'] = $_POST['experience'] ?? array();
+        $cv_data['certs'] = $_POST['certs'] ?? array();
         $cv_data['skills']['core'] = sanitize_text_field( $_POST['skills_list'] ?? '' );
         $cv_data['languages'] = $_POST['languages'] ?? array();
         $cv_data['preferences']['english_exam'] = sanitize_text_field( $_POST['english_exam'] ?? 'None' );
@@ -1186,7 +1230,13 @@ function jobs_ajax_complete_setup_v2_handler() {
         update_user_meta( $user_id, '_specialization', $personal['specialization'] );
         update_user_meta( $user_id, '_profession', $personal['profession'] );
         update_user_meta( $user_id, '_professional_summary', $personal['summary'] );
-        update_user_meta( $user_id, 'profile_visibility', 'public' );
+        update_user_meta( $user_id, '_ielts_score', sanitize_text_field($_POST['ielts_score'] ?? '') );
+        update_user_meta( $user_id, '_toefl_score', sanitize_text_field($_POST['toefl_score'] ?? '') );
+        update_user_meta( $user_id, '_facebook_url', esc_url_raw($_POST['facebook_url'] ?? '') );
+        update_user_meta( $user_id, '_twitter_url', esc_url_raw($_POST['twitter_url'] ?? '') );
+        update_user_meta( $user_id, '_linkedin_url', esc_url_raw($_POST['linkedin_url'] ?? '') );
+        $visibility = isset($_POST['profile_visibility']) && $_POST['profile_visibility'] === 'public' ? 'public' : 'private';
+        update_user_meta( $user_id, 'profile_visibility', $visibility );
     }
 
     update_user_meta( $user_id, '_setup_complete', 1 );
@@ -1362,4 +1412,20 @@ function jobs_ajax_upload_photo_handler() {
         }
     }
     wp_send_json_error( 'No file uploaded' );
+}
+
+/**
+ * AJAX Handler: Track Profile View
+ */
+add_action( 'wp_ajax_jobs_track_profile_view', 'jobs_ajax_track_profile_view' );
+add_action( 'wp_ajax_nopriv_jobs_track_profile_view', 'jobs_ajax_track_profile_view' );
+function jobs_ajax_track_profile_view() {
+    $user_id = intval( $_POST['user_id'] );
+    if ( ! $user_id ) wp_send_json_error();
+
+    $views = (int) get_user_meta( $user_id, '_profile_views', true );
+    $views++;
+    update_user_meta( $user_id, '_profile_views', $views );
+
+    wp_send_json_success( array( 'views' => $views ) );
 }

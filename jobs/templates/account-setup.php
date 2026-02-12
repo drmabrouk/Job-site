@@ -45,7 +45,8 @@ $steps_seeker = array(
     8 => 'Recent Career',
     9 => 'Skill Set',
     10 => 'Language Assets',
-    11 => 'Final Protocols'
+    11 => 'Professional Certifications',
+    12 => 'Final Protocols'
 );
 
 $steps_employer = array(
@@ -132,12 +133,21 @@ $total_steps = count($active_steps);
                         <div class="form-row-v2">
                             <div class="form-group-v2">
                                 <label>Nationality Country</label>
-                                <?php echo Jobs_Data_Service::render_country_picker('nationality', '', 'nat-country-select', 'country-picker'); ?>
+                                <?php
+                                $pre_nat = get_user_meta($user_id, '_nationality', true);
+                                echo Jobs_Data_Service::render_country_picker('nationality', $pre_nat, 'nat-country-select', 'country-picker');
+                                ?>
                             </div>
                             <div class="form-group-v2">
                                 <label>City / State</label>
-                                <select name="nat_city" id="nat-city-select" disabled>
-                                    <option value="">Select Country First</option>
+                                <?php $pre_nat_city = $cv_data['personal']['nat_city'] ?? ''; ?>
+                                <select name="nat_city" id="nat-city-select" <?php echo $pre_nat ? '' : 'disabled'; ?>>
+                                    <option value="">Select City / State</option>
+                                    <?php if($pre_nat && isset($locations[$pre_nat])): ?>
+                                        <?php foreach($locations[$pre_nat] as $city): ?>
+                                            <option value="<?php echo esc_attr($city); ?>" <?php selected($pre_nat_city, $city); ?>><?php echo esc_html($city); ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -156,12 +166,21 @@ $total_steps = count($active_steps);
                         <div class="form-row-v2">
                             <div class="form-group-v2">
                                 <label>Current Country</label>
-                                <?php echo Jobs_Data_Service::render_country_picker('residence', '', 'res-country-select', 'country-picker'); ?>
+                                <?php
+                                $pre_res = get_user_meta($user_id, '_country', true);
+                                echo Jobs_Data_Service::render_country_picker('residence', $pre_res, 'res-country-select', 'country-picker');
+                                ?>
                             </div>
                             <div class="form-group-v2">
                                 <label>City / State</label>
-                                <select name="res_city" id="res-city-select" disabled>
-                                    <option value="">Select Country First</option>
+                                <?php $pre_res_city = $cv_data['personal']['res_city'] ?? get_user_meta($user_id, '_region', true); ?>
+                                <select name="res_city" id="res-city-select" <?php echo $pre_res ? '' : 'disabled'; ?>>
+                                    <option value="">Select City / State</option>
+                                    <?php if($pre_res && isset($locations[$pre_res])): ?>
+                                        <?php foreach($locations[$pre_res] as $city): ?>
+                                            <option value="<?php echo esc_attr($city); ?>" <?php selected($pre_res_city, $city); ?>><?php echo esc_html($city); ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -179,17 +198,36 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Primary Phone Number</label>
-                            <input type="tel" name="phone" id="primary-phone" class="v2-phone-input">
+                            <?php $pre_phone = get_user_meta($user_id, '_phone', true); ?>
+                            <input type="tel" name="phone" id="primary-phone" class="v2-phone-input" value="<?php echo esc_attr($pre_phone); ?>">
                             <div style="margin-top: 10px;">
                                 <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9em; cursor: pointer;">
-                                    <input type="checkbox" name="whatsapp_linked" value="1" style="width: auto;"> This number is linked to <strong>WhatsApp</strong>
+                                    <?php $pre_wa = $cv_data['personal']['whatsapp_linked'] ?? ''; ?>
+                                    <input type="checkbox" name="whatsapp_linked" value="1" <?php checked($pre_wa, '1'); ?> style="width: auto;"> This number is linked to <strong>WhatsApp</strong>
                                 </label>
                             </div>
                         </div>
                         <div class="form-group-v2" style="margin-top: 30px;">
                             <label>Additional Phone (Optional)</label>
-                            <input type="tel" name="phone_extra" id="extra-phone" class="v2-phone-input">
+                            <?php $pre_phone_extra = $cv_data['personal']['phone_extra'] ?? ''; ?>
+                            <input type="tel" name="phone_extra" id="extra-phone" class="v2-phone-input" value="<?php echo esc_attr($pre_phone_extra); ?>">
                         </div>
+
+                        <div class="form-grid-v2" style="margin-top: 40px; border-top: 1px solid #f1f5f9; padding-top: 30px;">
+                            <div class="form-group-v2">
+                                <label>Facebook Profile URL</label>
+                                <input type="url" name="facebook_url" value="<?php echo esc_url(get_user_meta($user_id, '_facebook_url', true)); ?>" placeholder="https://facebook.com/yourprofile">
+                            </div>
+                            <div class="form-group-v2">
+                                <label>Twitter / X Profile URL</label>
+                                <input type="url" name="twitter_url" value="<?php echo esc_url(get_user_meta($user_id, '_twitter_url', true)); ?>" placeholder="https://x.com/yourprofile">
+                            </div>
+                            <div class="form-group-v2 span-2">
+                                <label>LinkedIn Professional URL</label>
+                                <input type="url" name="linkedin_url" value="<?php echo esc_url(get_user_meta($user_id, '_linkedin_url', true)); ?>" placeholder="https://linkedin.com/in/yourprofile">
+                            </div>
+                        </div>
+
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="3">Back</button>
                             <button type="button" class="v2-next-btn" data-next="5">Continue</button>
@@ -205,17 +243,24 @@ $total_steps = count($active_steps);
                         <div class="form-row-v2">
                             <div class="form-group-v2">
                                 <label>Industry / Specialization</label>
+                                <?php $pre_spec = get_user_meta($user_id, '_specialization', true); ?>
                                 <select name="specialization" id="v2-spec-select">
                                     <option value="">Select Field</option>
                                     <?php foreach(array_keys($specializations) as $s): ?>
-                                        <option value="<?php echo esc_attr($s); ?>"><?php echo esc_html($s); ?></option>
+                                        <option value="<?php echo esc_attr($s); ?>" <?php selected($pre_spec, $s); ?>><?php echo esc_html($s); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="form-group-v2">
                                 <label>Job Profession / Role</label>
-                                <select name="profession" id="v2-prof-select" disabled>
-                                    <option value="">Select Field First</option>
+                                <?php $pre_prof = get_user_meta($user_id, '_profession', true); ?>
+                                <select name="profession" id="v2-prof-select" <?php echo $pre_spec ? '' : 'disabled'; ?>>
+                                    <option value="">Select Role</option>
+                                    <?php if($pre_spec && isset($specializations[$pre_spec])): ?>
+                                        <?php foreach($specializations[$pre_spec] as $p): ?>
+                                            <option value="<?php echo esc_attr($p); ?>" <?php selected($pre_prof, $p); ?>><?php echo esc_html($p); ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                         </div>
@@ -229,11 +274,12 @@ $total_steps = count($active_steps);
                     <div class="setup-v2-panel" data-step="6">
                         <div class="panel-header">
                             <h2>Executive Summary</h2>
-                            <p>Draft a compelling narrative of your professional journey (200 - 500 characters).</p>
+                            <p>Draft a compelling narrative of your professional journey (250 - 600 characters).</p>
                         </div>
                         <div class="form-group-v2">
-                            <textarea name="summary" id="v2-summary" placeholder="e.g. Dedicated Software Architect with over 8 years of experience in building scalable distributed systems..." style="height: 180px;"></textarea>
-                            <div class="char-counter"><span id="char-count">0</span> / 500 characters</div>
+                            <?php $pre_summary = get_user_meta($user_id, '_professional_summary', true); ?>
+                            <textarea name="summary" id="v2-summary" placeholder="e.g. Dedicated Software Architect with over 8 years of experience in building scalable distributed systems..." style="height: 200px;"><?php echo esc_textarea($pre_summary); ?></textarea>
+                            <div class="char-counter"><span id="char-count">0</span> / 600 characters</div>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="5">Back</button>
@@ -427,24 +473,38 @@ $total_steps = count($active_steps);
                             <p>Global communication proficiency (Up to 3 languages).</p>
                         </div>
                         <div id="languages-container">
+                            <?php
+                            $langs = !empty($cv_data['languages']) && is_array($cv_data['languages']) ? $cv_data['languages'] : array(array('name' => 'English', 'level' => 'Native'));
+                            foreach($langs as $li => $l): if(!is_array($l)) continue; ?>
                             <div class="language-entry">
-                                <input type="text" name="languages[0][name]" placeholder="e.g. English" value="English">
-                                <select name="languages[0][level]">
-                                    <option value="Native">Native</option>
-                                    <option value="Fluent">Fluent</option>
-                                    <option value="Professional">Professional</option>
-                                    <option value="Intermediate">Intermediate</option>
+                                <input type="text" name="languages[<?php echo $li; ?>][name]" placeholder="e.g. English" value="<?php echo esc_attr($l['name'] ?? ''); ?>">
+                                <select name="languages[<?php echo $li; ?>][level]">
+                                    <option value="Native" <?php selected($l['level'] ?? '', 'Native'); ?>>Native</option>
+                                    <option value="Fluent" <?php selected($l['level'] ?? '', 'Fluent'); ?>>Fluent</option>
+                                    <option value="Professional" <?php selected($l['level'] ?? '', 'Professional'); ?>>Professional</option>
+                                    <option value="Intermediate" <?php selected($l['level'] ?? '', 'Intermediate'); ?>>Intermediate</option>
                                 </select>
                             </div>
+                            <?php endforeach; ?>
                         </div>
-                        <button type="button" id="add-language" class="v2-btn-minimal">+ Add Another Language</button>
+                        <button type="button" id="add-language" class="v2-btn-minimal" <?php echo count($langs) >= 3 ? 'style="display:none;"' : ''; ?>>+ Add Another Language</button>
 
-                        <div style="margin-top: 30px; padding: 20px; background: #f0f9ff; border-radius: 12px; border: 1px solid #bae6fd;">
-                            <label style="display: block; font-weight: 700; color: #0369a1; margin-bottom: 10px;">English Proficiency Exams</label>
-                            <div style="display: flex; gap: 20px;">
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="IELTS" style="width:auto;"> IELTS</label>
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="TOEFL" style="width:auto;"> TOEFL</label>
-                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="None" checked style="width:auto;"> None</label>
+                        <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="padding: 20px; background: #f0f9ff; border-radius: 12px; border: 1px solid #bae6fd;">
+                                <label style="display: block; font-weight: 700; color: #0369a1; margin-bottom: 10px;">English Proficiency Exams</label>
+                                <?php $pre_exam = $cv_data['preferences']['english_exam'] ?? 'None'; ?>
+                                <div style="display: flex; gap: 20px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="IELTS" <?php checked($pre_exam, 'IELTS'); ?> style="width:auto;"> IELTS</label>
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="TOEFL" <?php checked($pre_exam, 'TOEFL'); ?> style="width:auto;"> TOEFL</label>
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="radio" name="english_exam" value="None" <?php checked($pre_exam, 'None'); ?> style="width:auto;"> None</label>
+                                </div>
+                            </div>
+                            <div style="padding: 20px; background: #fdf2f8; border-radius: 12px; border: 1px solid #fbcfe8;">
+                                <label style="display: block; font-weight: 700; color: #9d174d; margin-bottom: 10px;">IELTS / TOEFL Score</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" name="ielts_score" value="<?php echo esc_attr(get_user_meta($user_id, '_ielts_score', true)); ?>" placeholder="IELTS Score" style="padding: 8px;">
+                                    <input type="text" name="toefl_score" value="<?php echo esc_attr(get_user_meta($user_id, '_toefl_score', true)); ?>" placeholder="TOEFL Score" style="padding: 8px;">
+                                </div>
                             </div>
                         </div>
                         <div class="panel-footer">
@@ -453,24 +513,81 @@ $total_steps = count($active_steps);
                         </div>
                     </div>
 
-                    <!-- Step 11: Privacy -->
+                    <!-- Step 11: Certifications -->
                     <div class="setup-v2-panel" data-step="11">
+                        <div class="panel-header">
+                            <h2>Professional Certifications</h2>
+                            <p><?php echo $is_revisit ? 'Manage your professional certifications and licenses.' : 'List any relevant professional certifications or licenses.'; ?></p>
+                        </div>
+
+                        <div id="certifications-entries-container">
+                            <?php
+                            $certs_data = !empty($cv_data['certs']) ? $cv_data['certs'] : array(array());
+                            foreach($certs_data as $index => $cert): ?>
+                                <div class="cert-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
+                                    <?php if ($is_revisit && $index > 0): ?><button type="button" class="remove-repeat-item">&times;</button><?php endif; ?>
+                                    <div class="form-grid-v2">
+                                        <div class="form-group-v2 span-2">
+                                            <label>Certification Name</label>
+                                            <input type="text" name="certs[<?php echo $index; ?>][name]" value="<?php echo esc_attr($cert['name'] ?? ''); ?>" placeholder="e.g. AWS Certified Solutions Architect">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Issuing Authority</label>
+                                            <input type="text" name="certs[<?php echo $index; ?>][auth]" value="<?php echo esc_attr($cert['auth'] ?? ''); ?>" placeholder="e.g. Amazon Web Services">
+                                        </div>
+                                        <div class="form-group-v2">
+                                            <label>Issue Date / Year</label>
+                                            <input type="text" name="certs[<?php echo $index; ?>][date]" value="<?php echo esc_attr($cert['date'] ?? ''); ?>" placeholder="e.g. 2023 or Jan 2023">
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <?php if ($is_revisit): ?>
+                            <button type="button" id="add-cert-btn" class="v2-btn-minimal" style="margin-bottom: 30px; font-size: 1.1em; color: #10b981;">+ Add Another Certification</button>
+                        <?php endif; ?>
+
+                        <div class="panel-footer">
+                            <button type="button" class="v2-prev-btn" data-prev="10">Back</button>
+                            <button type="button" class="v2-next-btn" data-next="12">Continue</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 12: Privacy -->
+                    <div class="setup-v2-panel" data-step="12">
                         <div class="panel-header">
                             <h2>Privacy & Final Protocols</h2>
                             <p>Finalize your professional profile and data accuracy confirmation.</p>
                         </div>
                         <div class="agreement-box">
-                            <label><input type="checkbox" required> I agree to the <a href="<?php echo home_url('/policies'); ?>" target="_blank">Terms of Use</a> and <a href="<?php echo home_url('/policies'); ?>" target="_blank">Privacy Policy</a>.</label>
-                            <label><input type="checkbox" required> I confirm that all provided information is accurate and authentic.</label>
-                            <label><input type="checkbox" checked disabled> I understand that I can add more details to my public profile later.</label>
+                            <label><input type="checkbox" <?php echo $is_revisit ? 'checked' : 'required'; ?>> I agree to the <a href="<?php echo home_url('/policies'); ?>" target="_blank">Terms of Use</a> and <a href="<?php echo home_url('/policies'); ?>" target="_blank">Privacy Policy</a>.</label>
+                            <label><input type="checkbox" <?php echo $is_revisit ? 'checked' : 'required'; ?>> I confirm that all provided information is accurate and authentic.</label>
+
+                            <?php if ($is_revisit): ?>
+                                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                                    <label style="font-weight: 700; color: #1d3469; display: block; margin-bottom: 10px;">Advanced Profile Visibility</label>
+                                    <?php $visibility = get_user_meta($user_id, 'profile_visibility', true) ?: 'public'; ?>
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="checkbox" name="profile_visibility" value="public" <?php checked($visibility, 'public'); ?> style="width: auto;">
+                                        Make my profile visible to employers and the public
+                                    </label>
+                                    <p style="font-size: 0.8em; color: #64748b; margin: 5px 0 0 25px;">When disabled, only you can see your profile. Employers can still see your applications.</p>
+                                </div>
+                            <?php else: ?>
+                                <input type="hidden" name="profile_visibility" value="public">
+                                <label><input type="checkbox" checked disabled> I understand that I can add more details to my public profile later.</label>
+                            <?php endif; ?>
                         </div>
                         <div class="panel-footer">
-                            <button type="button" class="v2-prev-btn" data-prev="10">Back</button>
+                            <button type="button" class="v2-prev-btn" data-prev="11">Back</button>
                             <button type="submit" class="v2-finish-btn">Finish Account Setup</button>
                         </div>
                     </div>
 
-                <?php else : ?>
+                <?php else :
+                    $comp_data = get_user_meta($user_id, 'jobs_company_data', true) ?: array();
+                ?>
                     <!-- EMPLOYER STEPS -->
                     <!-- Adapted from seeker steps but for company -->
                     <div class="setup-v2-panel active" data-step="1">
@@ -488,11 +605,11 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2" style="margin-top: 30px;">
                             <label>Company Registered Name</label>
-                            <input type="text" name="company_name" placeholder="Brand Name" required>
+                            <input type="text" name="company_name" value="<?php echo esc_attr($comp_data['name'] ?? ''); ?>" placeholder="Brand Name" required>
                         </div>
                         <div class="form-group-v2">
                             <label>Legal Registered Entity Name</label>
-                            <input type="text" name="legal_name" placeholder="Official Corporate Name">
+                            <input type="text" name="legal_name" value="<?php echo esc_attr($comp_data['legal_name'] ?? ''); ?>" placeholder="Official Corporate Name">
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-next-btn" data-next="2">Continue</button>
@@ -508,7 +625,7 @@ $total_steps = count($active_steps);
                             <label>Primary Industry</label>
                             <select name="company_industry">
                                 <?php foreach(array_keys($specializations) as $s): ?>
-                                    <option value="<?php echo esc_attr($s); ?>"><?php echo esc_html($s); ?></option>
+                                    <option value="<?php echo esc_attr($s); ?>" <?php selected($comp_data['industry'] ?? '', $s); ?>><?php echo esc_html($s); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -516,7 +633,7 @@ $total_steps = count($active_steps);
                             <label>Company Type</label>
                             <select name="company_type">
                                 <?php foreach(Jobs_Data_Service::get_company_types() as $t): ?>
-                                    <option value="<?php echo $t; ?>"><?php echo $t; ?></option>
+                                    <option value="<?php echo $t; ?>" <?php selected($comp_data['company_type'] ?? '', $t); ?>><?php echo $t; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -535,13 +652,13 @@ $total_steps = count($active_steps);
                             <label>Employee Count</label>
                             <select name="company_employee_count">
                                 <?php foreach(Jobs_Data_Service::get_company_sizes() as $s): ?>
-                                    <option value="<?php echo $s; ?>"><?php echo $s; ?></option>
+                                    <option value="<?php echo $s; ?>" <?php selected($comp_data['employee_count'] ?? '', $s); ?>><?php echo $s; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="form-group-v2">
                             <label>Founded Year</label>
-                            <input type="number" name="founded_year" placeholder="YYYY">
+                            <input type="number" name="founded_year" value="<?php echo esc_attr($comp_data['founded_year'] ?? ''); ?>" placeholder="YYYY">
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="2">Back</button>
@@ -556,7 +673,7 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Headquarters Country</label>
-                            <?php echo Jobs_Data_Service::render_country_picker('company_address', '', 'hq-country-select'); ?>
+                            <?php echo Jobs_Data_Service::render_country_picker('company_address', $comp_data['address'] ?? '', 'hq-country-select'); ?>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="3">Back</button>
@@ -571,11 +688,11 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Corporate Website</label>
-                            <input type="url" name="company_website" placeholder="https://www.example.com">
+                            <input type="url" name="company_website" value="<?php echo esc_url($comp_data['website'] ?? ''); ?>" placeholder="https://www.example.com">
                         </div>
                         <div class="form-group-v2">
                             <label>Our Mission</label>
-                            <textarea name="mission" placeholder="What drives your company?" style="height: 120px;"></textarea>
+                            <textarea name="mission" placeholder="What drives your company?" style="height: 120px;"><?php echo esc_textarea($comp_data['mission'] ?? ''); ?></textarea>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="4">Back</button>
@@ -590,11 +707,11 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>About the Organization</label>
-                            <textarea name="company_description" placeholder="Full company overview..." style="height: 120px;"></textarea>
+                            <textarea name="company_description" placeholder="Full company overview..." style="height: 120px;"><?php echo esc_textarea($comp_data['details'] ?? ''); ?></textarea>
                         </div>
                         <div class="form-group-v2">
                             <label>Employee Benefits & Perks</label>
-                            <textarea name="benefits" placeholder="Why should people work with you?" style="height: 120px;"></textarea>
+                            <textarea name="benefits" placeholder="Why should people work with you?" style="height: 120px;"><?php echo esc_textarea($comp_data['benefits'] ?? ''); ?></textarea>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="5">Back</button>
@@ -609,7 +726,7 @@ $total_steps = count($active_steps);
                         </div>
                         <div class="form-group-v2">
                             <label>Work Culture</label>
-                            <textarea name="culture" placeholder="Describe the atmosphere..." style="height: 120px;"></textarea>
+                            <textarea name="culture" placeholder="Describe the atmosphere..." style="height: 120px;"><?php echo esc_textarea($comp_data['culture'] ?? ''); ?></textarea>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="6">Back</button>
@@ -622,8 +739,21 @@ $total_steps = count($active_steps);
                             <h2>Privacy & Final Protocols</h2>
                         </div>
                         <div class="agreement-box">
-                            <label><input type="checkbox" required> I agree to the <a href="<?php echo home_url('/policies'); ?>" target="_blank">Terms of Use</a>.</label>
-                            <label><input type="checkbox" required> I confirm the organizational data is legitimate.</label>
+                            <label><input type="checkbox" <?php echo $is_revisit ? 'checked' : 'required'; ?>> I agree to the <a href="<?php echo home_url('/policies'); ?>" target="_blank">Terms of Use</a>.</label>
+                            <label><input type="checkbox" <?php echo $is_revisit ? 'checked' : 'required'; ?>> I confirm the organizational data is legitimate.</label>
+
+                            <?php if ($is_revisit): ?>
+                                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                                    <label style="font-weight: 700; color: #1d3469; display: block; margin-bottom: 10px;">Corporate Visibility</label>
+                                    <?php $visibility = get_user_meta($user_id, 'profile_visibility', true) ?: 'public'; ?>
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="checkbox" name="profile_visibility" value="public" <?php checked($visibility, 'public'); ?> style="width: auto;">
+                                        Make company profile public
+                                    </label>
+                                </div>
+                            <?php else: ?>
+                                <input type="hidden" name="profile_visibility" value="public">
+                            <?php endif; ?>
                         </div>
                         <div class="panel-footer">
                             <button type="button" class="v2-prev-btn" data-prev="7">Back</button>
@@ -639,8 +769,8 @@ $total_steps = count($active_steps);
 
 <style>
 .jobs-premium-setup-v2 { background: transparent; min-height: auto; padding: 0; font-family: 'Rubik', sans-serif; color: #1e293b; width: 100%; }
-.setup-container { max-width: 860px; margin: 0 auto; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #eef2f6; }
-.setup-v2-header { padding: 48px; border-bottom: 1px solid #f1f5f9; background: #ffffff; }
+.setup-container { max-width: 900px; margin: 20px auto; background: white; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: visible; border: 1px solid #eef2f6; }
+.setup-v2-header { padding: 40px 48px; border-bottom: 1px solid #f1f5f9; background: #ffffff; }
 .setup-welcome h1 { font-size: 2.4em; font-weight: 800; margin: 24px 0 8px; color: #0f172a; }
 .setup-welcome p { color: #64748b; font-size: 1.1em; margin: 0; }
 .setup-v2-progress { margin-top: 40px; }
@@ -653,13 +783,16 @@ $total_steps = count($active_steps);
 @keyframes panelFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .panel-header h2 { font-size: 1.8em; font-weight: 700; color: #1d3469; margin: 0 0 10px; }
 .panel-header p { color: #64748b; margin-bottom: 40px; line-height: 1.6; }
-.form-group-v2 { margin-bottom: 24px; }
+.form-group-v2 { margin-bottom: 24px; min-width: 0; width: 100%; }
 .form-group-v2 label { display: block; font-size: 0.9em; font-weight: 700; color: #1d3469; margin-bottom: 10px; }
-.form-row-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
-.form-grid-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
-.span-2 { grid-column: span 2; }
+.form-row-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; width: 100% !important; }
+.form-grid-v2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 24px !important; width: 100% !important; }
+.span-2 { grid-column: span 2 !important; }
 input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="url"], input[type="date"], select, textarea {
-    width: 100%; padding: 14px 18px; border-radius: 14px; border: 2px solid #e2e8f0; background: #f8fafc; font-size: 1em; color: #1e293b; transition: all 0.3s ease; outline: none;
+    width: 100%; padding: 12px 18px; border-radius: 14px; border: 2px solid #e2e8f0; background: #f8fafc; font-size: 1em; color: #1e293b; transition: all 0.3s ease; outline: none; box-sizing: border-box; line-height: 1.2;
+}
+select {
+    height: 50px;
 }
 input:focus, select:focus, textarea:focus { border-color: #1d3469; background: white; box-shadow: 0 0 0 4px rgba(29, 52, 105, 0.05); }
 .photo-upload-zone { display: flex; align-items: center; gap: 32px; background: #f8fafc; padding: 24px; border-radius: 20px; border: 2px dashed #e2e8f0; }
@@ -703,7 +836,11 @@ jQuery(document).ready(function($) {
     const skillsList = <?php echo json_encode($skills_list); ?>;
     const specializations = <?php echo json_encode($specializations); ?>;
     const totalSteps = <?php echo $total_steps; ?>;
-    let selectedSkills = [];
+    let selectedSkills = <?php
+        $existing_skills = array_filter(array_map('trim', explode(',', $cv_data['skills']['core'] ?? '')));
+        echo json_encode(array_values($existing_skills));
+    ?>;
+    updateSkillsUI();
 
     // Toggle Button Logic
     $(document).on('click', '.v2-toggle-btn', function() {
@@ -791,7 +928,7 @@ jQuery(document).ready(function($) {
     $('#v2-summary').on('input', function() {
         const count = $(this).val().length;
         $('#char-count').text(count);
-        if (count >= 200 && count <= 500) {
+        if (count >= 250 && count <= 600) {
             $('#char-count').css('color', '#10b981');
             $('#summary-next').prop('disabled', false).css('opacity', 1);
         } else {
@@ -823,11 +960,32 @@ jQuery(document).ready(function($) {
         } else { $('#v2-skills-suggestions').hide(); }
     });
 
+    $('#v2-skills-input').on('keypress', function(e) {
+        if(e.which == 13) {
+            e.preventDefault();
+            const val = $(this).val().trim();
+            if(val) {
+                if (selectedSkills.includes(val)) {
+                    $(this).val('');
+                } else if (selectedSkills.length < 10) {
+                    selectedSkills.push(val);
+                    updateSkillsUI();
+                    $(this).val('');
+                } else {
+                    alert('Maximum 10 skills allowed.');
+                }
+            }
+            $('#v2-skills-suggestions').hide();
+        }
+    });
+
     $(document).on('click', '.skill-choice', function() {
         const skill = $(this).data('skill');
         if (selectedSkills.length < 10) {
             selectedSkills.push(skill);
             updateSkillsUI();
+        } else {
+            alert('Maximum 10 skills allowed.');
         }
         $('#v2-skills-input').val('').focus();
         $('#v2-skills-suggestions').hide();
@@ -851,6 +1009,30 @@ jQuery(document).ready(function($) {
     // Multiple Entries Logic
     let academicIndex = <?php echo count($academic_data); ?>;
     let experienceIndex = <?php echo count($experience_data); ?>;
+    let certIndex = <?php echo count($certs_data ?? array()); ?>;
+
+    $('#add-cert-btn').on('click', function() {
+        const index = certIndex++;
+        const html = `
+            <div class="cert-entry-card v2-repeat-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 25px; position: relative;">
+                <button type="button" class="remove-repeat-item">&times;</button>
+                <div class="form-grid-v2">
+                    <div class="form-group-v2 span-2">
+                        <label>Certification Name</label>
+                        <input type="text" name="certs[${index}][name]" placeholder="Certification Name">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Issuing Authority</label>
+                        <input type="text" name="certs[${index}][auth]" placeholder="e.g. Microsoft">
+                    </div>
+                    <div class="form-group-v2">
+                        <label>Issue Date / Year</label>
+                        <input type="text" name="certs[${index}][date]" placeholder="e.g. 2023">
+                    </div>
+                </div>
+            </div>`;
+        $('#certifications-entries-container').prepend(html);
+    });
 
     $('#add-academic-btn').on('click', function() {
         const index = academicIndex++;
@@ -1048,6 +1230,13 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    // Handle URL Step Parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const startStep = urlParams.get('step');
+    if (startStep && startStep >= 1 && startStep <= totalSteps) {
+        goToStep(parseInt(startStep));
+    }
 
     // Initialize Global Scripts
     if (window.initJobsPhoneFields) window.initJobsPhoneFields();

@@ -34,6 +34,15 @@ $last_activity = isset($all_meta['_last_activity'][0]) ? $all_meta['_last_activi
 get_header();
 ?>
 <div class="jobs-premium-profile-v4">
+    <!-- PDF Header (Hidden on Screen) -->
+    <div class="pdf-only-header" style="display: none;">
+        <?php
+        $logo_url = get_option( 'jobs_site_logo' );
+        if($logo_url): ?>
+            <img src="<?php echo esc_url($logo_url); ?>" style="height: 40px; width: auto;">
+        <?php endif; ?>
+    </div>
+
     <div class="profile-layout-container">
 
         <?php if ($role === 'employer') :
@@ -48,8 +57,9 @@ get_header();
             ?>
             <!-- HEADER: EMPLOYER -->
             <header class="profile-v4-header">
-                <div class="profile-v4-avatar-box">
+                <div class="profile-v4-avatar-box" style="position: relative;">
                     <img src="<?php echo esc_url($logo); ?>" alt="Company Logo">
+                    <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=1'); ?>" class="v4-avatar-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
                 </div>
                 <div class="profile-v4-identity-box">
                     <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16px;">
@@ -71,12 +81,39 @@ get_header();
                 </div>
                 <div class="profile-v4-actions">
                     <div class="v4-action-group">
+                            <?php if ( get_current_user_id() === $user_id || current_user_can('manage_options') ) :
+                                $views = (int) get_user_meta($user_id, '_profile_views', true);
+                                global $wpdb;
+                                $msg_table = Jobs_DB_Service::get_table('messages');
+                                $requests_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $msg_table WHERE receiver_id = %d", $user_id));
+                            ?>
+                                <div class="stats-dropdown-wrapper">
+                                    <button class="v4-icon-btn stats-trigger" title="Profile Statistics">
+                                        <span class="dashicons dashicons-visibility"></span>
+                                    </button>
+                                    <div class="stats-dropdown-panel">
+                                        <div class="stats-dropdown-header">Corporate Activity</div>
+                                        <div class="stats-grid-mini">
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($views); ?></div>
+                                                <div class="stat-mini-label">Profile Views</div>
+                                            </div>
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($total_posted); ?></div>
+                                                <div class="stat-mini-label">Jobs Posted</div>
+                                            </div>
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($requests_count); ?></div>
+                                                <div class="stat-mini-label">Total Requests</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Settings"><span class="dashicons dashicons-admin-generic"></span></a>
+                            <?php endif; ?>
                         <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-email-alt"></span> Contact Platform</button>
-                        <button class="v4-icon-btn" onclick="window.print()" title="Print Profile"><span class="dashicons dashicons-media-document"></span></button>
-                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                        <?php if ( get_current_user_id() === $user_id ) : ?>
-                            <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Update Company Profile"><span class="dashicons dashicons-admin-generic"></span></a>
-                        <?php endif; ?>
+                            <button class="v4-icon-btn" onclick="window.print()" title="PDF"><span class="dashicons dashicons-media-document"></span></button>
+                            <button class="v4-icon-btn open-share-modal" title="Share"><span class="dashicons dashicons-share"></span></button>
                     </div>
                 </div>
             </header>
@@ -84,7 +121,10 @@ get_header();
             <div class="profile-v4-grid">
                 <div class="profile-v4-main">
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-businesswoman"></span> Company Overview</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-businesswoman"></span> Company Overview
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=6'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <p><?php echo nl2br(esc_html($company['details'] ?? 'Strategic organization focused on global excellence.')); ?></p>
 
@@ -120,7 +160,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Corporate Heritage & Recognition</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-awards"></span> Corporate Heritage & Recognition
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=7'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div style="padding: 20px; background: #fdfcfb; border: 1px solid #f3f4f6; border-radius: 16px;">
@@ -167,7 +210,10 @@ get_header();
                 <div class="profile-v4-sidebar">
                     <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
                     <section class="v4-card contact-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=5'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php
                             $c_email = $company['email'] ?? $user->user_email;
@@ -209,7 +255,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-location"></span> Global Operation Footprint</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-location"></span> Global Operation Footprint
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=4'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                                 <p style="font-size: 12px; color: #475569; margin: 0;">Our operations span across multiple regions, providing localized expertise with a global perspective.</p>
@@ -227,7 +276,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title">Corporate Profile</h3>
+                        <h3 class="v4-card-title">
+                            Corporate Profile
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=3'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div style="margin-bottom: 16px;">
                                 <small style="display: block; font-size: 10px; color: #999; text-transform: uppercase; font-weight: 700;">Founded</small>
@@ -310,68 +362,104 @@ get_header();
             $region = isset($all_meta['_region'][0]) ? $all_meta['_region'][0] : '';
             ?>
             <!-- HEADER: SEEKER -->
-            <header class="profile-v4-header seeker-header-v2">
-                <div class="profile-v4-avatar-box" style="position: relative;">
-                    <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
-                    <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
-                    <?php if(($cv['preferences']['availability_status'] ?? '') === 'Immediate'): ?>
-                        <div class="v4-open-to-work-overlay" title="Open to Work"></div>
-                    <?php endif; ?>
-                </div>
-                <div class="profile-v4-identity-box seeker-identity-v2">
-                    <h1 class="seeker-name-v2"><?php echo esc_html($cv['personal']['full_name'] ?? $display_name); ?> <span class="badge-verified-circle" title="Verified"><span class="dashicons dashicons-yes"></span></span></h1>
-
-                    <div class="seeker-header-capsules">
-                        <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
-                        <span class="v4-pastel-pill pill-blue"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+            <div class="v4-card profile-header-card">
+                <header class="profile-v4-header seeker-header-v2">
+                    <div class="profile-v4-avatar-box" style="position: relative;">
+                        <?php $seeker_photo = get_user_meta($user_id, '_jobs_profile_photo', true) ?: get_avatar_url($user_id, array('size' => 140)); ?>
+                        <img src="<?php echo esc_url($seeker_photo); ?>" alt="Profile Photo">
+                        <?php if(($cv['preferences']['availability_status'] ?? '') === 'Immediate'): ?>
+                            <div class="v4-open-to-work-overlay" title="Open to Work"></div>
+                        <?php endif; ?>
+                        <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=1'); ?>" class="v4-avatar-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
                     </div>
+                    <div class="profile-v4-identity-box seeker-identity-v2">
+                        <h1 class="seeker-name-v2"><?php echo esc_html($display_name); ?> <span class="badge-verified-circle" title="Verified Member"><span class="dashicons dashicons-yes"></span></span></h1>
 
-                    <div class="seeker-meta-v2">
-                        <p class="experience-line-v2"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</p>
-                    </div>
+                        <div class="seeker-header-capsules">
+                            <span class="v4-pastel-pill pill-purple"><?php echo esc_html($spec); ?></span>
+                            <span class="v4-pastel-pill pill-blue"><?php echo esc_html($prof ?: 'Professional'); ?></span>
+                        </div>
 
-                    <div class="profile-v4-location-info seeker-location-v2">
-                        <?php
-                        $nationality = get_user_meta($user_id, '_nationality', true);
-                        $residence = get_user_meta($user_id, '_country', true);
-                        $region = get_user_meta($user_id, '_region', true);
-                        ?>
-                        <?php if($residence): ?>
-                            <div class="location-item-row" title="Country of Residence">
-                                <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
+                        <div class="seeker-meta-v2">
+                            <div class="seeker-meta-row-combined">
+                                <p class="experience-line-v2"><?php echo esc_html($exp_years ?: '0'); ?>+ Productive Years</p>
+
+                                <?php
+                                $nationality = get_user_meta($user_id, '_nationality', true);
+                                $residence = get_user_meta($user_id, '_country', true);
+                                $region = get_user_meta($user_id, '_region', true);
+                                ?>
+
+                                <?php if($nationality): ?>
+                                    <div class="location-item-row-inline nationality-meta" title="Nationality">
+                                        <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                        <span><?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if($residence): ?>
+                                    <div class="location-item-row-inline residence-meta" title="Country of Residence">
+                                        <?php if($f = Jobs_Data_Service::get_flag_url($residence)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
+                                        <span>Resident in <?php echo ($region ? $region . ', ' : '') . ucwords(str_replace('-', ' ', $residence)); ?></span>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                        <?php endif; ?>
-
-                        <?php if($nationality): ?>
-                            <div class="location-item-row" title="Nationality">
-                                <?php if($f = Jobs_Data_Service::get_flag_url($nationality)): ?><img src="<?php echo $f; ?>" class="country-flag-icon"><?php endif; ?>
-                                <span>Nationality: <?php echo ucwords(str_replace('-', ' ', $nationality)); ?></span>
-                            </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
-                </div>
-                <div class="profile-v4-actions">
-                    <div class="v4-action-group">
-                        <button class="v4-btn-primary open-message-modal" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Career Inquiry</button>
-                        <button class="v4-icon-btn" onclick="window.print()" title="Download PDF Portfolio"><span class="dashicons dashicons-media-document"></span></button>
-                        <button class="v4-icon-btn open-share-modal" title="Share Profile"><span class="dashicons dashicons-share"></span></button>
-                        <?php if ( get_current_user_id() === $user_id ) : ?>
-                            <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Update Professional Data"><span class="dashicons dashicons-admin-generic"></span></a>
-                        <?php endif; ?>
+                    <div class="profile-v4-actions">
+                        <div class="v4-action-group">
+                            <?php if ( get_current_user_id() === $user_id || current_user_can('manage_options') ) :
+                                $views = (int) get_user_meta($user_id, '_profile_views', true);
+                                $apps_count = count_user_posts($user_id, 'application', true);
+                                global $wpdb;
+                                $msg_table = Jobs_DB_Service::get_table('messages');
+                                $requests_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $msg_table WHERE receiver_id = %d", $user_id));
+                            ?>
+                                <div class="stats-dropdown-wrapper">
+                                    <button class="v4-icon-btn stats-trigger" title="Profile Statistics">
+                                        <span class="dashicons dashicons-visibility"></span>
+                                    </button>
+                                    <div class="stats-dropdown-panel">
+                                        <div class="stats-dropdown-header">Professional Activity</div>
+                                        <div class="stats-grid-mini">
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($views); ?></div>
+                                                <div class="stat-mini-label">Profile Views</div>
+                                            </div>
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($apps_count); ?></div>
+                                                <div class="stat-mini-label">Apps Submitted</div>
+                                            </div>
+                                            <div class="stat-mini-item">
+                                                <div class="stat-mini-val"><?php echo number_format($requests_count); ?></div>
+                                                <div class="stat-mini-label">Total Requests</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="<?php echo home_url('/account-setup/'); ?>" class="v4-icon-btn" title="Settings"><span class="dashicons dashicons-admin-generic"></span></a>
+                            <?php endif; ?>
+                            <button class="v4-icon-btn" onclick="window.print()" title="PDF"><span class="dashicons dashicons-media-document"></span></button>
+                            <button class="v4-icon-btn open-share-modal" title="Share"><span class="dashicons dashicons-share"></span></button>
+                            <button class="v4-btn-primary <?php echo is_user_logged_in() ? 'open-message-modal' : 'guest-offer-trigger'; ?>" data-receiver="<?php echo $user_id; ?>"><span class="dashicons dashicons-businessperson"></span> Offer a Job</button>
+                        </div>
                     </div>
-                </div>
-            </header>
+                </header>
+            </div>
 
             <div class="profile-v4-grid">
                 <div class="profile-v4-main">
                     <?php Jobs_Ads_Service::display_ad('above_content'); ?>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-users"></span> Professional Summary</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-admin-users"></span> Professional Summary
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=6'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php $summary = get_user_meta($user_id, '_professional_summary', true) ?: (get_user_meta($user_id, '_bio', true) ?: 'Dedicated professional with expertise in strategic field development and execution.'); ?>
                             <p><?php echo nl2br(esc_html($summary)); ?></p>
+
 
                             <?php if($philosophy = get_user_meta($user_id, '_professional_philosophy', true)): ?>
                             <div style="margin-top: 24px; padding: 20px; background: #fdf2f8; border-radius: 16px; position: relative;">
@@ -383,47 +471,36 @@ get_header();
                         </div>
                     </section>
 
+                    <!-- Career Highlights (Boxes) -->
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-portfolio"></span> Professional Experience</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-chart-bar"></span> Career Highlights
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=8'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
-                            <?php if(!empty($experience)): foreach($experience as $exp): ?>
-                                <div class="v4-timeline-item">
-                                    <div class="v4-timeline-header">
-                                        <div class="v4-timeline-title"><?php echo esc_html($exp['title']); ?></div>
-                                        <span style="font-size: 11px; color: #999; font-weight: 600;"><?php echo esc_html($exp['type'] ?? 'Full-time'); ?></span>
-                                    </div>
-                                    <div class="v4-timeline-org"><?php echo esc_html($exp['company']); ?></div>
-                                    <div class="v4-timeline-meta"><?php echo date('M Y', strtotime($exp['start'])); ?> — <?php echo !empty($exp['end']) ? date('M Y', strtotime($exp['end'])) : 'Present'; ?></div>
-                                    <p style="font-size: 13px; color: #666; margin-top: 8px; line-height: 1.5;"><?php echo nl2br(esc_html($exp['tasks'] ?? '')); ?></p>
+                            <div class="career-highlights-row">
+                                <div class="highlight-box">
+                                    <div class="highlight-value"><?php echo esc_html($exp_years ?: '0'); ?>+</div>
+                                    <div class="highlight-label">Years Experience</div>
                                 </div>
-                            <?php endforeach; else: ?>
-                                <p style="color: #999; font-size: 13px;">Experience data pending verification.</p>
-                            <?php endif; ?>
-                        </div>
-                    </section>
-
-                    <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Career Highlights / Milestones</h3>
-                        <div class="v4-card-body">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
-                                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
-                                    <div style="font-size: 24px; font-weight: 800; color: #1d3469; margin-bottom: 5px;"><?php echo esc_html($exp_years ?: '0'); ?>+</div>
-                                    <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Years Experience</div>
+                                <div class="highlight-box">
+                                    <div class="highlight-value"><?php echo count($experience); ?></div>
+                                    <div class="highlight-label">Corporate Roles</div>
                                 </div>
-                                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
-                                    <div style="font-size: 24px; font-weight: 800; color: #1d3469; margin-bottom: 5px;"><?php echo count($experience); ?></div>
-                                    <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Corporate Roles</div>
-                                </div>
-                                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
-                                    <div style="font-size: 24px; font-weight: 800; color: #1d3469; margin-bottom: 5px;"><?php echo count($skills); ?>+</div>
-                                    <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Key Competencies</div>
+                                <div class="highlight-box">
+                                    <div class="highlight-value"><?php echo count($skills); ?>+</div>
+                                    <div class="highlight-label">Key Competencies</div>
                                 </div>
                             </div>
                         </div>
                     </section>
 
+                    <!-- Key Achievements -->
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-star-filled"></span> Key Accomplishments</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-awards"></span> Key Professional Achievements & Milestones
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=8'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php
                             $accomplishments = get_user_meta($user_id, '_key_accomplishments', true);
@@ -445,7 +522,10 @@ get_header();
                     </section>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-welcome-learn-more"></span> Academic Background</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-welcome-learn-more"></span> Academic Background
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=7'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php if(!empty($academic)): foreach($academic as $edu): ?>
                                 <div class="v4-timeline-item">
@@ -462,23 +542,33 @@ get_header();
                         </div>
                     </section>
 
-                    <?php if(!empty($refs)): ?>
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-awards"></span> Professional References</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-portfolio"></span> Professional Experience
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=8'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
-                            <?php foreach($refs as $r): ?>
-                                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
-                                    <div style="font-weight: 700; color: #1d3469; font-size: 14px;"><?php echo esc_html($r['name']); ?></div>
-                                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;"><?php echo esc_html($r['title']); ?> • <?php echo esc_html($r['company']); ?></div>
+                            <?php if(!empty($experience)): foreach($experience as $exp): ?>
+                                <div class="v4-timeline-item">
+                                    <div class="v4-timeline-header">
+                                        <div class="v4-timeline-title"><?php echo esc_html($exp['title']); ?></div>
+                                        <span style="font-size: 11px; color: #999; font-weight: 600;"><?php echo esc_html($exp['type'] ?? 'Full-time'); ?></span>
+                                    </div>
+                                    <div class="v4-timeline-org"><?php echo esc_html($exp['company']); ?></div>
+                                    <div class="v4-timeline-meta"><?php echo date('M Y', strtotime($exp['start'])); ?> — <?php echo !empty($exp['end']) ? date('M Y', strtotime($exp['end'])) : 'Present'; ?></div>
+                                    <p style="font-size: 13px; color: #666; margin-top: 8px; line-height: 1.5;"><?php echo nl2br(esc_html($exp['tasks'] ?? '')); ?></p>
                                 </div>
-                            <?php endforeach; ?>
+                            <?php endforeach; else: ?>
+                                <p style="color: #999; font-size: 13px;">Experience data pending verification.</p>
+                            <?php endif; ?>
                         </div>
                     </section>
-                    <?php endif; ?>
-
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-admin-settings"></span> Strategic Core Competencies</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-admin-settings"></span> Core & Strategic Competencies
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=9'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <p style="color: #64748b; margin-bottom: 20px;">Validated skills and operational capabilities acquired through professional engagement.</p>
                             <div class="v4-tag-container">
@@ -492,47 +582,57 @@ get_header();
                         </div>
                     </section>
 
-                    <?php if(!empty($portfolio)): ?>
                     <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-visibility"></span> Case Studies & Work Samples</h3>
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-visibility"></span> References
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=11'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <?php foreach($portfolio as $port): ?>
-                                    <div style="padding: 16px; background: #FAFAFA; border-radius: 12px; border: 1px solid #F0F0F0;">
-                                        <div style="font-weight: 600; color: #111;"><?php echo esc_html($port['title']); ?></div>
-                                        <p style="font-size: 12px; color: #666; margin: 8px 0;"><?php echo esc_html($port['desc']); ?></p>
-                                        <a href="<?php echo esc_url($port['url']); ?>" target="_blank" style="font-size: 11px; font-weight: 700; color: #1d3469; text-decoration: none;">View Sample ↗</a>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
+                            <?php if(!empty($refs)): ?>
+                                <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;">
+                                    <h4 style="font-size: 14px; color: #1d3469; margin-bottom: 16px;">Professional Verification</h4>
+                                    <?php foreach($refs as $r): ?>
+                                        <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f8fafc;">
+                                            <div style="font-weight: 700; color: #1d3469; font-size: 14px;"><?php echo esc_html($r['name']); ?></div>
+                                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;"><?php echo esc_html($r['title']); ?> • <?php echo esc_html($r['company']); ?></div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if(!empty($portfolio)): ?>
+                                <h4 style="font-size: 14px; color: #1d3469; margin-bottom: 16px;">Case Studies & Work Samples</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                    <?php foreach($portfolio as $port): ?>
+                                        <div style="padding: 16px; background: #FAFAFA; border-radius: 12px; border: 1px solid #F0F0F0;">
+                                            <div style="font-weight: 600; color: #111;"><?php echo esc_html($port['title']); ?></div>
+                                            <p style="font-size: 12px; color: #666; margin: 8px 0;"><?php echo esc_html($port['desc']); ?></p>
+                                            <a href="<?php echo esc_url($port['url']); ?>" target="_blank" style="font-size: 11px; font-weight: 700; color: #1d3469; text-decoration: none;">View Sample ↗</a>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if(empty($refs) && empty($portfolio)): ?>
+                                <p style="color: #999; font-size: 13px;">No reference or portfolio data available.</p>
+                            <?php endif; ?>
                         </div>
                     </section>
-                    <?php endif; ?>
                 </div>
 
                 <div class="profile-v4-sidebar">
-                    <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
-                    <section class="v4-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-hammer"></span> Strategic Domain Knowledge</h3>
-                        <div class="v4-card-body">
-                            <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Comprehensive expertise across core technical and professional domains, developed through years of practical application.</p>
-                            <div class="v4-tag-container">
-                                <?php foreach($skills as $s): ?>
-                                    <span class="v4-pastel-pill pill-blue"><?php echo trim($s); ?></span>
-                                <?php endforeach; ?>
-                                <?php foreach($sec_specs as $ss): ?>
-                                    <span class="v4-pastel-pill pill-purple"><?php echo esc_html($ss); ?></span>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="v4-card contact-card">
-                        <h3 class="v4-card-title"><span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details</h3>
+                    <section class="v4-card contact-card sidebar-contact-info">
+                        <h3 class="v4-card-title">
+                            <span class="dashicons dashicons-id-alt" style="color: #1d3469;"></span> Contact Details
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=4'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <?php
                             $s_email = $cv['personal']['email'] ?? $user->user_email;
                             $s_phone = $cv['personal']['phone'] ?? get_user_meta($user_id, '_phone', true);
+                            $facebook = get_user_meta($user_id, '_facebook_url', true);
+                            $twitter = get_user_meta($user_id, '_twitter_url', true);
+                            $linkedin = get_user_meta($user_id, '_linkedin_url', true);
                             ?>
                             <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 <span class="dashicons dashicons-email" style="color: #64748b; font-size: 18px; width: 18px; height: 18px;"></span>
@@ -540,7 +640,7 @@ get_header();
                             </div>
 
                             <?php if($s_phone): ?>
-                            <div style="display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 <span class="dashicons dashicons-phone" style="color: #64748b; font-size: 18px; width: 18px; height: 18px;"></span>
                                 <span style="color: #1d3469; font-weight: 600; font-size: 13px;"><?php echo esc_html($s_phone); ?></span>
                                 <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $s_phone); ?>" target="_blank" style="margin-left: auto; color: #25D366;" title="WhatsApp Chat">
@@ -548,12 +648,24 @@ get_header();
                                 </a>
                             </div>
                             <?php endif; ?>
+
+                            <?php if($facebook || $twitter || $linkedin): ?>
+                            <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; padding-top: 15px; border-top: 1px solid #f1f5f9;">
+                                <?php if($facebook): ?><a href="<?php echo esc_url($facebook); ?>" target="_blank" class="sidebar-social-icon-v2" title="Facebook"><span class="dashicons dashicons-facebook"></span></a><?php endif; ?>
+                                <?php if($twitter): ?><a href="<?php echo esc_url($twitter); ?>" target="_blank" class="sidebar-social-icon-v2" title="Twitter/X"><span class="dashicons dashicons-twitter"></span></a><?php endif; ?>
+                                <?php if($linkedin): ?><a href="<?php echo esc_url($linkedin); ?>" target="_blank" class="sidebar-social-icon-v2" title="LinkedIn"><span class="dashicons dashicons-networking"></span></a><?php endif; ?>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </section>
 
+                    <?php Jobs_Ads_Service::display_ad('sidebar'); ?>
 
                     <section class="v4-card">
-                        <h3 class="v4-card-title">Career Profile</h3>
+                        <h3 class="v4-card-title">
+                            Career Summary
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=5'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
                         <div class="v4-card-body">
                             <div class="v4-career-item">
                                 <span class="dashicons dashicons-awards"></span>
@@ -588,7 +700,34 @@ get_header();
                                 <div>
                                     <small>Language Proficiency</small>
                                     <span><?php echo esc_html($cv['languages']['native'] ?? 'English'); ?><?php echo !empty($cv['languages']['other']) ? ', '.esc_html($cv['languages']['other']) : ''; ?></span>
+                                    <?php
+                                    $ielts = get_user_meta($user_id, '_ielts_score', true);
+                                    $toefl = get_user_meta($user_id, '_toefl_score', true);
+                                    if($ielts || $toefl): ?>
+                                        <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center;">
+                                            <?php if($ielts): ?><div style="flex: 1; font-size: 10px; background: #eff6ff; color: #1d4ed8; padding: 4px 8px; border-radius: 6px; font-weight: 700; text-align: center; border: 1px solid #dbeafe;">IELTS: <?php echo esc_html($ielts); ?></div><?php endif; ?>
+                                            <?php if($toefl): ?><div style="flex: 1; font-size: 10px; background: #faf5ff; color: #7e22ce; padding: 4px 8px; border-radius: 6px; font-weight: 700; text-align: center; border: 1px solid #f3e8ff;">TOEFL: <?php echo esc_html($toefl); ?></div><?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="v4-card">
+                        <h3 class="v4-card-title">
+                            Strategic Domain Knowledge
+                            <?php if(get_current_user_id() === $user_id): ?><a href="<?php echo home_url('/account-setup/?step=9'); ?>" class="v4-edit-link"><span class="dashicons dashicons-edit"></span></a><?php endif; ?>
+                        </h3>
+                        <div class="v4-card-body">
+                            <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Comprehensive expertise across core technical and professional domains, developed through years of practical application.</p>
+                            <div class="v4-tag-container">
+                                <?php foreach($skills as $s): ?>
+                                    <span class="v4-pastel-pill pill-blue"><?php echo trim($s); ?></span>
+                                <?php endforeach; ?>
+                                <?php foreach($sec_specs as $ss): ?>
+                                    <span class="v4-pastel-pill pill-purple"><?php echo esc_html($ss); ?></span>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </section>
@@ -607,10 +746,11 @@ get_header();
                     </section>
                     <?php endif; ?>
 
-                    <section class="v4-card integrity-card" style="background: linear-gradient(135deg, #1d3469 0%, #2a4a8c 100%); border: none; color: #FFFFFF;">
-                        <h3 class="v4-card-title" style="color: #FFFFFF; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;"><span class="dashicons dashicons-shield-alt" style="color: #60a5fa;"></span> Profile Strength</h3>
+                    <a href="<?php echo home_url('/account-setup/'); ?>" class="integrity-card-link" style="text-decoration: none;">
+                    <section class="v4-card integrity-card" style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); border: none; color: #FFFFFF; cursor: pointer; transition: transform 0.3s ease;">
+                        <h3 class="v4-card-title" style="color: #FFFFFF; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px;"><span class="dashicons dashicons-shield-alt" style="color: #fff;"></span> Profile Strength</h3>
                         <div style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 24px 0 12px; border: 1px solid rgba(255,255,255,0.05);">
-                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #60a5fa, #34d399); border-radius: 10px; box-shadow: 0 0 15px rgba(96,165,250,0.5);"></div>
+                            <div style="width: <?php echo esc_attr($cv['completeness'] ?? 75); ?>%; height: 100%; background: linear-gradient(to right, #34d399, #fbbf24); border-radius: 10px; box-shadow: 0 0 15px rgba(52,211,153,0.5);"></div>
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7);">
                             <span style="letter-spacing: 0.1em;">COMPLETENESS SCORE</span>
@@ -639,6 +779,7 @@ get_header();
                             </div>
                         <?php endif; ?>
                     </section>
+                    </a>
 
                     <div style="text-align: center; color: #999; font-size: 11px; font-weight: 500;">
                         Last Active: <?php echo $last_activity ? human_time_diff($last_activity, current_time('timestamp')).' ago' : 'Recently'; ?>
@@ -648,6 +789,14 @@ get_header();
             <?php Jobs_Ads_Service::display_ad('below_content'); ?>
         <?php endif; ?>
 
+    </div>
+
+    <!-- PDF Footer (Hidden on Screen) -->
+    <div class="pdf-only-footer" style="display: none;">
+        <div style="border-top: 1px solid #ccc; padding-top: 10px; margin-top: 30px; text-align: center; font-size: 10px; color: #666;">
+            <p>This professional profile was generated via <strong><?php bloginfo('name'); ?></strong> - The Premium Career Platform.</p>
+            <p><?php echo home_url(); ?> | Verified Professional Identity</p>
+        </div>
     </div>
 </div>
 
@@ -681,21 +830,62 @@ get_header();
 </div>
 
 
-<!-- Modal: Contact/Message -->
-<div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index:9999; align-items:center; justify-content:center;">
-    <div class="modal-content" style="background:white; padding:32px; border-radius:16px; width:100%; max-width:480px; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
-        <h3 style="margin-top:0; font-size: 18px; font-weight: 600; color: #111;">Contact <?php echo esc_html($display_name); ?></h3>
-        <p style="color: #666; font-size: 13px; margin: 8px 0 24px;">Initiate a professional inquiry through the Jobedia platform.</p>
-        <textarea id="message-text" placeholder="Write your professional message here..." style="width:100%; height:160px; padding:12px; border-radius:8px; border:1px solid #E0E0E0; margin-bottom: 24px; font-family: inherit; font-size: 13px;"></textarea>
+<!-- Modal: Contact/Message (Job Offer) -->
+<div id="message-modal" class="jobs-modal" style="display:none; position:fixed; inset:0; background:rgba(29, 52, 105, 0.2); backdrop-filter: blur(8px); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-content" style="background:white; padding:40px; border-radius:24px; width:100%; max-width:540px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+        <h3 style="margin-top:0; font-size: 22px; font-weight: 800; color: #1d3469;">Offer a Position to <?php echo esc_html($display_name); ?></h3>
+
+        <div style="margin: 20px 0; padding: 15px; background: #eff6ff; border-radius: 12px; border-left: 4px solid #2563eb;">
+            <h4 style="margin: 0 0 5px; font-size: 14px; color: #1e40af;">Guidelines:</h4>
+            <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: #1e40af; line-height: 1.6;">
+                <li>Be specific about the role and company culture.</li>
+                <li>Mention why you are interested in this candidate specifically.</li>
+                <li>Keep the tone professional and respectful.</li>
+            </ul>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <input type="text" id="message-subject" placeholder="Message Subject" style="width:100%; padding:12px 16px; border-radius:10px; border:1.5px solid #E2E8F0; font-family: inherit; font-size: 14px; outline: none;">
+        </div>
+
+        <textarea id="message-text" placeholder="Write your job offer or inquiry here..." style="width:100%; height:180px; padding:12px 16px; border-radius:10px; border:1.5px solid #E2E8F0; margin-bottom: 24px; font-family: inherit; font-size: 14px; resize: none; outline: none;"></textarea>
+
         <div style="display:flex; justify-content:flex-end; gap:12px;">
-            <button class="v4-btn-secondary close-modal">Discard</button>
-            <button class="v4-btn-primary" id="confirm-send-message">Deliver Message</button>
+            <button class="v4-btn-secondary close-modal" style="border-radius: 10px;">Cancel</button>
+            <button class="v4-btn-primary" id="confirm-send-message" style="border-radius: 10px; background: #1d3469;">Send Job Offer</button>
         </div>
     </div>
 </div>
 
 <script>
 jQuery(document).ready(function($) {
+    // Statistics Dropdown Logic
+    $('.stats-trigger').on('click', function(e) {
+        e.stopPropagation();
+        $('.stats-dropdown-panel').fadeToggle(200);
+    });
+    $(document).on('click', function() {
+        $('.stats-dropdown-panel').fadeOut(200);
+    });
+    $('.stats-dropdown-panel').on('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Guest Offer Logic
+    $('.guest-offer-trigger').on('click', function() {
+        if(confirm('Please log in or register to offer a job to this professional. Redirect to login?')) {
+            window.location.href = '<?php echo home_url('/login/'); ?>?redirect_to=' + encodeURIComponent(window.location.href);
+        }
+    });
+
+    // Profile View Tracking (1 minute delay)
+    setTimeout(function() {
+        $.post(jobs_vars.ajax_url, {
+            action: 'jobs_track_profile_view',
+            user_id: <?php echo $user_id; ?>
+        });
+    }, 60000);
+
     // Share Modal Logic
     $('.open-share-modal').on('click', function() { $('#share-modal').css('display', 'flex'); });
     $('.close-share-modal').on('click', function() { $('#share-modal').hide(); });
@@ -726,22 +916,35 @@ jQuery(document).ready(function($) {
     });
     $('.close-modal').on('click', function() { $('#message-modal').hide(); });
     $('#confirm-send-message').on('click', function() {
+        var subject = $('#message-subject').val();
         var msg = $('#message-text').val();
-        if(!msg) return;
+        if(!msg) { alert('Please enter a message.'); return; }
+
         var btn = $(this);
-        btn.prop('disabled', true).text('Sending...');
+        btn.prop('disabled', true).text('Delivering...');
+
         $.post(jobs_vars.ajax_url, {
             action: 'jobs_send_message',
             receiver_id: <?php echo $user_id; ?>,
+            subject: subject,
             message: msg,
             nonce: '<?php echo wp_create_nonce("jobs_messaging_nonce"); ?>'
         }, function(res) {
             if(res.success) {
-                $('#message-modal .modal-content').html('<div style="text-align:center; padding: 24px;"><h3>Message Delivered</h3><p style="font-size:13px; color:#666;">Your inquiry has been sent successfully.</p><button class="v4-btn-primary close-modal" style="margin-top:16px;">Close</button></div>');
+                $('#message-modal .modal-content').html(`
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <div style="width: 80px; height: 80px; background: #dcfce7; color: #166534; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                            <span class="dashicons dashicons-yes" style="font-size: 40px; width: 40px; height: 40px;"></span>
+                        </div>
+                        <h3 style="margin: 0 0 10px; font-size: 24px; color: #111;">Job Offer Sent!</h3>
+                        <p style="font-size:15px; color:#64748b; margin-bottom: 30px;">Your professional inquiry has been delivered to <?php echo esc_html($display_name); ?>.</p>
+                        <button class="v4-btn-primary close-modal" style="width: 100%; border-radius: 12px;">Back to Profile</button>
+                    </div>
+                `);
                 $('.close-modal').on('click', function() { $('#message-modal').hide(); });
             } else {
-                alert('Failed to send message.');
-                btn.prop('disabled', false).text('Deliver Message');
+                alert('Failed to deliver message: ' + res.data);
+                btn.prop('disabled', false).text('Send Job Offer');
             }
         });
     });
