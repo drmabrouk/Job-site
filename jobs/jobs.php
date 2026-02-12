@@ -128,7 +128,8 @@ function jobs_template_loader( $template ) {
     }
 
     // Account Setup Standalone Page
-    if ( is_page( 'account-setup' ) ) {
+    $current_path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
+    if ( is_page( 'account-setup' ) || $current_path === 'account-setup' ) {
         $plugin_template = JOBS_PLUGIN_DIR . 'templates/account-setup-page.php';
         if ( file_exists( $plugin_template ) ) {
             return $plugin_template;
