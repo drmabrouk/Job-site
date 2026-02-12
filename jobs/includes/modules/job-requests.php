@@ -7,9 +7,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $user_id = get_current_user_id();
+$is_system_admin = Jobs_Permission_Service::is_system_admin($user_id);
 $is_employer = Jobs_Permission_Service::can_post_job($user_id);
 
-if ($is_employer) {
+if ($is_system_admin) {
+    // System admin sees all applications
+    $args = array(
+        'post_type' => 'application',
+        'posts_per_page' => -1
+    );
+} elseif ($is_employer) {
     // Get applications received for jobs posted by this employer
     $my_jobs = get_posts(array(
         'post_type' => 'job',

@@ -19,7 +19,11 @@ $current_user = wp_get_current_user();
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div class="form-group">
-                <input type="text" name="display_name" value="<?php echo esc_attr( $current_user->display_name ); ?>" placeholder="Full Name" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
+                <input type="text" name="first_name" value="<?php echo esc_attr( get_user_meta($current_user->ID, 'first_name', true) ); ?>" placeholder="First Name" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="last_name" value="<?php echo esc_attr( get_user_meta($current_user->ID, 'last_name', true) ); ?>" placeholder="Last Name" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
             </div>
 
             <div class="form-group">
@@ -31,40 +35,25 @@ $current_user = wp_get_current_user();
                 <small style="font-size: 0.7em; color: #999;">Changeable once per month</small>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="grid-column: span 2;">
                 <select name="profile_visibility" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
-                    <option value="public" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'public' ); ?>>Public Profile</option>
-                    <option value="private" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'private' ); ?>>Private (Hidden)</option>
+                    <option value="public" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'public' ); ?>>Public Profile Visibility</option>
+                    <option value="private" <?php selected( get_user_meta( $current_user->ID, 'profile_visibility', true ), 'private' ); ?>>Private (Hidden from directory)</option>
                 </select>
             </div>
 
-            <div class="form-group" style="grid-column: span 2;">
-                <input type="password" name="user_pass" placeholder="New Password (Leave blank to keep current)" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
+            <div class="form-group">
+                <input type="password" name="user_pass" placeholder="New Password" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="user_pass_confirm" placeholder="Confirm New Password" style="width:100%; border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px;">
             </div>
         </div>
 
         <button type="submit" name="jobs_save_account" class="jobs-btn" style="margin-top: 20px; width: 100%;">Save Changes</button>
         <div id="jobs-settings-status" style="margin-top:10px; text-align:center;"></div>
     </form>
-
-    <?php if ( current_user_can('administrator') || current_user_can('system_admin') || in_array('reviewer', (array) $current_user->roles) ) : ?>
-    <hr>
-    <div class="activity-log-section">
-        <h4>My Activity Log</h4>
-        <div style="max-height: 200px; overflow-y: auto; font-size: 0.85em; background: #f5f5f5; padding: 15px; border-radius: 8px;">
-            <?php
-            $logs = Jobs_Activity_Service::get_recent_logs( 10 );
-            foreach ( $logs as $log ) {
-                if ( $log->user_id == $current_user->ID ) {
-                    echo '<div style="margin-bottom:8px; border-bottom:1px solid #ddd; padding-bottom:4px;">';
-                    echo '<strong>' . $log->time . ':</strong> ' . esc_html($log->message);
-                    echo '</div>';
-                }
-            }
-            ?>
-        </div>
-    </div>
-    <?php endif; ?>
 
     <div class="danger-zone" style="margin-top: 50px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
         <a href="#" id="jobs-delete-account" style="color: #94a3b8; font-size: 0.85em; text-decoration: underline; transition: color 0.2s;">Delete my account permanently</a>

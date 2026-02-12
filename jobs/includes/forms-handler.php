@@ -167,18 +167,38 @@ function jobs_handle_forms() {
         }
 
         $email = sanitize_email( $_POST['user_email'] );
-        $display_name = sanitize_text_field( $_POST['display_name'] );
+        $first_name = sanitize_text_field( $_POST['first_name'] );
+        $last_name = sanitize_text_field( $_POST['last_name'] );
         $visibility = sanitize_text_field( $_POST['profile_visibility'] );
         $new_username = sanitize_user( $_POST['user_login_change'] );
+
+        $current_user = get_userdata( $user_id );
+
+        // Validate password confirmation if provided
+        if ( ! empty( $_POST['user_pass'] ) ) {
+            if ( $_POST['user_pass'] !== $_POST['user_pass_confirm'] ) {
+                wp_die( 'Passwords do not match.' );
+            }
+        }
+
+        // Handle Email verification if changed
+        $email_changed = false;
+        if ( $email !== $current_user->user_email ) {
+            $email_changed = true;
+            if ( email_exists( $email ) ) {
+                wp_die( 'Email address already registered by another user.' );
+            }
+        }
 
         $update_data = array(
             'ID'           => $user_id,
             'user_email'   => $email,
-            'display_name' => $display_name,
+            'first_name'   => $first_name,
+            'last_name'    => $last_name,
+            'display_name' => trim($first_name . ' ' . $last_name),
         );
 
         // Update username if changed and allowed
-        $current_user = get_userdata( $user_id );
         if ( ! empty( $new_username ) && $new_username !== $current_user->user_login ) {
             if ( ! username_exists( $new_username ) ) {
                 global $wpdb;
@@ -191,6 +211,11 @@ function jobs_handle_forms() {
 
         if ( ! empty( $_POST['user_pass'] ) ) {
             wp_set_password( $_POST['user_pass'], $user_id );
+        }
+
+        if ( $email_changed ) {
+            delete_user_meta( $user_id, '_is_email_verified' );
+            Jobs_Auth_Service::send_verification_email( $user_id );
         }
 
         update_user_meta( $user_id, 'profile_visibility', $visibility );

@@ -30,7 +30,7 @@ jQuery(document).ready(function($) {
         if ($('#jobs-notif-menu').hasClass('active')) {
             $('#jobs-notif-detail').hide();
             $('#jobs-notif-list').show();
-            $('.dropdown-header strong').text('Notifications');
+            $('#jobs-notif-menu .dropdown-header strong').text('Notifications');
             loadNotifications();
         }
     });
@@ -60,13 +60,13 @@ jQuery(document).ready(function($) {
 
         $('#jobs-notif-list').hide();
         $('#jobs-notif-detail').show();
-        $('.dropdown-header strong').text('Notification Detail');
+        $('#jobs-notif-menu .dropdown-header strong').text('Notification Detail');
     });
 
     $(document).on('click', '#notif-back', function() {
         $('#jobs-notif-detail').hide();
         $('#jobs-notif-list').show();
-        $('.dropdown-header strong').text('Notifications');
+        $('#jobs-notif-menu .dropdown-header strong').text('Notifications');
     });
 
     function loadNotifications() {
